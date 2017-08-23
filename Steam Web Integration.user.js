@@ -19,6 +19,8 @@
 // @connect      cdn.steam.tools
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js
 // @supportURL   https://www.steamgifts.com/discussion/y9vVm/
+// @updateURL    https://github.com/Royalgamer06/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
+// @downloadURL  https://github.com/Royalgamer06/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
 // ==/UserScript==
 
 // ==Configuration==
@@ -193,8 +195,8 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, lc
             }
             if (wantCards && cards.includes(appID)) { //if has cards and enabled
                 html += "<span style='color: ${cardColor}; cursor: help;' title='Game or DLC (" + appID + ") has cards\nLast updated: " + clcs + "'> " + (linkCardIcon ?
-                            "<a href='http://www.steamcardexchange.net/index.php?gamepage-appid-" + appID + "' target='_blank'>" + cardIcon + "</a>" :
-                            cardIcon) + "</span>";
+                    "<a href='http://www.steamcardexchange.net/index.php?gamepage-appid-" + appID + "' target='_blank'>" + cardIcon + "</a>" :
+                    cardIcon) + "</span>";
             }
             if (prefix) {
                 $(elem).before(html);
