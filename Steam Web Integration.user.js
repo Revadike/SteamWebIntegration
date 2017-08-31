@@ -5,7 +5,7 @@
 // @author       Royalgamer06
 // @contributor  Black3ird
 // @contributor  Lex
-// @version      1.6.1
+// @version      1.6.2
 // @description  Check every web page for game, dlc and package links to the steam store and mark if it's owned, unowned, ignored (not interested), removed/delisted (decommissioned), wishlisted or has cards using icons.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com.*/
@@ -93,7 +93,7 @@ function refreshDecommissioned(callback) {
     if (wantDecommissioned && (Date.now() - lastCachedDecommissioned >= decommissionedRefreshInterval * 60000 || !cachedDecommissioned)) {
         GM_xmlhttpRequest({
             method: "GET",
-            url: "https://steam-tracker.com/api?action=GetAppListV2",
+            url: "https://steam-tracker.com/api?action=GetAppListV3",
             onload: function(response) {
                 const json = JSON.parse(response.responseText);
                 if (json.success) {
