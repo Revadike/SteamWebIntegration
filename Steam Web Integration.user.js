@@ -5,7 +5,7 @@
 // @author       Royalgamer06
 // @contributor  Black3ird
 // @contributor  Lex
-// @version      1.6.2
+// @version      1.6.3
 // @description  Check every web page for game, dlc and package links to the steam store and mark if it's owned, unowned, ignored (not interested), removed/delisted (decommissioned), wishlisted or has cards using icons.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com.*/
@@ -19,8 +19,8 @@
 // @connect      cdn.steam.tools
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js
 // @supportURL   https://www.steamgifts.com/discussion/y9vVm/
-// @updateURL    https://github.com/Royalgamer06/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
 // @downloadURL  https://github.com/Royalgamer06/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
+// @updateURL
 // ==/UserScript==
 
 // ==Configuration==
@@ -194,7 +194,7 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, lc
                     app.category.toLowerCase() + " and has only " + app.count + " confirmed owners on Steam\nLast updated: " + dlcs + "'> " + decommissionedIcon + "</span>"; //🗑
             }
             if (wantCards && cards.includes(appID)) { //if has cards and enabled
-                html += "<span style='color: ${cardColor}; cursor: help;' title='Game or DLC (" + appID + ") has cards\nLast updated: " + clcs + "'> " + (linkCardIcon ?
+                html += "<span style='color: " + cardColor + "; cursor: help;' title='Game or DLC (" + appID + ") has cards\nLast updated: " + clcs + "'> " + (linkCardIcon ?
                     "<a href='http://www.steamcardexchange.net/index.php?gamepage-appid-" + appID + "' target='_blank'>" + cardIcon + "</a>" :
                     cardIcon) + "</span>";
             }
