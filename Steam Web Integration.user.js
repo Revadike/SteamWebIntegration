@@ -5,7 +5,7 @@
 // @author       Royalgamer06
 // @contributor  Black3ird
 // @contributor  Lex
-// @version      1.6.3
+// @version      1.6.4
 // @description  Check every web page for game, dlc and package links to the steam store and mark if it's owned, unowned, ignored (not interested), removed/delisted (decommissioned), wishlisted or has cards using icons.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com.*/
@@ -42,8 +42,8 @@ const decommissionedColor = "initial"; // Color of the icon for removed or delis
 const cardIcon = "&#x1F0A1"; // HTML entity code for '🂡' (default).
 const cardColor = "blue"; // Color of the icon for cards.
 const userRefreshInterval = 0; // Number of minutes to wait to refesh cached userdata. 0 = always stay up-to-date.
-const decommissionedRefreshInterval = 60 * 12; // Number of minutes to wait to refesh cached userdata. 0 = always stay up-to-date.
-const cardRefreshInterval = 60 * 24 * 2; // Number of minutes to wait to refesh cached trading card data. 0 = always stay up-to-date.
+const decommissionedRefreshInterval = 60 * 24; // Number of minutes to wait to refesh cached userdata. 0 = always stay up-to-date.
+const cardRefreshInterval = 60 * 24 * 3; // Number of minutes to wait to refesh cached trading card data. 0 = always stay up-to-date.
 // ==/Configuration==
 
 // ==Code==
