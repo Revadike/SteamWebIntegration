@@ -5,7 +5,7 @@
 // @author       Royalgamer06
 // @contributor  Black3ird
 // @contributor  Lex
-// @version      1.6.4
+// @version      1.6.5
 // @description  Check every web page for game, dlc and package links to the steam store and mark if it's owned, unowned, ignored (not interested), removed/delisted (decommissioned), wishlisted or has cards using icons.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com.*/
@@ -19,8 +19,8 @@
 // @connect      cdn.steam.tools
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js
 // @supportURL   https://www.steamgifts.com/discussion/y9vVm/
+// @updateURL    https://github.com/Royalgamer06/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
 // @downloadURL  https://github.com/Royalgamer06/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @updateURL
 // ==/UserScript==
 
 // ==Configuration==
@@ -43,7 +43,7 @@ const cardIcon = "&#x1F0A1"; // HTML entity code for '🂡' (default).
 const cardColor = "blue"; // Color of the icon for cards.
 const userRefreshInterval = 0; // Number of minutes to wait to refesh cached userdata. 0 = always stay up-to-date.
 const decommissionedRefreshInterval = 60 * 24; // Number of minutes to wait to refesh cached userdata. 0 = always stay up-to-date.
-const cardRefreshInterval = 60 * 24 * 3; // Number of minutes to wait to refesh cached trading card data. 0 = always stay up-to-date.
+const cardRefreshInterval = 60 * 24 * 2; // Number of minutes to wait to refesh cached trading card data. 0 = always stay up-to-date.
 // ==/Configuration==
 
 // ==Code==
@@ -94,13 +94,28 @@ function refreshDecommissioned(callback) {
         GM_xmlhttpRequest({
             method: "GET",
             url: "https://steam-tracker.com/api?action=GetAppListV3",
+            timeout: 30000,
             onload: function(response) {
-                const json = JSON.parse(response.responseText);
-                if (json.success) {
-                    GM_setValue("swi_decommissioned", JSON.stringify(json.removed_apps));
-                    GM_setValue("swi_decommissioned_last", Date.now());
+                var json = null;
+                try {
+                    json = JSON.parse(response.responseText);
+                    if (json.success) {
+                        GM_setValue("swi_decommissioned", JSON.stringify(json.removed_apps));
+                        GM_setValue("swi_decommissioned_last", Date.now());
+                    }
+                    callback(json.removed_apps);
+                } catch(e) {
+                    console.log("Unable to parse removed steam games data. Using cached data...", e);
+                    callback(cachedDecommissioned);
                 }
-                callback(json.removed_apps);
+            },
+            onerror: function() {
+                console.log("An error occurred while refreshing removed steam games data. Using cached data...");
+                callback(cachedDecommissioned);
+            },
+            ontimeout: function() {
+                console.log("It took too long to refresh removed steam games data. Using cached data...");
+                callback(cachedDecommissioned);
             }
         });
     } else {
@@ -115,16 +130,31 @@ function refreshCards(callback) {
         GM_xmlhttpRequest({
             method: "GET",
             url: "http://cdn.steam.tools/data/set_data.json",
+            timeout: 30000,
             onload: function(response) {
-                const json = JSON.parse(response.responseText).sets.map(function(game) {
-                    return parseInt(game.appid);
-                });
-                if (json.length > 7000) { // sanity check
-                    console.log(json);
-                    GM_setValue("swi_cards", JSON.stringify(json));
-                    GM_setValue("swi_cards_last", Date.now());
+                var json = null;
+                try {
+                    json = JSON.parse(response.responseText).sets.map(function(game) {
+                        return parseInt(game.appid);
+                    });
+                    if (json.length > 7000) { // sanity check
+                        console.log(json);
+                        GM_setValue("swi_cards", JSON.stringify(json));
+                        GM_setValue("swi_cards_last", Date.now());
+                    }
+                    callback(json);
+                } catch(e) {
+                    console.log("Unable to parse steam trading cards data. Using cached data...", e);
+                    callback(cachedCards);
                 }
-                callback(json);
+            },
+            onerror: function() {
+                console.log("An error occurred while refreshing steam trading cards data. Using cached data...");
+                callback(cachedCards);
+            },
+            ontimeout: function() {
+                console.log("It took too long to refresh steam trading cards data. Using cached data...");
+                callback(cachedCards);
             }
         });
     } else {
