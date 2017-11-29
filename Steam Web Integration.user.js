@@ -5,7 +5,7 @@
 // @author       Royalgamer06
 // @contributor  Black3ird
 // @contributor  Lex
-// @version      1.6.5
+// @version      1.6.6
 // @description  Check every web page for game, dlc and package links to the steam store and mark if it's owned, unowned, ignored (not interested), removed/delisted (decommissioned), wishlisted or has cards using icons.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com.*/
