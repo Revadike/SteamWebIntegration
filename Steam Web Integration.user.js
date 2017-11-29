@@ -5,7 +5,7 @@
 // @author       Royalgamer06
 // @contributor  Black3ird
 // @contributor  Lex
-// @version      1.6.5
+// @version      1.6.6
 // @description  Check every web page for game, dlc and package links to the steam store and mark if it's owned, unowned, ignored (not interested), removed/delisted (decommissioned), wishlisted or has cards using icons.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com.*/
@@ -182,7 +182,8 @@ function init(userdata, decommissioned, cards) {
     const lcs = (new Date(lastCached)).toLocaleString();
     const clcs = (new Date(GM_getValue("swi_cards_last", 0))).toLocaleString();
     const dlcs = (new Date(GM_getValue("swi_decommissioned_last", 0))).toLocaleString();
-    const appSelector = ":regex(href, ^(https?:)?\/\/(store\.steampowered\.com|steamcommunity\.com|steamdb\.info)\/(agecheck\/)?app\/[0-9]+), img[src*='cdn.akamai.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steam/apps/']";
+    const appSelector = ":regex(href, ^(https?:)?\/\/(store\.steampowered\.com|steamcommunity\.com|steamdb\.info)\/(agecheck\/)?app\/[0-9]+), img[src*='cdn.akamai.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steam/apps/'], " +
+        "img[src*='cdn.edgecast.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/'], img[src*='steamdb.info/static/camo/apps/']";
     const subSelector = ":regex(href, ^(https?:)?\/\/(store\.steampowered\.com|steamdb\.info)\/sub\/[0-9]+)";
     $(document).on("DOMSubtreeModified", appSelector, function() {
         doApp(this, wishlist, ownedApps, ignoredApps, decommissioned, cards, lcs, clcs, dlcs);
