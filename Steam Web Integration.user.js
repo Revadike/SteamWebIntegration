@@ -183,7 +183,7 @@ function init(userdata, decommissioned, cards) {
     const clcs = (new Date(GM_getValue("swi_cards_last", 0))).toLocaleString();
     const dlcs = (new Date(GM_getValue("swi_decommissioned_last", 0))).toLocaleString();
     const appSelector = ":regex(href, ^(https?:)?\/\/(store\.steampowered\.com|steamcommunity\.com|steamdb\.info)\/(agecheck\/)?app\/[0-9]+), img[src*='cdn.akamai.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steam/apps/'], " +
-        "img[src*='cdn.edgecast.steamstatic.com/steam/apps/'], img[src*='https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/'], img[src*='https://steamdb.info/static/camo/apps/']";
+        "img[src*='cdn.edgecast.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/'], img[src*='steamdb.info/static/camo/apps/']";
     const subSelector = ":regex(href, ^(https?:)?\/\/(store\.steampowered\.com|steamdb\.info)\/sub\/[0-9]+)";
     $(document).on("DOMSubtreeModified", appSelector, function() {
         doApp(this, wishlist, ownedApps, ignoredApps, decommissioned, cards, lcs, clcs, dlcs);
