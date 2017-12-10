@@ -27,7 +27,7 @@
 const prefix = false; // Prefix (true) instead of suffix (false) position icon.
 const wantIgnores = true; // Wether (true) or not (false) you want to display an extra icon for ignored (not interested) apps.
 const wantDecommissioned = true; // Wether (true) or not (false) you want to display an extra icon for removed or delisted (decommissioned) apps.
-const wantCards = true; // Whether (true) or not (false) you want to display an extra icon for apps with cards.
+const wantCards = false; // Whether (true) or not (false) you want to display an extra icon for apps with cards.
 const linkCardIcon = true; // Link the card icon to SteamCardExchange.net
 const ignoredIcon = "&#128683;&#xFE0E;"; // HTML entity code for '🛇' (default).
 const ignoredColor = "grey"; // Color of the icon for ignored (not interested) apps.
