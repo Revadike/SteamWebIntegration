@@ -5,7 +5,7 @@
 // @author       Royalgamer06
 // @contributor  Black3ird
 // @contributor  Lex
-// @version      1.6.6
+// @version      1.6.7
 // @description  Check every web page for game, dlc and package links to the steam store and mark if it's owned, unowned, ignored (not interested), removed/delisted (decommissioned), wishlisted or has cards using icons.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com.*/
@@ -16,7 +16,7 @@
 // @run-at       document-start
 // @connect      store.steampowered.com
 // @connect      steam-tracker.com
-// @connect      cdn.steam.tools
+// @connect      steamcardexchange.net
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js
 // @supportURL   https://www.steamgifts.com/discussion/y9vVm/
 // @updateURL    https://github.com/Royalgamer06/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
@@ -27,7 +27,7 @@
 const prefix = false; // Prefix (true) instead of suffix (false) position icon.
 const wantIgnores = true; // Wether (true) or not (false) you want to display an extra icon for ignored (not interested) apps.
 const wantDecommissioned = true; // Wether (true) or not (false) you want to display an extra icon for removed or delisted (decommissioned) apps.
-const wantCards = false; // Whether (true) or not (false) you want to display an extra icon for apps with cards.
+const wantCards = true; // Whether (true) or not (false) you want to display an extra icon for apps with cards.
 const linkCardIcon = true; // Link the card icon to SteamCardExchange.net
 const ignoredIcon = "&#128683;&#xFE0E;"; // HTML entity code for '🛇' (default).
 const ignoredColor = "grey"; // Color of the icon for ignored (not interested) apps.
@@ -125,31 +125,32 @@ function refreshDecommissioned(callback) {
 
 function refreshCards(callback) {
     const cachedCards = JSON.parse(GM_getValue("swi_cards", null));
-    const lastCachedCards = GM_getValue("swi_cards_last", 0);
-    if (wantCards && (Date.now() - lastCachedCards >= cardRefreshInterval * 60000 || !cachedCards || cachedCards.length < 7000)) {
+    const lastCachedCards = parseInt(GM_getValue("swi_cards_last", 0)) || 1;
+    if (wantCards && (Date.now() - lastCachedCards >= cardRefreshInterval * 60000 || !cachedCards || Object.keys(cachedCards).length < 7000)) {
         GM_xmlhttpRequest({
             method: "GET",
-            url: "http://cdn.steam.tools/data/set_data.json",
+            url: "https://www.steamcardexchange.net/api/request.php?GetBadgePrices_Guest",
             timeout: 30000,
             onload: function(response) {
                 var json = null;
                 try {
-                    json = JSON.parse(response.responseText).sets.map(function(game) {
-                        return parseInt(game.appid);
+                    json = {};
+                    JSON.parse(response.responseText).data.forEach(function(item) {
+                        json[item[0][0]] = item[1];
                     });
-                    if (json.length > 7000) { // sanity check
+                    if (Object.keys(json).length > 7000) { // sanity check
                         console.log(json);
                         GM_setValue("swi_cards", JSON.stringify(json));
                         GM_setValue("swi_cards_last", Date.now());
                     }
                     callback(json);
-                } catch(e) {
-                    console.log("Unable to parse steam trading cards data. Using cached data...", e);
+                } catch(error) {
+                    console.log("Unable to parse steam trading cards data. Using cached data...", error);
                     callback(cachedCards);
                 }
             },
-            onerror: function() {
-                console.log("An error occurred while refreshing steam trading cards data. Using cached data...");
+            onerror: function(response) {
+                console.log("An error occurred while refreshing steam trading cards data. Using cached data...", response);
                 callback(cachedCards);
             },
             ontimeout: function() {
@@ -224,8 +225,8 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, lc
                 html += "<span style='color: " + decommissionedColor + "; cursor: help;' title='The " + app.type + " \"" + app.name.replace(/'/g, "") + "\" (" + appID + ") is " +
                     app.category.toLowerCase() + " and has only " + app.count + " confirmed owners on Steam\nLast updated: " + dlcs + "'> " + decommissionedIcon + "</span>"; //🗑
             }
-            if (wantCards && cards.includes(appID)) { //if has cards and enabled
-                html += "<span style='color: " + cardColor + "; cursor: help;' title='Game or DLC (" + appID + ") has cards\nLast updated: " + clcs + "'> " + (linkCardIcon ?
+            if (wantCards && cards.hasOwnProperty(appID)) { //if has cards and enabled
+                html += "<span style='color: " + cardColor + "; cursor: help;' title='Game (" + appID + ") has " + cards[appID] + " cards\nLast updated: " + clcs + "'> " + (linkCardIcon ?
                     "<a href='http://www.steamcardexchange.net/index.php?gamepage-appid-" + appID + "' target='_blank'>" + cardIcon + "</a>" :
                     cardIcon) + "</span>";
             }
