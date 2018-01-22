@@ -5,7 +5,8 @@
 // @author       Royalgamer06
 // @contributor  Black3ird
 // @contributor  Lex
-// @version      1.6.7
+// @contributor  Luckz
+// @version      1.6.8
 // @description  Check every web page for game, dlc and package links to the steam store and mark if it's owned, unowned, ignored (not interested), removed/delisted (decommissioned), wishlisted or has cards using icons.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com.*/
@@ -16,7 +17,7 @@
 // @run-at       document-start
 // @connect      store.steampowered.com
 // @connect      steam-tracker.com
-// @connect      steamcardexchange.net
+// @connect      barter.vg
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js
 // @supportURL   https://www.steamgifts.com/discussion/y9vVm/
 // @updateURL    https://github.com/Royalgamer06/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
@@ -129,14 +130,15 @@ function refreshCards(callback) {
     if (wantCards && (Date.now() - lastCachedCards >= cardRefreshInterval * 60000 || !cachedCards || Object.keys(cachedCards).length < 7000)) {
         GM_xmlhttpRequest({
             method: "GET",
-            url: "https://www.steamcardexchange.net/api/request.php?GetBadgePrices_Guest",
+            url: "https://barter.vg/browse/json/",
             timeout: 30000,
             onload: function(response) {
                 var json = null;
                 try {
                     json = {};
-                    JSON.parse(response.responseText).data.forEach(function(item) {
-                        json[item[0][0]] = item[1];
+                    $.each(JSON.parse(response.responseText), function (key, item) {
+                        if (item.cards > 0)
+                            json[item.sku] = item.cards;
                     });
                     if (Object.keys(json).length > 7000) { // sanity check
                         console.log(json);
