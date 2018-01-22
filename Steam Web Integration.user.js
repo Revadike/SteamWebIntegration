@@ -225,7 +225,7 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, lc
                 html += "<span style='color: " + decommissionedColor + "; cursor: help;' title='The " + app.type + " \"" + app.name.replace(/'/g, "") + "\" (" + appID + ") is " +
                     app.category.toLowerCase() + " and has only " + app.count + " confirmed owners on Steam\nLast updated: " + dlcs + "'> " + decommissionedIcon + "</span>"; //🗑
             }
-            if (wantCards && cards.hasOwnProperty(appID)) { //if has cards and enabled
+            if (wantCards && cards[appID] !== undefined) { //if has cards and enabled
                 html += "<span style='color: " + cardColor + "; cursor: help;' title='Game (" + appID + ") has " + cards[appID] + " cards\nLast updated: " + clcs + "'> " + (linkCardIcon ?
                     "<a href='http://www.steamcardexchange.net/index.php?gamepage-appid-" + appID + "' target='_blank'>" + cardIcon + "</a>" :
                     cardIcon) + "</span>";
