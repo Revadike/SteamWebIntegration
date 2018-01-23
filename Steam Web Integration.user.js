@@ -137,9 +137,12 @@ function refreshBarter(callback) {
                 try {
                     json = {};
                     $.each(JSON.parse(response.responseText), function (key, item) {
-                        if (item.source_id == 1)
-                            if (item.cards > 0)
-                                json[item.sku] = item.cards;
+                        if (item.source_id == 1) {
+                            json[item.sku] = {};
+                            if (item.cards > 0) {
+                                json[item.sku].cards = item.cards;
+                            }
+                        }
                     });
                     if (Object.keys(json).length > 7000) { // sanity check
                         console.log(json);
@@ -228,8 +231,8 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, barter, l
                 html += "<span style='color: " + decommissionedColor + "; cursor: help;' title='The " + app.type + " \"" + app.name.replace(/'/g, "") + "\" (" + appID + ") is " +
                     app.category.toLowerCase() + " and has only " + app.count + " confirmed owners on Steam\nLast updated: " + dlcs + "'> " + decommissionedIcon + "</span>"; //🗑
             }
-            if (wantCards && barter[appID] !== undefined) { //if has cards and enabled
-                html += "<span style='color: " + cardColor + "; cursor: help;' title='Game (" + appID + ") has " + barter[appID] + " cards\nLast updated: " + clcs + "'> " + (linkCardIcon ?
+            if (wantCards && barter[appID] !== undefined && barter[appID].cards !== undefined) { //if has cards and enabled
+                html += "<span style='color: " + cardColor + "; cursor: help;' title='Game (" + appID + ") has " + barter[appID].cards + " cards\nLast updated: " + clcs + "'> " + (linkCardIcon ?
                     "<a href='http://www.steamcardexchange.net/index.php?gamepage-appid-" + appID + "' target='_blank'>" + cardIcon + "</a>" :
                     cardIcon) + "</span>";
             }
