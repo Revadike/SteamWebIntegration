@@ -6,7 +6,7 @@
 // @contributor  Black3ird
 // @contributor  Lex
 // @contributor  Luckz
-// @version      1.6.10
+// @version      1.7.0
 // @description  Check every web page for game, dlc and package links to the steam store and mark if it's owned, unowned, ignored (not interested), removed/delisted (decommissioned), wishlisted or has cards using icons.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com.*/
@@ -131,28 +131,15 @@ function refreshDecommissioned(callback) {
 function refreshCards(callback) {
     const cachedCards = JSON.parse(GM_getValue("swi_tradingcards", null));
     const lastCachedCards = parseInt(GM_getValue("swi_tradingcards_last", 0)) || 1;
-    if ((wantCards || wantBundles) && (Date.now() - lastCachedCards >= cardsRefreshInterval * 60000 || !cachedCards || Object.keys(cachedCards).length < 7000)) {
+    if ((wantCards || wantBundles) && (Date.now() - lastCachedCards >= cardsRefreshInterval * 60000 || !cachedCards || Object.keys(cachedCards).length < 7000) || Object.values(cachedCards)[0].marketable === undefined) {
         GM_xmlhttpRequest({
             method: "GET",
-            url: "https://barter.vg/browse/json/",
+            url: "https://barter.vg/browse/cards/json/",
             timeout: 30000,
             onload: function(response) {
                 var json = null;
                 try {
-                    json = {};
-                    const orgJson = JSON.parse(response.responseText);
-                    for (var key in orgJson) {
-                        const item = orgJson[key];
-                        if (item.source_id === 1) {
-                            json[item.sku] = {};
-                            if (item.cards > 0) {
-                                json[item.sku].cards = item.cards;
-                            }
-                            if (item.bundles > 0) {
-                                json[item.sku].bundles = item.bundles;
-                            }
-                        }
-                    }
+                    json = JSON.parse(response.responseText);
                     if (Object.keys(json).length > 7000) { // sanity check
                         console.log(json);
                         GM_setValue("swi_tradingcards", JSON.stringify(json));
@@ -196,8 +183,8 @@ function init(userdata, decommissioned, cards) {
         GM_setValue("swi_data", JSON.stringify(userdata));
     }
     const lcs = dateOverride ? (new Date(lastCached)).toLocaleString("sv-SE") : (new Date(lastCached)).toLocaleString();
-    const blcs = dateOverride ? (new Date(GM_getValue("swi_tradingcards_last", 0))).toLocaleString("sv-SE") : (new Date(GM_getValue("swi_tradingcards_last", 0))).toLocaleString();
-    const dlcs = dateOverride ? (new Date(GM_getValue("swi_decommissioned_last", 0))).toLocaleString("sv-SE") : (new Date(GM_getValue("swi_decommissioned_last", 0))).toLocaleString();
+    const blcs = (new Date(GM_getValue("swi_tradingcards_last", 0))).toLocaleString(dateOverride ? "sv-SE" : undefined);
+    const dlcs = (new Date(GM_getValue("swi_decommissioned_last", 0))).toLocaleString(dateOverride ? "sv-SE" : undefined);
     const appSelector = ":regex(href, ^(https?:)?\/\/(store\.steampowered\.com|steamcommunity\.com|steamdb\.info)\/(agecheck\/)?app\/[0-9]+), img[src*='cdn.akamai.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steam/apps/'], " +
         "img[src*='cdn.edgecast.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/'], img[src*='steamdb.info/static/camo/apps/']";
     const subSelector = ":regex(href, ^(https?:)?\/\/(store\.steampowered\.com|steamdb\.info)\/sub\/[0-9]+)";
@@ -221,16 +208,16 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, lc
         setTimeout(function() {
             var appID = elem.href ? parseInt(elem.href.split("app/")[1].split("/")[0].split("?")[0].split("#")[0]) : parseInt(elem.src.split("apps/")[1].split("/")[0].split("?")[0].split("#")[0]);
             var html;
-            if ($.inArray(appID, ownedApps) > -1) { //if owned
+            if (ownedApps.includes(appID)) { //if owned
                 html = "<span style='color: " + ownedColor + "; cursor: help;' title='Game or DLC (" + appID + ") owned on Steam\nLast updated: " + lcs + "'> " + ownedIcon + "</span>"; //✔
             } else { //else not owned
-                if ($.inArray(appID, wishlist) > -1) { //if wishlisted
+                if (wishlist.includes(appID)) { //if wishlisted
                     html = "<span style='color: " + wishlistColor + "; cursor: help;' title='Game or DLC (" + appID + ") wishlisted on Steam\nLast updated: " + lcs + "'> " + wishlistIcon + "</span>"; //❤
                 } else { //else not wishlisted
                     html = "<span style='color: " + unownedColor + "; cursor: help;' title='Game or DLC (" + appID + ") not owned on Steam\nLast updated: " + lcs + "'> " + unownedIcon + "</span>"; //✘
                 }
             }
-            if ($.inArray(appID, ignoredApps) > -1 && wantIgnores) { //if ignored and enabled
+            if (ignoredApps.includes(appID) && wantIgnores) { //if ignored and enabled
                 html += "<span style='color: " + ignoredColor + "; cursor: help;' title='Game or DLC (" + appID + ") ignored on Steam\nLast updated: " + lcs + "'> " + ignoredIcon + "</span>"; //🛇
             }
             var app = decommissioned.filter(function(obj) {
@@ -240,12 +227,12 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, lc
                 html += "<span style='color: " + decommissionedColor + "; cursor: help;' title='The " + app.type + " \"" + app.name.replace(/'/g, "") + "\" (" + appID + ") is " +
                     app.category.toLowerCase() + " and has only " + app.count + " confirmed owners on Steam\nLast updated: " + dlcs + "'> " + decommissionedIcon + "</span>"; //🗑
             }
-            if (wantCards && cards[appID] !== undefined && cards[appID].cards !== undefined) { //if has cards and enabled
-                html += "<span style='color: " + cardColor + "; cursor: help;' title='Game (" + appID + ") has " + cards[appID].cards + " cards\nLast updated: " + blcs + "'> " + (linkCardIcon ?
+            if (wantCards && cards[appID] !== undefined && cards[appID].cards !== undefined && cards[appID].cards > 0) { //if has cards and enabled
+                html += "<span style='color: " + cardColor + "; cursor: help;' title='Game (" + appID + ") has " + cards[appID].cards + (cards[appID].marketable ? " " : " un") + "marketable cards\nLast updated: " + blcs + "'> " + (linkCardIcon ?
                     "<a href='http://www.steamcardexchange.net/index.php?gamepage-appid-" + appID + "' target='_blank'>" + cardIcon + "</a>" :
                     cardIcon) + "</span>";
             }
-            if (wantBundles && cards[appID] !== undefined && cards[appID].bundles !== undefined) { //if is bundled and enabled
+            if (wantBundles && cards[appID] !== undefined && cards[appID].bundles !== undefined && cards[appID].bundles > 0) { //if is bundled and enabled
                 html += "<span style='color: " + bundleColor + "; cursor: help;' title='Game (" + appID + ") has been in " + cards[appID].bundles + " bundles\nLast updated: " + blcs + "'> " +
                     "<a href='https://barter.vg/steam/app/" + appID + "' target='_blank'>" + bundleIcon + "</a></span>";
             }
