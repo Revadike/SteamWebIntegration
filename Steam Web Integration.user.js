@@ -48,6 +48,7 @@ const bundleColor = "initial"; // Color of the icon for bundled apps.
 const userRefreshInterval = 0; // Number of minutes to wait to refresh cached userdata. 0 = always stay up-to-date.
 const decommissionedRefreshInterval = 60 * 24; // Number of minutes to wait to refresh cached userdata. 0 = always stay up-to-date.
 const barterRefreshInterval = 60 * 24 * 2; // Number of minutes to wait to refresh cached trading card data and more. 0 = always stay up-to-date.
+const dateOverride = false; // Force date display in the YYYY-MM-DD HH:MM:SS style; otherwise matches system locale.
 // ==/Configuration==
 
 // ==Code==
@@ -192,9 +193,9 @@ function init(userdata, decommissioned, barter) {
         GM_setValue("swi_last", lastCached);
         GM_setValue("swi_data", JSON.stringify(userdata));
     }
-    const lcs = (new Date(lastCached)).toLocaleString();
-    const blcs = (new Date(GM_getValue("swi_barter_last", 0))).toLocaleString();
-    const dlcs = (new Date(GM_getValue("swi_decommissioned_last", 0))).toLocaleString();
+    const lcs = dateOverride ? (new Date(lastCached)).toLocaleString("sv-SE") : (new Date(lastCached)).toLocaleString();
+    const blcs = dateOverride ? (new Date(GM_getValue("swi_barter_last", 0))).toLocaleString("sv-SE") : (new Date(GM_getValue("swi_barter_last", 0))).toLocaleString();
+    const dlcs = dateOverride ? (new Date(GM_getValue("swi_decommissioned_last", 0))).toLocaleString("sv-SE") : (new Date(GM_getValue("swi_decommissioned_last", 0))).toLocaleString();
     const appSelector = ":regex(href, ^(https?:)?\/\/(store\.steampowered\.com|steamcommunity\.com|steamdb\.info)\/(agecheck\/)?app\/[0-9]+), img[src*='cdn.akamai.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steam/apps/'], " +
         "img[src*='cdn.edgecast.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/'], img[src*='steamdb.info/static/camo/apps/']";
     const subSelector = ":regex(href, ^(https?:)?\/\/(store\.steampowered\.com|steamdb\.info)\/sub\/[0-9]+)";
