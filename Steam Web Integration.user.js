@@ -6,7 +6,7 @@
 // @contributor  Black3ird
 // @contributor  Lex
 // @contributor  Luckz
-// @version      1.6.8
+// @version      1.6.9
 // @description  Check every web page for game, dlc and package links to the steam store and mark if it's owned, unowned, ignored (not interested), removed/delisted (decommissioned), wishlisted or has cards using icons.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com.*/
@@ -29,6 +29,7 @@ const prefix = false; // Prefix (true) instead of suffix (false) position icon.
 const wantIgnores = true; // Whether (true) or not (false) you want to display an extra icon for ignored (not interested) apps.
 const wantDecommissioned = true; // Wether (true) or not (false) you want to display an extra icon for removed or delisted (decommissioned) apps.
 const wantCards = true; // Whether (true) or not (false) you want to display an extra icon for apps with cards.
+const wantBundles = false; // Whether (true) or not (false) you want to display an extra icon for previously bundled apps.
 const linkCardIcon = true; // Link the card icon to SteamCardExchange.net
 const ignoredIcon = "&#128683;&#xFE0E;"; // HTML entity code for '🛇' (default).
 const ignoredColor = "grey"; // Color of the icon for ignored (not interested) apps.
@@ -38,10 +39,12 @@ const ownedIcon = "&#10004;"; // HTML entity code for '✔' (default).
 const ownedColor = "green"; // Color of the icon for owned apps and subs.
 const unownedIcon = "&#10008;"; // HTML entity code for '✘' (default).
 const unownedColor = "red"; // Color of the icon for unowned apps and subs.
-const decommissionedIcon = "&#128465;"; // HTML entity code for '🗑' (default).
+const decommissionedIcon = "&#128465;"; // HTML entity code for '🗑' (default). ☠ ("&#9760;") is a good choice if this symbol is unavailable.
 const decommissionedColor = "initial"; // Color of the icon for removed or delisted apps and subs.
-const cardIcon = "&#x1F0A1"; // HTML entity code for '🂡' (default).
+const cardIcon = "&#x1F0A1"; // HTML entity code for '🂡' (default). ♠ ("&spades;") is an alternative if this symbol is unavailable.
 const cardColor = "blue"; // Color of the icon for cards.
+const bundleIcon = "&#127873;"; // HTML entity code for '🎁' (default). Barter.vg uses ✽ ("&#10045;").
+const bundleColor = "initial"; // Color of the icon for bundled apps.
 const userRefreshInterval = 0; // Number of minutes to wait to refresh cached userdata. 0 = always stay up-to-date.
 const decommissionedRefreshInterval = 60 * 24; // Number of minutes to wait to refresh cached userdata. 0 = always stay up-to-date.
 const barterRefreshInterval = 60 * 24 * 2; // Number of minutes to wait to refresh cached trading card data and more. 0 = always stay up-to-date.
@@ -127,7 +130,7 @@ function refreshDecommissioned(callback) {
 function refreshBarter(callback) {
     const cachedBarter = JSON.parse(GM_getValue("swi_barter", null));
     const lastCachedBarter = parseInt(GM_getValue("swi_barter_last", 0)) || 1;
-    if (wantCards && (Date.now() - lastCachedBarter >= barterRefreshInterval * 60000 || !cachedBarter || Object.keys(cachedBarter).length < 7000)) {
+    if ((wantCards || wantBundles) && (Date.now() - lastCachedBarter >= barterRefreshInterval * 60000 || !cachedBarter || Object.keys(cachedBarter).length < 7000)) {
         GM_xmlhttpRequest({
             method: "GET",
             url: "https://barter.vg/browse/json/",
@@ -141,6 +144,9 @@ function refreshBarter(callback) {
                             json[item.sku] = {};
                             if (item.cards > 0) {
                                 json[item.sku].cards = item.cards;
+                            }
+                            if (item.bundles > 0) {
+                                json[item.sku].bundles = item.bundles;
                             }
                         }
                     });
@@ -187,18 +193,18 @@ function init(userdata, decommissioned, barter) {
         GM_setValue("swi_data", JSON.stringify(userdata));
     }
     const lcs = (new Date(lastCached)).toLocaleString();
-    const clcs = (new Date(GM_getValue("swi_barter_last", 0))).toLocaleString();
+    const blcs = (new Date(GM_getValue("swi_barter_last", 0))).toLocaleString();
     const dlcs = (new Date(GM_getValue("swi_decommissioned_last", 0))).toLocaleString();
     const appSelector = ":regex(href, ^(https?:)?\/\/(store\.steampowered\.com|steamcommunity\.com|steamdb\.info)\/(agecheck\/)?app\/[0-9]+), img[src*='cdn.akamai.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steam/apps/'], " +
         "img[src*='cdn.edgecast.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/'], img[src*='steamdb.info/static/camo/apps/']";
     const subSelector = ":regex(href, ^(https?:)?\/\/(store\.steampowered\.com|steamdb\.info)\/sub\/[0-9]+)";
     $(document).on("DOMSubtreeModified", appSelector, function() {
-        doApp(this, wishlist, ownedApps, ignoredApps, decommissioned, barter, lcs, clcs, dlcs);
+        doApp(this, wishlist, ownedApps, ignoredApps, decommissioned, barter, lcs, blcs, dlcs);
     }).on("DOMSubtreeModified", subSelector, function() {
         doSub(this, wishlist, ownedPackages, lcs);
     }).ready(function() {
         $(appSelector).each(function() {
-            doApp(this, wishlist, ownedApps, ignoredApps, decommissioned, barter, lcs, clcs, dlcs);
+            doApp(this, wishlist, ownedApps, ignoredApps, decommissioned, barter, lcs, blcs, dlcs);
         });
         $(subSelector).each(function() {
             doSub(this, wishlist, ownedPackages, lcs);
@@ -206,7 +212,7 @@ function init(userdata, decommissioned, barter) {
     });
 }
 
-function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, barter, lcs, clcs, dlcs) {
+function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, barter, lcs, blcs, dlcs) {
     if (!$(elem).hasClass("swi")) {
         $(elem).addClass("swi");
         setTimeout(function() {
@@ -232,9 +238,13 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, barter, l
                     app.category.toLowerCase() + " and has only " + app.count + " confirmed owners on Steam\nLast updated: " + dlcs + "'> " + decommissionedIcon + "</span>"; //🗑
             }
             if (wantCards && barter[appID] !== undefined && barter[appID].cards !== undefined) { //if has cards and enabled
-                html += "<span style='color: " + cardColor + "; cursor: help;' title='Game (" + appID + ") has " + barter[appID].cards + " cards\nLast updated: " + clcs + "'> " + (linkCardIcon ?
+                html += "<span style='color: " + cardColor + "; cursor: help;' title='Game (" + appID + ") has " + barter[appID].cards + " cards\nLast updated: " + blcs + "'> " + (linkCardIcon ?
                     "<a href='http://www.steamcardexchange.net/index.php?gamepage-appid-" + appID + "' target='_blank'>" + cardIcon + "</a>" :
                     cardIcon) + "</span>";
+            }
+            if (wantBundles && barter[appID] !== undefined && barter[appID].bundles !== undefined) { //if is bundled and enabled
+                html += "<span style='color: " + bundleColor + "; cursor: help;' title='Game (" + appID + ") has been in " + barter[appID].bundles + " bundles\nLast updated: " + blcs + "'> " +
+                    "<a href='https://barter.vg/steam/app/" + appID + "' target='_blank'>" + bundleIcon + "</a></span>";
             }
             if (prefix) {
                 $(elem).before(html);
