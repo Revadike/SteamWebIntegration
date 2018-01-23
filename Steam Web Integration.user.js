@@ -6,7 +6,7 @@
 // @contributor  Black3ird
 // @contributor  Lex
 // @contributor  Luckz
-// @version      1.7.0
+// @version      1.7.1
 // @description  Check every web page for game, dlc and package links to the steam store and mark if it's owned, unowned, ignored (not interested), removed/delisted (decommissioned), wishlisted or has cards using icons.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com.*/
@@ -17,7 +17,7 @@
 // @run-at       document-start
 // @connect      store.steampowered.com
 // @connect      steam-tracker.com
-// @connect      barter.vg
+// @connect      bartervg.com
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js
 // @supportURL   https://www.steamgifts.com/discussion/y9vVm/
 // @updateURL    https://github.com/Royalgamer06/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
@@ -134,7 +134,7 @@ function refreshCards(callback) {
     if ((wantCards || wantBundles) && (Date.now() - lastCachedCards >= cardsRefreshInterval * 60000 || !cachedCards || Object.keys(cachedCards).length < 7000) || Object.values(cachedCards)[0].marketable === undefined) {
         GM_xmlhttpRequest({
             method: "GET",
-            url: "https://barter.vg/browse/cards/json/",
+            url: "http://bartervg.com/browse/cards/json/",
             timeout: 30000,
             onload: function(response) {
                 var json = null;
