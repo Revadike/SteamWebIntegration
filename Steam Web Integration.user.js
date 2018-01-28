@@ -6,7 +6,7 @@
 // @contributor  Black3ird
 // @contributor  Lex
 // @contributor  Luckz
-// @version      1.7.1
+// @version      1.7.2
 // @description  Check every web page for game, dlc and package links to the steam store and mark if it's owned, unowned, ignored (not interested), removed/delisted (decommissioned), wishlisted or has cards using icons.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com.*/
@@ -186,7 +186,7 @@ function init(userdata, decommissioned, cards) {
     const blcs = (new Date(GM_getValue("swi_tradingcards_last", 0))).toLocaleString(dateOverride ? "sv-SE" : undefined);
     const dlcs = (new Date(GM_getValue("swi_decommissioned_last", 0))).toLocaleString(dateOverride ? "sv-SE" : undefined);
     const appSelector = ":regex(href, ^(https?:)?\/\/(store\.steampowered\.com|steamcommunity\.com|steamdb\.info)\/(agecheck\/)?app\/[0-9]+), img[src*='cdn.akamai.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steam/apps/'], " +
-        "img[src*='cdn.edgecast.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/'], img[src*='steamdb.info/static/camo/apps/']";
+          "img[src*='cdn.edgecast.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/'], img[src*='steamdb.info/static/camo/apps/']";
     const subSelector = ":regex(href, ^(https?:)?\/\/(store\.steampowered\.com|steamdb\.info)\/sub\/[0-9]+)";
     $(document).on("DOMSubtreeModified", appSelector, function() {
         doApp(this, wishlist, ownedApps, ignoredApps, decommissioned, cards, lcs, blcs, dlcs);
@@ -205,9 +205,9 @@ function init(userdata, decommissioned, cards) {
 function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, lcs, blcs, dlcs) {
     if (!$(elem).hasClass("swi")) {
         $(elem).addClass("swi");
-        setTimeout(function() {
-            var appID = elem.href ? parseInt(elem.href.split("app/")[1].split("/")[0].split("?")[0].split("#")[0]) : parseInt(elem.src.split("apps/")[1].split("/")[0].split("?")[0].split("#")[0]);
-            var html;
+        let appID = elem.href ? parseInt(elem.href.split("app/")[1].split("/")[0].split("?")[0].split("#")[0]) : parseInt(elem.src.split("apps/")[1].split("/")[0].split("?")[0].split("#")[0]);
+        if (!isNaN(appID)) setTimeout(function() {
+            let html;
             if (ownedApps.includes(appID)) { //if owned
                 html = "<span style='color: " + ownedColor + "; cursor: help;' title='Game or DLC (" + appID + ") owned on Steam\nLast updated: " + lcs + "'> " + ownedIcon + "</span>"; //✔
             } else { //else not owned
