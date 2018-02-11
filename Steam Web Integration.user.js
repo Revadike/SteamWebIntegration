@@ -141,7 +141,7 @@ function refreshCards(callback) {
                 try {
                     json = JSON.parse(response.responseText);
                     if (Object.keys(json).length > 7000) { // sanity check
-                        console.log(json);
+                        //console.log(json); -> debug?
                         GM_setValue("swi_tradingcards", JSON.stringify(json));
                         GM_setValue("swi_tradingcards_last", Date.now());
                     }
@@ -220,12 +220,14 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, lc
             if (ignoredApps.includes(appID) && wantIgnores) { //if ignored and enabled
                 html += "<span style='color: " + ignoredColor + "; cursor: help;' title='Game or DLC (" + appID + ") ignored on Steam\nLast updated: " + lcs + "'> " + ignoredIcon + "</span>"; //🛇
             }
-            var app = decommissioned.filter(function(obj) {
-                return obj.appid === appID.toString();
-            })[0];
-            if (app && wantDecommissioned) { //if decommissioned and enabled
-                html += "<span style='color: " + decommissionedColor + "; cursor: help;' title='The " + app.type + " \"" + app.name.replace(/'/g, "") + "\" (" + appID + ") is " +
-                    app.category.toLowerCase() + " and has only " + app.count + " confirmed owners on Steam\nLast updated: " + dlcs + "'> " + decommissionedIcon + "</span>"; //🗑
+            if (wantDecommissioned && decommissioned) { //if decommissioned and have cache or new data
+                var app = decommissioned.filter(function(obj) {
+                    return obj.appid === appID.toString();
+                })[0];
+                if (app) { //if decommissioned?
+                    html += "<span style='color: " + decommissionedColor + "; cursor: help;' title='The " + app.type + " \"" + app.name.replace(/'/g, "") + "\" (" + appID + ") is " +
+                        app.category.toLowerCase() + " and has only " + app.count + " confirmed owners on Steam\nLast updated: " + dlcs + "'> " + decommissionedIcon + "</span>"; //🗑
+                }
             }
             if (wantCards && cards[appID] !== undefined && cards[appID].cards !== undefined && cards[appID].cards > 0) { //if has cards and enabled
                 html += "<span style='color: " + cardColor + "; cursor: help;' title='Game (" + appID + ") has " + cards[appID].cards + (cards[appID].marketable ? " " : " un") + "marketable cards\nLast updated: " + blcs + "'> " + (linkCardIcon ?
