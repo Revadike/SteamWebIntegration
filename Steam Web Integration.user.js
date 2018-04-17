@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         Steam Web Integration
-// @icon         http://store.steampowered.com/favicon.ico
+// @icon         https://store.steampowered.com/favicon.ico
 // @namespace    Royalgamer06
 // @author       Royalgamer06
 // @contributor  Black3ird
 // @contributor  Lex
 // @contributor  Luckz
-// @version      1.7.2
+// @version      1.7.3
 // @description  Check every web page for game, dlc and package links to the steam store and mark if it's owned, unowned, ignored (not interested), removed/delisted (decommissioned), wishlisted or has cards using icons.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com.*/
@@ -73,7 +73,7 @@ function refresh() {
         var v = parseInt(GM_getValue("swi_v", "1")) + 1;
         GM_xmlhttpRequest({
             method: "GET",
-            url: "http://store.steampowered.com/dynamicstore/userdata/?v=" + v,
+            url: "https://store.steampowered.com/dynamicstore/userdata/?v=" + v,
             onload: function(response) {
                 GM_setValue("swi_v", v);
                 refreshDecommissioned(function(decommissioned) {
@@ -134,7 +134,7 @@ function refreshCards(callback) {
     if ((wantCards || wantBundles) && (Date.now() - lastCachedCards >= cardsRefreshInterval * 60000 || !cachedCards || Object.keys(cachedCards).length < 7000) || Object.values(cachedCards)[0].marketable === undefined) {
         GM_xmlhttpRequest({
             method: "GET",
-            url: "http://bartervg.com/browse/cards/json/",
+            url: "https://bartervg.com/browse/cards/json/",
             timeout: 30000,
             onload: function(response) {
                 var json = null;
@@ -231,7 +231,7 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, lc
             }
             if (wantCards && cards[appID] !== undefined && cards[appID].cards !== undefined && cards[appID].cards > 0) { //if has cards and enabled
                 html += "<span style='color: " + cardColor + "; cursor: help;' title='Game (" + appID + ") has " + cards[appID].cards + (cards[appID].marketable ? " " : " un") + "marketable cards\nLast updated: " + blcs + "'> " + (linkCardIcon ?
-                    "<a href='http://www.steamcardexchange.net/index.php?gamepage-appid-" + appID + "' target='_blank'>" + cardIcon + "</a>" :
+                    "<a href='https://www.steamcardexchange.net/index.php?gamepage-appid-" + appID + "' target='_blank'>" + cardIcon + "</a>" :
                     cardIcon) + "</span>";
             }
             if (wantBundles && cards[appID] !== undefined && cards[appID].bundles !== undefined && cards[appID].bundles > 0) { //if is bundled and enabled
