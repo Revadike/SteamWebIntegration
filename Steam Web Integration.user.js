@@ -6,8 +6,8 @@
 // @contributor  Black3ird
 // @contributor  Lex
 // @contributor  Luckz
-// @version      1.7.3
-// @description  Check every web page for game, dlc and package links to the steam store and mark if it's owned, unowned, ignored (not interested), removed/delisted (decommissioned), wishlisted or has cards using icons.
+// @version      1.7.4
+// @description  Check every web page for game, dlc and package links to the steam store and mark using icons whether it's owned, unowned, wishlisted, ignored (not interested), removed/delisted (decommissioned), has cards, or is bundled.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com.*/
 // @grant        GM_xmlhttpRequest
@@ -47,7 +47,8 @@ const bundleIcon = "&#127873;&#xFE0E;"; //          HTML entity code for 'ðŸŽï¸
 const bundleColor = "yellow"; //                    Color of the icon for bundled apps.
 const userRefreshInterval = 0; //                   Number of minutes to wait to refresh cached userdata. 0 = always stay up-to-date.
 const decommissionedRefreshInterval = 60 * 24; //   Number of minutes to wait to refresh cached userdata. 0 = always stay up-to-date, but not recommended.
-const cardsRefreshInterval = 60 * 24 * 2; //        Number of minutes to wait to refresh cached trading card data and more. 0 = always stay up-to-date, but not recommended.
+const cardsRefreshInterval = 60 * 24 * 2; //        Number of minutes to wait to refresh cached trading card data. 0 = always stay up-to-date, but not recommended.
+const bundlesRefreshInterval = 60 * 24 * 2; //      Number of minutes to wait to refresh cached bundle data. 0 = always stay up-to-date, but not recommended.
 const dateOverride = false; //                      Force date display in the YYYY-MM-DD HH:MM:SS style; otherwise matches system locale.
 // ==/Configuration==
 
@@ -78,7 +79,9 @@ function refresh() {
                 GM_setValue("swi_v", v);
                 refreshDecommissioned(function(decommissioned) {
                     refreshCards(function(cards) {
-                        init(JSON.parse(response.responseText), decommissioned, cards);
+                        refreshBundles(function(bundles) {
+                            init(JSON.parse(response.responseText), decommissioned, cards, bundles);
+                        });
                     });
                 });
             }
@@ -86,7 +89,9 @@ function refresh() {
     } else {
         refreshDecommissioned(function(decommissioned) {
             refreshCards(function(cards) {
-                init(JSON.parse(cachedJson), decommissioned, cards);
+                refreshBundles(function(bundles) {
+                    init(JSON.parse(cachedJson), decommissioned, cards, bundles);
+                });
             });
         });
     }
@@ -131,7 +136,7 @@ function refreshDecommissioned(callback) {
 function refreshCards(callback) {
     const cachedCards = JSON.parse(GM_getValue("swi_tradingcards", null));
     const lastCachedCards = parseInt(GM_getValue("swi_tradingcards_last", 0)) || 1;
-    if ((wantCards || wantBundles) && (Date.now() - lastCachedCards >= cardsRefreshInterval * 60000 || !cachedCards || Object.keys(cachedCards).length < 7000) || Object.values(cachedCards)[0].marketable === undefined) {
+    if (wantCards && (Date.now() - lastCachedCards >= cardsRefreshInterval * 60000 || !cachedCards || Object.keys(cachedCards).length < 7000) || Object.values(cachedCards)[0].marketable === undefined) {
         GM_xmlhttpRequest({
             method: "GET",
             url: "https://bartervg.com/browse/cards/json/",
@@ -141,22 +146,21 @@ function refreshCards(callback) {
                 try {
                     json = JSON.parse(response.responseText);
                     if (Object.keys(json).length > 7000) { // sanity check
-                        //console.log(json); -> debug?
                         GM_setValue("swi_tradingcards", JSON.stringify(json));
                         GM_setValue("swi_tradingcards_last", Date.now());
                     }
                     callback(json);
                 } catch (error) {
-                    console.log("Unable to parse Barter.vg data. Using cached data...", error);
+                    console.log("Unable to parse Barter.vg trading cards data. Using cached data...", error);
                     callback(cachedCards);
                 }
             },
             onerror: function(response) {
-                console.log("An error occurred while refreshing Barter.vg data. Using cached data...", response);
+                console.log("An error occurred while refreshing Barter.vg trading cards data. Using cached data...", response);
                 callback(cachedCards);
             },
             ontimeout: function() {
-                console.log("It took too long to refresh Barter.vg data. Using cached data...");
+                console.log("It took too long to refresh Barter.vg trading cards data. Using cached data...");
                 callback(cachedCards);
             }
         });
@@ -165,7 +169,44 @@ function refreshCards(callback) {
     }
 }
 
-function init(userdata, decommissioned, cards) {
+function refreshBundles(callback) {
+    const cachedBundles = JSON.parse(GM_getValue("swi_bundles", null));
+    const lastCachedBundles = parseInt(GM_getValue("swi_bundles_last", 0)) || 1;
+    if (wantBundles && (Date.now() - lastCachedBundles >= bundlesRefreshInterval * 60000 || !cachedBundles || Object.keys(cachedBundles).length < 7000) || Object.values(cachedBundles)[0].bundles === undefined) {
+        GM_xmlhttpRequest({
+            method: "GET",
+            url: "https://bartervg.com/browse/bundles/json/",
+            timeout: 30000,
+            onload: function(response) {
+                var json = null;
+                try {
+                    json = JSON.parse(response.responseText);
+                    if (Object.keys(json).length > 7000) { // sanity check
+                        GM_setValue("swi_bundles", JSON.stringify(json));
+                        GM_setValue("swi_bundles_last", Date.now());
+                    }
+                    callback(json);
+                } catch (error) {
+                    console.log("Unable to parse Barter.vg bundles data. Using cached data...", error);
+                    callback(cachedBundles);
+                }
+            },
+            onerror: function(response) {
+                console.log("An error occurred while refreshing Barter.vg bundles data. Using cached data...", response);
+                callback(cachedBundles);
+            },
+            ontimeout: function() {
+                console.log("It took too long to refresh Barter.vg bundles data. Using cached data...");
+                callback(cachedBundles);
+            }
+        });
+    } else {
+        callback(cachedBundles);
+    }
+}
+
+
+function init(userdata, decommissioned, cards, bundles) {
     var ignoredApps = userdata.rgIgnoredApps;
     var ownedApps = userdata.rgOwnedApps;
     var ownedPackages = userdata.rgOwnedPackages;
@@ -183,18 +224,19 @@ function init(userdata, decommissioned, cards) {
         GM_setValue("swi_data", JSON.stringify(userdata));
     }
     const lcs = dateOverride ? (new Date(lastCached)).toLocaleString("sv-SE") : (new Date(lastCached)).toLocaleString();
-    const blcs = (new Date(GM_getValue("swi_tradingcards_last", 0))).toLocaleString(dateOverride ? "sv-SE" : undefined);
     const dlcs = (new Date(GM_getValue("swi_decommissioned_last", 0))).toLocaleString(dateOverride ? "sv-SE" : undefined);
+    const clcs = (new Date(GM_getValue("swi_tradingcards_last", 0))).toLocaleString(dateOverride ? "sv-SE" : undefined);
+    const blcs = (new Date(GM_getValue("swi_bundles_last", 0))).toLocaleString(dateOverride ? "sv-SE" : undefined);
     const appSelector = ":regex(href, ^(https?:)?\/\/(store\.steampowered\.com|steamcommunity\.com|steamdb\.info)\/(agecheck\/)?app\/[0-9]+), img[src*='cdn.akamai.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steam/apps/'], " +
           "img[src*='cdn.edgecast.steamstatic.com/steam/apps/'], img[src*='steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/'], img[src*='steamdb.info/static/camo/apps/']";
     const subSelector = ":regex(href, ^(https?:)?\/\/(store\.steampowered\.com|steamdb\.info)\/sub\/[0-9]+)";
     $(document).on("DOMSubtreeModified", appSelector, function() {
-        doApp(this, wishlist, ownedApps, ignoredApps, decommissioned, cards, lcs, blcs, dlcs);
+        doApp(this, wishlist, ownedApps, ignoredApps, decommissioned, cards, bundles, lcs, dlcs, clcs, blcs);
     }).on("DOMSubtreeModified", subSelector, function() {
         doSub(this, wishlist, ownedPackages, lcs);
     }).ready(function() {
         $(appSelector).each(function() {
-            doApp(this, wishlist, ownedApps, ignoredApps, decommissioned, cards, lcs, blcs, dlcs);
+            doApp(this, wishlist, ownedApps, ignoredApps, decommissioned, cards, bundles, lcs, dlcs, clcs, blcs);
         });
         $(subSelector).each(function() {
             doSub(this, wishlist, ownedPackages, lcs);
@@ -202,7 +244,7 @@ function init(userdata, decommissioned, cards) {
     });
 }
 
-function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, lcs, blcs, dlcs) {
+function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, bundles, lcs, dlcs, clcs, blcs) {
     if (!$(elem).hasClass("swi")) {
         $(elem).addClass("swi");
         let appID = elem.href ? parseInt(elem.href.split("app/")[1].split("/")[0].split("?")[0].split("#")[0]) : parseInt(elem.src.split("apps/")[1].split("/")[0].split("?")[0].split("#")[0]);
@@ -230,12 +272,12 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, lc
                 }
             }
             if (wantCards && cards[appID] !== undefined && cards[appID].cards !== undefined && cards[appID].cards > 0) { //if has cards and enabled
-                html += "<span style='color: " + cardColor + "; cursor: help;' title='Game (" + appID + ") has " + cards[appID].cards + (cards[appID].marketable ? " " : " un") + "marketable cards\nLast updated: " + blcs + "'> " + (linkCardIcon ?
+                html += "<span style='color: " + cardColor + "; cursor: help;' title='Game (" + appID + ") has " + cards[appID].cards + (cards[appID].marketable ? " " : " un") + "marketable cards\nLast updated: " + clcs + "'> " + (linkCardIcon ?
                     "<a href='https://www.steamcardexchange.net/index.php?gamepage-appid-" + appID + "' target='_blank'>" + cardIcon + "</a>" :
                     cardIcon) + "</span>";
             }
-            if (wantBundles && cards[appID] !== undefined && cards[appID].bundles !== undefined && cards[appID].bundles > 0) { //if is bundled and enabled
-                html += "<span style='color: " + bundleColor + "; cursor: help;' title='Game (" + appID + ") has been in " + cards[appID].bundles + " bundles\nLast updated: " + blcs + "'> " +
+            if (wantBundles && bundles[appID] !== undefined && bundles[appID].bundles !== undefined && bundles[appID].bundles > 0) { //if is bundled and enabled
+                html += "<span style='color: " + bundleColor + "; cursor: help;' title='Game (" + appID + ") has been in " + bundles[appID].bundles + " bundles\nLast updated: " + blcs + "'> " +
                     "<a href='https://barter.vg/steam/app/" + appID + "' target='_blank'>" + bundleIcon + "</a></span>";
             }
             if (prefix) {
