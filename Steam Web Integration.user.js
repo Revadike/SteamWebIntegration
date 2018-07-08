@@ -6,7 +6,7 @@
 // @contributor  Black3ird
 // @contributor  Lex
 // @contributor  Luckz
-// @version      1.7.5
+// @version      1.7.6
 // @description  Check every web page for game, dlc and package links to the steam store and mark using icons whether it's owned, unowned, wishlisted, ignored (not interested), removed/delisted (decommissioned), has cards, or is bundled.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+.steampowered|steamcommunity).com\/(?!groups\/groupbuys).*/
@@ -30,7 +30,6 @@ const wantIgnores = true; //                        Whether (true) or not (false
 const wantDecommissioned = true; //                 Whether (true) or not (false) you want to display an extra icon for removed or delisted (decommissioned) apps.
 const wantCards = true; //                          Whether (true) or not (false) you want to display an extra icon for apps with cards.
 const wantBundles = true; //                        Whether (true) or not (false) you want to display an extra icon for previously bundled apps.
-const linkCardIcon = true; //                       Link the card icon to SteamCardExchange.net
 const ignoredIcon = "&#128683;&#xFE0E;"; //         HTML entity code for '🛇' (default).
 const ignoredColor = "grey"; //                     Color of the icon for ignored (not interested) apps.
 const wishlistIcon = "&#10084;"; //                 HTML entity code for '❤' (default).
@@ -39,7 +38,7 @@ const ownedIcon = "&#10004;"; //                    HTML entity code for '✔' (
 const ownedColor = "green"; //                      Color of the icon for owned apps and subs.
 const unownedIcon = "&#10008;"; //                  HTML entity code for '✘' (default).
 const unownedColor = "red"; //                      Color of the icon for unowned apps and subs.
-const decommissionedIcon = "&#128465;"; //          HTML entity code for '🗑' (default). The symbol '☠' ("&#9760;") is a good alternative if the default symbol is unavailable.
+const decommissionedIcon = "&#9760;"; //            HTML entity code for '☠' (default).
 const decommissionedColor = "initial"; //           Color of the icon for removed or delisted apps and subs.
 const cardIcon = "&#x1F0A1"; //                     HTML entity code for '🂡' (default). ♠ ("&spades;") is an alternative if this symbol is unavailable.
 const cardColor = "blue"; //                        Color of the icon for cards.
@@ -251,34 +250,34 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, bu
         if (!isNaN(appID)) setTimeout(function() {
             let html;
             if (ownedApps.includes(appID)) { //if owned
-                html = "<span style='color: " + ownedColor + "; cursor: help;' title='Game or DLC (" + appID + ") owned on Steam\nLast updated: " + lcs + "'> " + ownedIcon + "</span>"; //✔
+                html = "<span style='color: " + ownedColor + " !important; cursor: help;' title='Game or DLC (" + appID + ") owned on Steam\nLast updated: " + lcs + "'> " + ownedIcon + "</span>"; //✔
             } else { //else not owned
                 if (wishlist.includes(appID)) { //if wishlisted
-                    html = "<span style='color: " + wishlistColor + "; cursor: help;' title='Game or DLC (" + appID + ") wishlisted on Steam\nLast updated: " + lcs + "'> " + wishlistIcon + "</span>"; //❤
+                    html = "<span style='color: " + wishlistColor + " !important; cursor: help;' title='Game or DLC (" + appID + ") wishlisted on Steam\nLast updated: " + lcs + "'> " + wishlistIcon + "</span>"; //❤
                 } else { //else not wishlisted
-                    html = "<span style='color: " + unownedColor + "; cursor: help;' title='Game or DLC (" + appID + ") not owned on Steam\nLast updated: " + lcs + "'> " + unownedIcon + "</span>"; //✘
+                    html = "<span style='color: " + unownedColor + " !important; cursor: help;' title='Game or DLC (" + appID + ") not owned on Steam\nLast updated: " + lcs + "'> " + unownedIcon + "</span>"; //✘
                 }
             }
             if (ignoredApps.includes(appID) && wantIgnores) { //if ignored and enabled
-                html += "<span style='color: " + ignoredColor + "; cursor: help;' title='Game or DLC (" + appID + ") ignored on Steam\nLast updated: " + lcs + "'> " + ignoredIcon + "</span>"; //🛇
+                html += "<span style='color: " + ignoredColor + " !important; cursor: help;' title='Game or DLC (" + appID + ") ignored on Steam\nLast updated: " + lcs + "'> " + ignoredIcon + "</span>"; //🛇
             }
             if (wantDecommissioned && decommissioned) { //if decommissioned and have cache or new data
                 var app = decommissioned.filter(function(obj) {
                     return obj.appid === appID.toString();
                 })[0];
                 if (app) { //if decommissioned?
-                    html += "<span style='color: " + decommissionedColor + "; cursor: help;' title='The " + app.type + " \"" + app.name.replace(/'/g, "") + "\" (" + appID + ") is " +
-                        app.category.toLowerCase() + " and has only " + app.count + " confirmed owners on Steam\nLast updated: " + dlcs + "'> " + decommissionedIcon + "</span>"; //🗑
+                    html += "<span style='cursor: help;' title='The " + app.type + " \"" + app.name.replace(/'/g, "") + "\" (" + appID + ") is " +
+                        app.category.toLowerCase() + " and has only " + app.count + " confirmed owners on Steam\nLast updated: " + dlcs + "'> " +
+                    "<a style=color: " + decommissionedColor + " !important;' href='https://steam-tracker.com/app/" + appID + "/' target='_blank'> " + decommissionedIcon + "</a></span>"; //🗑
                 }
             }
             if (wantCards && cards[appID] !== undefined && cards[appID].cards !== undefined && cards[appID].cards > 0) { //if has cards and enabled
-                html += "<span style='color: " + cardColor + "; cursor: help;' title='Game (" + appID + ") has " + cards[appID].cards + (cards[appID].marketable ? " " : " un") + "marketable cards\nLast updated: " + clcs + "'> " + (linkCardIcon ?
-                    "<a href='https://www.steamcardexchange.net/index.php?gamepage-appid-" + appID + "' target='_blank'>" + cardIcon + "</a>" :
-                    cardIcon) + "</span>";
+                html += "<span style='cursor: help;' title='Game (" + appID + ") has " + cards[appID].cards + (cards[appID].marketable ? " " : " un") + "marketable cards\nLast updated: " + clcs + "'> " + 
+                    "<a style='color: " + cardColor + "!important;' href='https://www.steamcardexchange.net/index.php?gamepage-appid-" + appID + "' target='_blank'> " + cardIcon + "</a></span>";
             }
             if (wantBundles && bundles[appID] !== undefined && bundles[appID].bundles !== undefined && bundles[appID].bundles > 0) { //if is bundled and enabled
-                html += "<span style='color: " + bundleColor + "; cursor: help;' title='Game (" + appID + ") has been in " + bundles[appID].bundles + " bundles\nLast updated: " + blcs + "'> " +
-                    "<a href='https://barter.vg/steam/app/" + appID + "' target='_blank'>" + bundleIcon + "</a></span>";
+                html += "<span style='cursor: help;' title='Game (" + appID + ") has been in " + bundles[appID].bundles + " bundles\nLast updated: " + blcs + "'> " +
+                    "<a style='color: " + bundleColor + " !important;' href='https://barter.vg/steam/app/" + appID + "/#bundles' target='_blank'>" + bundleIcon + "</a></span>";
             }
             if (prefix) {
                 $(elem).before(html);
