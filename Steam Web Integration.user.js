@@ -6,7 +6,7 @@
 // @contributor  Black3ird
 // @contributor  Lex
 // @contributor  Luckz
-// @version      1.7.6
+// @version      1.7.7
 // @description  Check every web page for game, dlc and package links to the steam store and mark using icons whether it's owned, unowned, wishlisted, ignored (not interested), removed/delisted (decommissioned), has cards, or is bundled.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+.steampowered|steamcommunity).com\/(?!groups\/groupbuys).*/
@@ -206,7 +206,7 @@ function refreshBundles(callback) {
 
 
 function init(userdata, decommissioned, cards, bundles) {
-    var ignoredApps = userdata.rgIgnoredApps;
+    var ignoredApps = Object.keys(userdata.rgIgnoredApps).map(a => parseInt(a, 10));
     var ownedApps = userdata.rgOwnedApps;
     var ownedPackages = userdata.rgOwnedPackages;
     var wishlist = userdata.rgWishlist;
