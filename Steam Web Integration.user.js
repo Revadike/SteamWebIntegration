@@ -7,6 +7,7 @@
 // @collaborator Lex
 // @collaborator Luckz
 // @version      1.8.1
+// @license      MIT
 // @description  Check every web page for game, dlc and package links to the steam store and mark using icons whether it's owned, unowned, wishlisted, ignored (not interested), removed/delisted (decommissioned), has cards, or is bundled.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+.steampowered|steamcommunity).com\/(?!groups\/groupbuys).*/
