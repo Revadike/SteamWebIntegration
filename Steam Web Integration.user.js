@@ -6,7 +6,7 @@
 // @collaborator Black3ird
 // @collaborator Lex
 // @collaborator Luckz
-// @version      1.8.0
+// @version      1.8.1
 // @description  Check every web page for game, dlc and package links to the steam store and mark using icons whether it's owned, unowned, wishlisted, ignored (not interested), removed/delisted (decommissioned), has cards, or is bundled.
 // @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+.steampowered|steamcommunity).com\/(?!groups\/groupbuys).*/
@@ -118,18 +118,29 @@ function init(userdata, decommissioned, cards, bundles) {
     const subSelector = [`[href*="store.steampowered.com/sub/"]`,
         `[href*="steamdb.info/sub/"]`].map((s) => `${s}:not(.swi)`).join(`, `);
 
+    let delaySWI = null;
     const doSWI = () => {
-        $(appSelector).get().forEach((elem) => doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, bundles, lcs, dlcs, clcs, blcs));
-        $(subSelector).get().forEach((elem) => doSub(elem, ownedPackages, lcs), 0);
+        if (delaySWI) {
+            clearTimeout(delaySWI);
+            delay = null;
+        }
+
+        delaySWI = setTimeout(() => {
+            console.log("[Steam Web Integration] Executing");
+            clearTimeout(delaySWI);
+            delaySWI = null
+            $(appSelector).get().forEach((elem) => doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, bundles, lcs, dlcs, clcs, blcs));
+            $(subSelector).get().forEach((elem) => doSub(elem, ownedPackages, lcs), 0);
+        }, 300);
     };
 
-    $(document).ready(setTimeout(() => {
+    $(document).ready(() => {
         doSWI();
-        $(document).observe(`added`, appSelector, (record) => setTimeout(() => $(record.addedNodes).find(appSelector).get().forEach((elem) => doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, bundles, lcs, dlcs, clcs, blcs)), 0));
-        $(document).observe(`added`, subSelector, (record) => setTimeout(() => $(record.addedNodes).find(subSelector).get().forEach((elem) => doSub(elem, ownedPackages, lcs)), 0));
-    }, 0));
-    unsafeWindow.doSWI = doSWI;
-    GM.registerMenuCommand(`Run manually (again)`, doSWI);
+        $(document).observe(`added`, appSelector, doSWI);
+        $(document).observe(`added`, subSelector, doSWI);
+        GM.registerMenuCommand(`Run manually (again)`, doSWI);
+        unsafeWindow.doSWI = doSWI;
+    });
 }
 
 function refreshDecommissioned(callback) {
