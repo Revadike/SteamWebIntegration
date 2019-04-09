@@ -26,7 +26,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.8.3
+// @version      1.8.4
 // ==/UserScript==
 "use strict";
 
@@ -371,6 +371,6 @@ function genIconHTML(color, str, lcs, icon, link) {
 function genBoxHTML(html, appID, subID) {
     const data = subID ? `subid="${subID}"` : `appid="${appID}"`;
     const style = boxed ? ` padding: 0px 4px 0px 4px; margin: 0px 4px 0px 4px; position: relative; border-radius: 5px; background: rgba(0, 0, 0, 0.7);` : ``;
-    return `<div class="swi-block" data-${data} style="display: inline-block;${style}">${html}</div>`;
+    return `<div class="swi-block" data-${data} style="display: inline-block; line-height: initial;${style}">${html}</div>`;
 }
 // ==/Code==
