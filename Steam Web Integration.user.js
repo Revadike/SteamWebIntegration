@@ -10,11 +10,11 @@
 // @downloadURL  https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
 // @exclude      /^https?\:\/\/(.+.steampowered|steamcommunity).com\/(?!groups\/groupbuys).*/
 // @grant        GM_getValue
+// @grant        GM_info
+// @grant        GM_openInTab
+// @grant        GM_registerMenuCommand
 // @grant        GM_setValue
-// @grant        GM.info
-// @grant        GM.openInTab
-// @grant        GM.registerMenuCommand
-// @grant        GM.xmlHttpRequest
+// @grant        GM_xmlhttpRequest
 // @grant        unsafeWindow
 // @homepageURL  https://www.steamgifts.com/discussion/y9vVm/
 // @icon         https://store.steampowered.com/favicon.ico
@@ -26,7 +26,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.8.2
+// @version      1.8.3
 // ==/UserScript==
 "use strict";
 
@@ -61,7 +61,7 @@ const dateOverride = false; //                      Force date display in the YY
 // ==Code==
 // eslint-disable-next-line no-multi-assign
 this.$ = this.jQuery = jQuery.noConflict(true);
-GM.registerMenuCommand(`Configuration: CTRL + click on script`, () => true);
+GM_registerMenuCommand(`Configuration: CTRL + click on script`, () => true);
 refresh();
 
 function refresh() {
@@ -74,7 +74,7 @@ function refresh() {
     }
 
     const v = parseInt(GM_getValue(`swi_v`, `1`)) + 1;
-    GM.xmlHttpRequest({
+    GM_xmlhttpRequest({
         "method": `GET`,
         "url": `https://store.steampowered.com/dynamicstore/userdata/?v=${v}`,
         "onload": (response) => {
@@ -109,20 +109,20 @@ function init(userdata, decommissioned, cards, bundles) {
     const blcs = (new Date(GM_getValue(`swi_bundles_last`, 0))).toLocaleString(dateOverride ? `sv-SE` : undefined);
 
     const appSelector = [
-        `[href*="store.steampowered.com/app/"]`,
-        `[href*="store.steampowered.com/agecheck/app/"]`,
         `[href*="steamcommunity.com/app/"]`,
         `[href*="steamdb.info/app/"]`,
+        `[href*="store.steampowered.com/agecheck/app/"]`,
+        `[href*="store.steampowered.com/app/"]`,
         `img[src*="cdn.akamai.steamstatic.com/steam/apps/"]`,
-        `img[src*="steamcdn-a.akamaihd.net/steam/apps/"]`,
         `img[src*="cdn.edgecast.steamstatic.com/steam/apps/"]`,
+        `img[src*="steamcdn-a.akamaihd.net/steam/apps/"]`,
         `img[src*="steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/"]`,
         `img[src*="steamdb.info/static/camo/apps/"]`
     ].map((s) => `${s}:not(.swi)`).join(`, `);
 
     const subSelector = [
-        `[href*="store.steampowered.com/sub/"]`,
-        `[href*="steamdb.info/sub/"]`
+        `[href*="steamdb.info/sub/"]`,
+        `[href*="store.steampowered.com/sub/"]`
     ].map((s) => `${s}:not(.swi)`).join(`, `);
 
     let delaySWI;
@@ -143,7 +143,7 @@ function init(userdata, decommissioned, cards, bundles) {
         doSWI();
         $(document).observe(`added`, appSelector, doSWI);
         $(document).observe(`added`, subSelector, doSWI);
-        GM.registerMenuCommand(`Run manually (again)`, doSWI);
+        GM_registerMenuCommand(`Run manually (again)`, doSWI);
         unsafeWindow.doSWI = doSWI;
     });
 }
@@ -161,7 +161,7 @@ function refreshDecommissioned(callback) {
         return;
     }
 
-    GM.xmlHttpRequest({
+    GM_xmlhttpRequest({
         "method": `GET`,
         "url": `https://steam-tracker.com/api?action=GetAppListV3`,
         "timeout": 30000,
@@ -206,7 +206,7 @@ function refreshCards(callback) {
         return;
     }
 
-    GM.xmlHttpRequest({
+    GM_xmlhttpRequest({
         "method": `GET`,
         "url": `https://bartervg.com/browse/cards/json/`,
         "timeout": 30000,
@@ -250,7 +250,7 @@ function refreshBundles(callback) {
         return;
     }
 
-    GM.xmlHttpRequest({
+    GM_xmlhttpRequest({
         "method": `GET`,
         "url": `https://bartervg.com/browse/bundles/json/`,
         "timeout": 30000,
@@ -306,16 +306,16 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, bu
         if (wantDecommissioned && decommissioned) { // if decommissioned and have cache or new data
             const app = decommissioned.find((obj) => obj.appid === appID.toString());
             if (app) { // if decommissioned?
-                html += genIconHTML(decommissionedColor, `The ${app.type} '${app.name.replace(/'/g, ``)}' (${appID}) is ${app.category.toLowerCase()} and has only ${app.count} confirmed owners on Steam`, dlcs, decommissionedIcon, `https://steam-tracker.com/app/${appID}/`); // 🗑
+                html += genIconHTML(decommissionedColor, `The ${app.type} '${app.name.replace(/"|'/g, ``)}' (${appID}) is ${app.category.toLowerCase()} and has only ${app.count} confirmed owner${app.count === 1 ? `` : `s`} on Steam`, dlcs, decommissionedIcon, `https://steam-tracker.com/app/${appID}/`); // 🗑
             }
         }
 
         if (wantCards && cards[appID] && cards[appID].cards && cards[appID].cards > 0) { // if has cards and enabled
-            html += genIconHTML(cardColor, `Game (${appID}) has ${cards[appID].cards}${cards[appID].marketable ? ` ` : ` un`}marketable cards`, clcs, cardIcon, `https://www.steamcardexchange.net/index.php?gamepage-appid-${appID}`);
+            html += genIconHTML(cardColor, `Game (${appID}) has ${cards[appID].cards} ${cards[appID].marketable ? `` : `un`}marketable card${cards[appID].cards === 1 ? `` : `s`}`, clcs, cardIcon, `https://www.steamcardexchange.net/index.php?gamepage-appid-${appID}`);
         }
 
         if (wantBundles && bundles[appID] && bundles[appID].bundles && bundles[appID].bundles > 0) { // if is bundled and enabled
-            html += genIconHTML(bundleColor, `Game (${appID}) has been in ${bundles[appID].bundles} bundles`, blcs, bundleIcon, `https://barter.vg/steam/app/${appID}/#bundles`);
+            html += genIconHTML(bundleColor, `Game (${appID}) has been in ${bundles[appID].bundles} bundle${bundles[appID].bundles === 1 ? `` : `s`}`, blcs, bundleIcon, `https://barter.vg/steam/app/${appID}/#bundles`);
         }
 
         if (prefix) {
@@ -359,7 +359,7 @@ function stripURI(uri) {
 }
 
 function genIconHTML(color, str, lcs, icon, link) {
-    const { name, version, author } = GM.info.script;
+    const { name, version, author } = GM_info.script;
     const titlePlus = `\nLast updated at ${lcs}\n${name} (${version}) by ${author}`;
     if (link) {
         return `<span style="margin: 2px; cursor: help;" title="${str}\n${titlePlus}"> <a style="color: ${color} !important; text-decoration: none;" href="${link}" target="_blank">${icon}</a></span>`;
@@ -370,7 +370,7 @@ function genIconHTML(color, str, lcs, icon, link) {
 
 function genBoxHTML(html, appID, subID) {
     const data = subID ? `subid="${subID}"` : `appid="${appID}"`;
-    const style = boxed ? ` padding: 0px 4px 0px 4px; margin: 0px 4px 0px 4px; position: relative; border-radius: 5px; background: rgba(0, 0, 0, 0.8);` : ``;
+    const style = boxed ? ` padding: 0px 4px 0px 4px; margin: 0px 4px 0px 4px; position: relative; border-radius: 5px; background: rgba(0, 0, 0, 0.7);` : ``;
     return `<div class="swi-block" data-${data} style="display: inline-block;${style}">${html}</div>`;
 }
 // ==/Code==
