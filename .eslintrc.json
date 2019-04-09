@@ -37,7 +37,7 @@
             "always"
         ],
         "arrow-body-style": ["error", "as-needed"],
-        "array-bracket-newline": ["error", "never"],
+        "array-bracket-newline": ["error", "consistent"],
         "array-bracket-spacing": ["error", "never"],
         "arrow-parens": ["error", "always"],
         "arrow-spacing": ["error", { "before": true, "after": true }],
@@ -70,7 +70,6 @@
         "no-unused-vars": "error",
         "no-useless-concat": "error",
         "no-var": "error",
-        "object-curly-newline": ["error", {"multiline": true, "minProperties": 1}],
         "object-curly-spacing": "error",
         "object-property-newline": "error",
         "padded-blocks": ["error", "never"],
