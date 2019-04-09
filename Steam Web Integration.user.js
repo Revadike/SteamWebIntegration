@@ -1,37 +1,38 @@
 // ==UserScript==
-// @name         Steam Web Integration
-// @icon         https://store.steampowered.com/favicon.ico
-// @namespace    Royalgamer06
 // @author       Revadike
 // @collaborator Black3ird
 // @collaborator Lex
 // @collaborator Luckz
-// @version      1.8.1
-// @license      MIT
+// @connect      bartervg.com
+// @connect      steam-tracker.com
+// @connect      store.steampowered.com
 // @description  Check every web page for game, dlc and package links to the steam store and mark using icons whether it's owned, unowned, wishlisted, ignored (not interested), removed/delisted (decommissioned), has cards, or is bundled.
-// @include      /^https?\:\/\/.+/
+// @downloadURL  https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
 // @exclude      /^https?\:\/\/(.+.steampowered|steamcommunity).com\/(?!groups\/groupbuys).*/
-// @grant        unsafeWindow
-// @grant        GM.registerMenuCommand
-// @grant        GM.xmlHttpRequest
-// @grant        GM.openInTab
 // @grant        GM_getValue
 // @grant        GM_setValue
-// @run-at       document-start
-// @connect      store.steampowered.com
-// @connect      steam-tracker.com
-// @connect      bartervg.com
+// @grant        GM.info
+// @grant        GM.openInTab
+// @grant        GM.registerMenuCommand
+// @grant        GM.xmlHttpRequest
+// @grant        unsafeWindow
+// @homepageURL  https://www.steamgifts.com/discussion/y9vVm/
+// @icon         https://store.steampowered.com/favicon.ico
+// @include      /^https?\:\/\/.+/
+// @name         Steam Web Integration
+// @namespace    Royalgamer06
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js
 // @require      https://raw.githubusercontent.com/kapetan/jquery-observe/master/jquery-observe.js
-// @homepageURL  https://www.steamgifts.com/discussion/y9vVm/
+// @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @downloadURL  https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
+// @version      1.8.2
 // ==/UserScript==
 "use strict";
 
 // ==Configuration==
 const prefix = false; //                            Prefix (true) instead of suffix (false) position icon.
+const boxed = true; //                              Whether (true) or not (false) you want the icons to be displayed in a boxed container
 const wantIgnores = true; //                        Whether (true) or not (false) you want to display an extra icon for ignored (not interested) apps.
 const wantDecommissioned = true; //                 Whether (true) or not (false) you want to display an extra icon for removed or delisted (decommissioned) apps.
 const wantCards = true; //                          Whether (true) or not (false) you want to display an extra icon for apps with cards.
@@ -45,7 +46,7 @@ const ownedColor = `green`; //                      Color of the icon for owned 
 const unownedIcon = `&#10008;`; //                  HTML entity code for '✘' (default).
 const unownedColor = `red`; //                      Color of the icon for unowned apps and subs.
 const decommissionedIcon = `&#9760;`; //            HTML entity code for '☠' (default).
-const decommissionedColor = `initial`; //           Color of the icon for removed or delisted apps and subs.
+const decommissionedColor = `white`; //             Color of the icon for removed or delisted apps and subs.
 const cardIcon = `&#x1F0A1`; //                     HTML entity code for '🂡' (default). ♠ ("&spades;") is an alternative if this symbol is unavailable.
 const cardColor = `blue`; //                        Color of the icon for cards.
 const bundleIcon = `&#127873;&#xFE0E;`; //          HTML entity code for '🎁︎' (default). Barter.vg uses the symbol '✽' ("&#10045;").
@@ -107,7 +108,8 @@ function init(userdata, decommissioned, cards, bundles) {
     const clcs = (new Date(GM_getValue(`swi_tradingcards_last`, 0))).toLocaleString(dateOverride ? `sv-SE` : undefined);
     const blcs = (new Date(GM_getValue(`swi_bundles_last`, 0))).toLocaleString(dateOverride ? `sv-SE` : undefined);
 
-    const appSelector = [`[href*="store.steampowered.com/app/"]`,
+    const appSelector = [
+        `[href*="store.steampowered.com/app/"]`,
         `[href*="store.steampowered.com/agecheck/app/"]`,
         `[href*="steamcommunity.com/app/"]`,
         `[href*="steamdb.info/app/"]`,
@@ -115,21 +117,23 @@ function init(userdata, decommissioned, cards, bundles) {
         `img[src*="steamcdn-a.akamaihd.net/steam/apps/"]`,
         `img[src*="cdn.edgecast.steamstatic.com/steam/apps/"]`,
         `img[src*="steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/"]`,
-        `img[src*="steamdb.info/static/camo/apps/"]`].map((s) => `${s}:not(.swi)`).join(`, `);
-    const subSelector = [`[href*="store.steampowered.com/sub/"]`,
-        `[href*="steamdb.info/sub/"]`].map((s) => `${s}:not(.swi)`).join(`, `);
+        `img[src*="steamdb.info/static/camo/apps/"]`
+    ].map((s) => `${s}:not(.swi)`).join(`, `);
 
-    let delaySWI = null;
+    const subSelector = [
+        `[href*="store.steampowered.com/sub/"]`,
+        `[href*="steamdb.info/sub/"]`
+    ].map((s) => `${s}:not(.swi)`).join(`, `);
+
+    let delaySWI;
     const doSWI = () => {
         if (delaySWI) {
             clearTimeout(delaySWI);
-            delay = null;
         }
 
         delaySWI = setTimeout(() => {
-            console.log("[Steam Web Integration] Executing");
+            console.log(`[Steam Web Integration] Executing`);
             clearTimeout(delaySWI);
-            delaySWI = null
             $(appSelector).get().forEach((elem) => doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, bundles, lcs, dlcs, clcs, blcs));
             $(subSelector).get().forEach((elem) => doSub(elem, ownedPackages, lcs), 0);
         }, 300);
@@ -288,36 +292,36 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, bu
         let html;
 
         if (ownedApps.includes(appID)) { // if owned
-            html = genHTML(ownedColor, `Game or DLC (${appID}) owned`, lcs, ownedIcon); // ✔
+            html = genIconHTML(ownedColor, `Game or DLC (${appID}) owned`, lcs, ownedIcon); // ✔
         } else if (wishlist.includes(appID)) { // if not owned and wishlisted
-            html = genHTML(wishlistColor, `Game or DLC (${appID}) wishlisted`, lcs, wishlistIcon); // ❤
+            html = genIconHTML(wishlistColor, `Game or DLC (${appID}) wishlisted`, lcs, wishlistIcon); // ❤
         } else { // else not owned and not wishlisted
-            html = genHTML(unownedColor, `Game or DLC (${appID}) not owned`, lcs, unownedIcon); // ✘
+            html = genIconHTML(unownedColor, `Game or DLC (${appID}) not owned`, lcs, unownedIcon); // ✘
         }
 
         if (wantIgnores && ignoredApps.includes(appID)) { // if ignored and enabled
-            html += genHTML(ignoredColor, `Game or DLC (${appID}) ignored`, lcs, ignoredIcon); // 🛇
+            html += genIconHTML(ignoredColor, `Game or DLC (${appID}) ignored`, lcs, ignoredIcon); // 🛇
         }
 
         if (wantDecommissioned && decommissioned) { // if decommissioned and have cache or new data
             const app = decommissioned.find((obj) => obj.appid === appID.toString());
             if (app) { // if decommissioned?
-                html += genHTML(decommissionedColor, `The ${app.type} '${app.name.replace(/'/g, ``)}' (${appID}) is ${app.category.toLowerCase()} and has only ${app.count} confirmed owners on Steam`, dlcs, decommissionedIcon, `https://steam-tracker.com/app/${appID}/`); // 🗑
+                html += genIconHTML(decommissionedColor, `The ${app.type} '${app.name.replace(/'/g, ``)}' (${appID}) is ${app.category.toLowerCase()} and has only ${app.count} confirmed owners on Steam`, dlcs, decommissionedIcon, `https://steam-tracker.com/app/${appID}/`); // 🗑
             }
         }
 
         if (wantCards && cards[appID] && cards[appID].cards && cards[appID].cards > 0) { // if has cards and enabled
-            html += genHTML(cardColor, `Game (${appID}) has ${cards[appID].cards}${cards[appID].marketable ? ` ` : ` un`}marketable cards`, clcs, cardIcon, `https://www.steamcardexchange.net/index.php?gamepage-appid-${appID}`);
+            html += genIconHTML(cardColor, `Game (${appID}) has ${cards[appID].cards}${cards[appID].marketable ? ` ` : ` un`}marketable cards`, clcs, cardIcon, `https://www.steamcardexchange.net/index.php?gamepage-appid-${appID}`);
         }
 
         if (wantBundles && bundles[appID] && bundles[appID].bundles && bundles[appID].bundles > 0) { // if is bundled and enabled
-            html += genHTML(bundleColor, `Game (${appID}) has been in ${bundles[appID].bundles} bundles`, blcs, bundleIcon, `https://barter.vg/steam/app/${appID}/#bundles`);
+            html += genIconHTML(bundleColor, `Game (${appID}) has been in ${bundles[appID].bundles} bundles`, blcs, bundleIcon, `https://barter.vg/steam/app/${appID}/#bundles`);
         }
 
         if (prefix) {
-            $(elem).before(html);
+            $(elem).before(genBoxHTML(html, appID));
         } else {
-            $(elem).after(html);
+            $(elem).after(genBoxHTML(html, appID));
         }
 
         $(elem).parent().css(`overflow`, `visible`);
@@ -335,15 +339,15 @@ function doSub(elem, ownedPackages, lcs) {
         let html;
 
         if (ownedPackages.includes(subID)) { // if owned
-            html = genHTML(ownedColor, `Package (${subID}) owned`, lcs, ownedIcon); // ✔
+            html = genIconHTML(ownedColor, `Package (${subID}) owned`, lcs, ownedIcon); // ✔
         } else { // else not owned
-            html = genHTML(unownedColor, `Package (${subID}) not owned`, lcs, unownedIcon); // ✖
+            html = genIconHTML(unownedColor, `Package (${subID}) not owned`, lcs, unownedIcon); // ✖
         }
 
         if (prefix) {
-            $(elem).before(html);
+            $(elem).before(genBoxHTML(html, undefined, subID));
         } else {
-            $(elem).after(html);
+            $(elem).after(genBoxHTML(html, undefined, subID));
         }
 
         $(elem).parent().css(`overflow`, `visible`);
@@ -354,11 +358,19 @@ function stripURI(uri) {
     return uri.split(`/`)[0].split(`?`)[0].split(`#`)[0];
 }
 
-function genHTML(color, str, lcs, icon, link) {
+function genIconHTML(color, str, lcs, icon, link) {
+    const { name, version, author } = GM.info.script;
+    const titlePlus = `\nLast updated at ${lcs}\n${name} (${version}) by ${author}`;
     if (link) {
-        return `<span style="cursor: help;" title="${str}\nLast updated: ${lcs}"> <a style="color: ${color} !important; text-decoration: none;" href="${link}" target="_blank">${icon}</a></span>`;
+        return `<span style="margin: 2px; cursor: help;" title="${str}\n${titlePlus}"> <a style="color: ${color} !important; text-decoration: none;" href="${link}" target="_blank">${icon}</a></span>`;
     }
 
-    return `<span style="color: ${color} !important; cursor: help;" title="${str} on Steam\nLast updated: ${lcs}"> ${icon}</span>`;
+    return `<span style="margin: 2px; color: ${color} !important; cursor: help;" title="${str} on Steam\n${titlePlus}"> ${icon}</span>`;
+}
+
+function genBoxHTML(html, appID, subID) {
+    const data = subID ? `subid="${subID}"` : `appid="${appID}"`;
+    const style = boxed ? ` padding: 0px 4px 0px 4px; margin: 0px 4px 0px 4px; position: relative; border-radius: 5px; background: rgba(0, 0, 0, 0.8);` : ``;
+    return `<div class="swi-block" data-${data} style="display: inline-block;${style}">${html}</div>`;
 }
 // ==/Code==
