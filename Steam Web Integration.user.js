@@ -6,7 +6,7 @@
 // @connect      bartervg.com
 // @connect      steam-tracker.com
 // @connect      store.steampowered.com
-// @description  Check every web page for game, dlc and package links to the steam store and mark using icons whether it's owned, unowned, wishlisted, ignored (not interested), removed/delisted (decommissioned), has cards, or is bundled.
+// @description  Check every web page for game, dlc and package links to the steam store and mark using icons whether it's owned, unowned, wishlisted, ignored (not interested), removed/delisted (decommissioned), has cards, or is bundled. Edit options in the Configuration section.
 // @downloadURL  https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
 // @exclude      /^https?\:\/\/(.+.steampowered|steamcommunity).com\/(?!groups\/groupbuys).*/
 // @grant        GM_getValue
@@ -26,11 +26,12 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.8.4
+// @version      1.8.5
 // ==/UserScript==
 "use strict";
 
 // ==Configuration==
+const settingsInMenu = true; //                     Show (true) 'Settings: CTRL + click on script' in script menu. Recommended to turn off (false) now.
 const prefix = false; //                            Prefix (true) instead of suffix (false) position icon.
 const boxed = true; //                              Whether (true) or not (false) you want the icons to be displayed in a boxed container
 const wantIgnores = true; //                        Whether (true) or not (false) you want to display an extra icon for ignored (not interested) apps.
@@ -61,8 +62,9 @@ const dateOverride = false; //                      Force date display in the YY
 // ==Code==
 // eslint-disable-next-line no-multi-assign
 this.$ = this.jQuery = jQuery.noConflict(true);
-GM_registerMenuCommand(`Configuration: CTRL + click on script`, () => true);
-refresh();
+if (settingsInMenu) {
+    GM_registerMenuCommand(`Settings`, () => unsafeWindow.open(`https://imgur.com/a/TzmiSbp`, `_blank`));
+}
 
 function refresh() {
     const cachedJson = GM_getValue(`swi_data`, null);
@@ -139,12 +141,29 @@ function init(userdata, decommissioned, cards, bundles) {
         }, 300);
     };
 
+    const clearSWI = () => {
+        console.log(`[Steam Web Integration] Clearing`);
+        $(`.swi-block`).remove();
+        $(`.swi`).removeClass(`swi`);
+    };
+
+    const reloadSWI = () => {
+        clearSWI();
+        doSWI();
+    };
+
     $(document).ready(() => {
         doSWI();
         $(document).observe(`added`, appSelector, doSWI);
         $(document).observe(`added`, subSelector, doSWI);
-        GM_registerMenuCommand(`Run manually (again)`, doSWI);
+
+        GM_registerMenuCommand(`Run again`, doSWI);
+        GM_registerMenuCommand(`Clear all`, clearSWI);
+        GM_registerMenuCommand(`Clear and run (reload)`, reloadSWI);
+
         unsafeWindow.doSWI = doSWI;
+        unsafeWindow.clearSWI = clearSWI;
+        unsafeWindow.reloadSWI = reloadSWI;
     });
 }
 
@@ -370,7 +389,9 @@ function genIconHTML(color, str, lcs, icon, link) {
 
 function genBoxHTML(html, appID, subID) {
     const data = subID ? `subid="${subID}"` : `appid="${appID}"`;
-    const style = boxed ? ` padding: 0px 4px 0px 4px; margin: 0px 4px 0px 4px; position: relative; border-radius: 5px; background: rgba(0, 0, 0, 0.7);` : ``;
+    const style = boxed ? ` position: relative; padding: 2px 4px 2px 4px; margin: auto 4px auto 4px; border-radius: 5px; background: rgba(0, 0, 0, 0.7);` : ``;
     return `<div class="swi-block" data-${data} style="display: inline-block; line-height: initial;${style}">${html}</div>`;
 }
+
+refresh();
 // ==/Code==
