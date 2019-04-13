@@ -26,7 +26,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.8.5
+// @version      1.8.6
 // ==/UserScript==
 "use strict";
 
@@ -119,6 +119,8 @@ function init(userdata, decommissioned, cards, bundles) {
         `img[src*="cdn.edgecast.steamstatic.com/steam/apps/"]`,
         `img[src*="steamcdn-a.akamaihd.net/steam/apps/"]`,
         `img[src*="steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/"]`,
+        `img[src*="steamcdn-a.opskins.media/steam/apps/"]`,
+        `img[src*="steamcdn-a.opskins.media/steamcommunity/public/images/apps/"]`,
         `img[src*="steamdb.info/static/camo/apps/"]`
     ].map((s) => `${s}:not(.swi)`).join(`, `);
 
