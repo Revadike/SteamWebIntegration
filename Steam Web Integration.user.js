@@ -6,7 +6,7 @@
 // @connect      bartervg.com
 // @connect      steam-tracker.com
 // @connect      store.steampowered.com
-// @description  Check every web page for game, dlc and package links to the steam store and mark using icons whether it's owned, unowned, wishlisted, ignored (not interested), removed/delisted (decommissioned), has cards, or is bundled. Edit options in the Configuration section.
+// @description  Check every web page for game, dlc and package links to the steam store and mark using icons whether it's owned, unowned, wishlisted, ignored (not interested), removed/delisted (decommissioned), has low confidence metric, has cards, or is bundled.
 // @downloadURL  https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
 // @exclude      /^https?\:\/\/(.+.steampowered|steamcommunity).com\/(?!groups\/groupbuys).*/
 // @grant        GM_getValue
@@ -26,7 +26,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.8.7
+// @version      1.8.8
 // ==/UserScript==
 "use strict";
 
@@ -233,7 +233,7 @@ function refreshLimited(callback) {
 
     GM_xmlhttpRequest({
         "method": `GET`,
-        "url": `https://barter.vg/browse/tag/481/json/`,
+        "url": `https://bartervg.com/browse/tag/481/json/`,
         "timeout": 30000,
         "onload": (response) => {
             let json = null;
@@ -380,7 +380,7 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, limited, 
         }
 
         if (settings.wantLimited && limited[appID]) { // if is limited
-            html += genIconHTML(settings.limitedColor, `Game has profile features limited`, llcs, settings.limitedIcon); // ⚙
+            html += genIconHTML(settings.limitedColor, `Game (${appID}) has profile features limited`, llcs, settings.limitedIcon); // ⚙
         }
 
         if (settings.wantCards && cards[appID] && cards[appID].cards && cards[appID].cards > 0) { // if has cards and enabled
