@@ -26,52 +26,55 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.8.6
+// @version      1.8.7
 // ==/UserScript==
 "use strict";
-
-// ==Configuration==
-const settingsInMenu = true; //                     Show (true) 'Settings: CTRL + click on script' in script menu. Recommended to turn off (false) now.
-const prefix = false; //                            Prefix (true) instead of suffix (false) position icon.
-const boxed = true; //                              Whether (true) or not (false) you want the icons to be displayed in a boxed container
-const wantIgnores = true; //                        Whether (true) or not (false) you want to display an extra icon for ignored (not interested) apps.
-const wantDecommissioned = true; //                 Whether (true) or not (false) you want to display an extra icon for removed or delisted (decommissioned) apps.
-const wantCards = true; //                          Whether (true) or not (false) you want to display an extra icon for apps with cards.
-const wantBundles = true; //                        Whether (true) or not (false) you want to display an extra icon for previously bundled apps.
-const ignoredIcon = `&#128683;&#xFE0E;`; //         HTML entity code for '🛇' (default).
-const ignoredColor = `grey`; //                     Color of the icon for ignored (not interested) apps.
-const wishlistIcon = `&#10084;`; //                 HTML entity code for '❤' (default).
-const wishlistColor = `hotpink`; //                 Color of the icon for wishlisted apps.
-const ownedIcon = `&#10004;`; //                    HTML entity code for '✔' (default).
-const ownedColor = `green`; //                      Color of the icon for owned apps and subs.
-const unownedIcon = `&#10008;`; //                  HTML entity code for '✘' (default).
-const unownedColor = `red`; //                      Color of the icon for unowned apps and subs.
-const decommissionedIcon = `&#9760;`; //            HTML entity code for '☠' (default).
-const decommissionedColor = `white`; //             Color of the icon for removed or delisted apps and subs.
-const cardIcon = `&#x1F0A1`; //                     HTML entity code for '🂡' (default). ♠ ("&spades;") is an alternative if this symbol is unavailable.
-const cardColor = `blue`; //                        Color of the icon for cards.
-const bundleIcon = `&#127873;&#xFE0E;`; //          HTML entity code for '🎁︎' (default). Barter.vg uses the symbol '✽' ("&#10045;").
-const bundleColor = `yellow`; //                    Color of the icon for bundled apps.
-const userRefreshInterval = 0; //                   Number of minutes to wait to refresh cached userdata. 0 = always stay up-to-date.
-const decommissionedRefreshInterval = 60 * 24; //   Number of minutes to wait to refresh cached userdata. 0 = always stay up-to-date, but not recommended.
-const cardsRefreshInterval = 60 * 24 * 2; //        Number of minutes to wait to refresh cached trading card data. 0 = always stay up-to-date, but not recommended.
-const bundlesRefreshInterval = 60 * 24 * 2; //      Number of minutes to wait to refresh cached bundle data. 0 = always stay up-to-date, but not recommended.
-const dateOverride = false; //                      Force date display in the YYYY-MM-DD HH:MM:SS style; otherwise matches system locale.
-// ==/Configuration==
 
 // ==Code==
 // eslint-disable-next-line no-multi-assign
 this.$ = this.jQuery = jQuery.noConflict(true);
-if (settingsInMenu) {
-    GM_registerMenuCommand(`Settings`, () => unsafeWindow.open(`https://imgur.com/a/TzmiSbp`, `_blank`));
+
+const defaults = `{"prefix":false,"boxed":true,"wantIgnores":true,"wantDecommissioned":true,"wantLimited":true,"wantCards":true,"wantBundles":true,"ignoredIcon":"&#128683;&#xFE0E;","ignoredColor":"#808080","wishlistIcon":"&#10084;","wishlistColor":"#ff69b4","ownedIcon":"&#10004;","ownedColor":"#008000","unownedIcon":"&#10008;","unownedColor":"#ff0000","decommissionedIcon":"&#9760;","decommissionedColor":"#ffffff","limitedIcon":"&#9881;","limitedColor":"#00ffff","cardIcon":"&#x1F0A1","cardColor":"#0000ff","bundleIcon":"&#127873;&#xFE0E;","bundleColor":"#ffff00","userRefreshInterval":0,"decommissionedRefreshInterval":1440,"limitedRefreshInterval":2880,"cardsRefreshInterval":2880,"bundlesRefreshInterval":2880,"dateOverride":false}`;
+const settings = JSON.parse(GM_getValue(`swi_settings`, defaults));
+const settingsuri = `https://revadike.ga/swi/settings/`;
+
+if (location.href.startsWith(settingsuri)) {
+    unsafeWindow.onChange = onChange;
+    unsafeWindow.scriptInfo = GM_info.script;
+    window.onload = displaySettings;
+}
+
+GM_registerMenuCommand(`Change settings`, () => unsafeWindow.open(settingsuri, `_blank`));
+refresh();
+
+function displaySettings() {
+    for (const name in settings) {
+        const value = settings[name];
+        if (typeof value === `boolean`) {
+            $(`#${name}`).prop(`checked`, value);
+        } else {
+            $(`#${name}`).val(value);
+        }
+    }
+}
+
+function onChange(elem) {
+    settings[elem.name] = elem.type === `checkbox` ? elem.checked : isFinite(elem.value) ? Number(elem.value) : elem.value;
+    GM_setValue(`swi_settings`, JSON.stringify(settings));
+    showToast();
+}
+
+function showToast() {
+    $(`#snackbar`).addClass(`show`);
+    setTimeout(() => $(`#snackbar`).removeClass(`show`), 3000);
 }
 
 function refresh() {
     const cachedJson = GM_getValue(`swi_data`, null);
     const lastCached = GM_getValue(`swi_last`, 0);
 
-    if (cachedJson && Date.now() - lastCached < userRefreshInterval * 60000) {
-        refreshDecommissioned((decommissioned) => refreshCards((cards) => refreshBundles((bundles) => init(JSON.parse(cachedJson), decommissioned, cards, bundles))));
+    if (cachedJson && Date.now() - lastCached < settings.userRefreshInterval * 60000) {
+        refreshDecommissioned((decommissioned) => refreshLimited((limited) => refreshCards((cards) => refreshBundles((bundles) => init(JSON.parse(cachedJson), decommissioned, cards, bundles, limited)))));
         return;
     }
 
@@ -81,12 +84,12 @@ function refresh() {
         "url": `https://store.steampowered.com/dynamicstore/userdata/?v=${v}`,
         "onload": (response) => {
             GM_setValue(`swi_v`, v);
-            refreshDecommissioned((decommissioned) => refreshCards((cards) => refreshBundles((bundles) => init(JSON.parse(response.responseText), decommissioned, cards, bundles))));
+            refreshDecommissioned((decommissioned) => refreshLimited((limited) => refreshCards((cards) => refreshBundles((bundles) => init(JSON.parse(response.responseText), decommissioned, cards, bundles, limited)))));
         }
     });
 }
 
-function init(userdata, decommissioned, cards, bundles) {
+function init(userdata, decommissioned, cards, bundles, limited) {
     let ignoredApps = Object.keys(userdata.rgIgnoredApps).map((a) => parseInt(a, 10));
     let ownedApps = userdata.rgOwnedApps;
     let ownedPackages = userdata.rgOwnedPackages;
@@ -105,10 +108,11 @@ function init(userdata, decommissioned, cards, bundles) {
         GM_setValue(`swi_data`, JSON.stringify(userdata));
     }
 
-    const lcs = dateOverride ? (new Date(lastCached)).toLocaleString(`sv-SE`) : (new Date(lastCached)).toLocaleString();
-    const dlcs = (new Date(GM_getValue(`swi_decommissioned_last`, 0))).toLocaleString(dateOverride ? `sv-SE` : undefined);
-    const clcs = (new Date(GM_getValue(`swi_tradingcards_last`, 0))).toLocaleString(dateOverride ? `sv-SE` : undefined);
-    const blcs = (new Date(GM_getValue(`swi_bundles_last`, 0))).toLocaleString(dateOverride ? `sv-SE` : undefined);
+    const lcs = settings.dateOverride ? (new Date(lastCached)).toLocaleString(`sv-SE`) : (new Date(lastCached)).toLocaleString();
+    const dlcs = (new Date(GM_getValue(`swi_decommissioned_last`, 0))).toLocaleString(settings.dateOverride ? `sv-SE` : undefined);
+    const llcs = (new Date(GM_getValue(`swi_limited_last`, 0))).toLocaleString(settings.dateOverride ? `sv-SE` : undefined);
+    const clcs = (new Date(GM_getValue(`swi_tradingcards_last`, 0))).toLocaleString(settings.dateOverride ? `sv-SE` : undefined);
+    const blcs = (new Date(GM_getValue(`swi_bundles_last`, 0))).toLocaleString(settings.dateOverride ? `sv-SE` : undefined);
 
     const appSelector = [
         `[href*="steamcommunity.com/app/"]`,
@@ -138,7 +142,7 @@ function init(userdata, decommissioned, cards, bundles) {
         delaySWI = setTimeout(() => {
             console.log(`[Steam Web Integration] Executing`);
             clearTimeout(delaySWI);
-            $(appSelector).get().forEach((elem) => doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, bundles, lcs, dlcs, clcs, blcs));
+            $(appSelector).get().forEach((elem) => doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, limited, cards, bundles, lcs, dlcs, llcs, clcs, blcs));
             $(subSelector).get().forEach((elem) => doSub(elem, ownedPackages, lcs), 0);
         }, 300);
     };
@@ -170,14 +174,14 @@ function init(userdata, decommissioned, cards, bundles) {
 }
 
 function refreshDecommissioned(callback) {
-    if (!wantDecommissioned) {
+    if (!settings.wantDecommissioned) {
         callback();
         return;
     }
 
     const cachedDecommissioned = JSON.parse(GM_getValue(`swi_decommissioned`, null));
     const lastCachedDecommissioned = GM_getValue(`swi_decommissioned_last`, 0);
-    if (cachedDecommissioned && Date.now() - lastCachedDecommissioned < decommissionedRefreshInterval * 60000) {
+    if (cachedDecommissioned && Date.now() - lastCachedDecommissioned < settings.decommissionedRefreshInterval * 60000) {
         callback(cachedDecommissioned);
         return;
     }
@@ -214,15 +218,59 @@ function refreshDecommissioned(callback) {
     });
 }
 
+function refreshLimited(callback) {
+    if (!settings.wantLimited) {
+        callback();
+        return;
+    }
+
+    const cachedLimited = JSON.parse(GM_getValue(`swi_limited`, null));
+    const lastCachedLimited = parseInt(GM_getValue(`swi_limited_last`, 0)) || 1;
+    if (cachedLimited && Object.keys(cachedLimited).length > 7000 && Date.now() - lastCachedLimited < settings.limitedRefreshInterval * 60000) {
+        callback(cachedLimited);
+        return;
+    }
+
+    GM_xmlhttpRequest({
+        "method": `GET`,
+        "url": `https://barter.vg/browse/tag/481/json/`,
+        "timeout": 30000,
+        "onload": (response) => {
+            let json = null;
+            try {
+                json = JSON.parse(response.responseText);
+                if (Object.keys(json).length > 7000) { // sanity check
+                    GM_setValue(`swi_limited`, JSON.stringify(json));
+                    GM_setValue(`swi_limited_last`, Date.now());
+                }
+                callback(json);
+                return;
+            } catch (error) {
+                console.log(`Unable to parse Barter.vg low confidence metric data. Using cached data...`, error);
+                callback(cachedLimited);
+                return;
+            }
+        },
+        "onerror": (response) => {
+            console.log(`An error occurred while refreshing Barter.vg low confidence metric data. Using cached data...`, response);
+            callback(cachedLimited);
+        },
+        "ontimeout": () => {
+            console.log(`It took too long to refresh Barter.vg low confidence metric data. Using cached data...`);
+            callback(cachedLimited);
+        }
+    });
+}
+
 function refreshCards(callback) {
-    if (!wantCards) {
+    if (!settings.wantCards) {
         callback();
         return;
     }
 
     const cachedCards = JSON.parse(GM_getValue(`swi_tradingcards`, null));
     const lastCachedCards = parseInt(GM_getValue(`swi_tradingcards_last`, 0)) || 1;
-    if (cachedCards && Object.keys(cachedCards).length > 7000 && Object.values(cachedCards)[0].marketable && Date.now() - lastCachedCards < cardsRefreshInterval * 60000) {
+    if (cachedCards && Object.keys(cachedCards).length > 7000 && Object.values(cachedCards)[0].marketable && Date.now() - lastCachedCards < settings.cardsRefreshInterval * 60000) {
         callback(cachedCards);
         return;
     }
@@ -259,14 +307,14 @@ function refreshCards(callback) {
 }
 
 function refreshBundles(callback) {
-    if (!wantBundles) {
+    if (!settings.wantBundles) {
         callback();
         return;
     }
 
     const cachedBundles = JSON.parse(GM_getValue(`swi_bundles`, null));
     const lastCachedBundles = parseInt(GM_getValue(`swi_bundles_last`, 0)) || 1;
-    if (cachedBundles && Object.keys(cachedBundles).length > 7000 && Object.values(cachedBundles)[0].bundles && Date.now() - lastCachedBundles < bundlesRefreshInterval * 60000) {
+    if (cachedBundles && Object.keys(cachedBundles).length > 7000 && Object.values(cachedBundles)[0].bundles && Date.now() - lastCachedBundles < settings.bundlesRefreshInterval * 60000) {
         callback(cachedBundles);
         return;
     }
@@ -302,7 +350,7 @@ function refreshBundles(callback) {
     });
 }
 
-function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, bundles, lcs, dlcs, clcs, blcs) {
+function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, limited, cards, bundles, lcs, dlcs, llcs, clcs, blcs) {
     $(elem).addClass(`swi`);
     const appID = elem.href ? parseInt(stripURI(elem.href.split(`app/`)[1])) : parseInt(stripURI(elem.src.split(`apps/`)[1]));
     if (isNaN(appID)) {
@@ -313,33 +361,37 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, cards, bu
         let html;
 
         if (ownedApps.includes(appID)) { // if owned
-            html = genIconHTML(ownedColor, `Game or DLC (${appID}) owned`, lcs, ownedIcon); // ✔
+            html = genIconHTML(settings.ownedColor, `Game or DLC (${appID}) owned`, lcs, settings.ownedIcon); // ✔
         } else if (wishlist.includes(appID)) { // if not owned and wishlisted
-            html = genIconHTML(wishlistColor, `Game or DLC (${appID}) wishlisted`, lcs, wishlistIcon); // ❤
+            html = genIconHTML(settings.wishlistColor, `Game or DLC (${appID}) wishlisted`, lcs, settings.wishlistIcon); // ❤
         } else { // else not owned and not wishlisted
-            html = genIconHTML(unownedColor, `Game or DLC (${appID}) not owned`, lcs, unownedIcon); // ✘
+            html = genIconHTML(settings.unownedColor, `Game or DLC (${appID}) not owned`, lcs, settings.unownedIcon); // ✘
         }
 
-        if (wantIgnores && ignoredApps.includes(appID)) { // if ignored and enabled
-            html += genIconHTML(ignoredColor, `Game or DLC (${appID}) ignored`, lcs, ignoredIcon); // 🛇
+        if (settings.wantIgnores && ignoredApps.includes(appID)) { // if ignored and enabled
+            html += genIconHTML(settings.ignoredColor, `Game or DLC (${appID}) ignored`, lcs, settings.ignoredIcon); // 🛇
         }
 
-        if (wantDecommissioned && decommissioned) { // if decommissioned and have cache or new data
+        if (settings.wantDecommissioned && decommissioned) { // if decommissioned and have cache or new data
             const app = decommissioned.find((obj) => obj.appid === appID.toString());
             if (app) { // if decommissioned?
-                html += genIconHTML(decommissionedColor, `The ${app.type} '${app.name.replace(/"|'/g, ``)}' (${appID}) is ${app.category.toLowerCase()} and has only ${app.count} confirmed owner${app.count === 1 ? `` : `s`} on Steam`, dlcs, decommissionedIcon, `https://steam-tracker.com/app/${appID}/`); // 🗑
+                html += genIconHTML(settings.decommissionedColor, `The ${app.type} '${app.name.replace(/"|'/g, ``)}' (${appID}) is ${app.category.toLowerCase()} and has only ${app.count} confirmed owner${app.count === 1 ? `` : `s`} on Steam`, dlcs, settings.decommissionedIcon, `https://steam-tracker.com/app/${appID}/`); // 🗑
             }
         }
 
-        if (wantCards && cards[appID] && cards[appID].cards && cards[appID].cards > 0) { // if has cards and enabled
-            html += genIconHTML(cardColor, `Game (${appID}) has ${cards[appID].cards} ${cards[appID].marketable ? `` : `un`}marketable card${cards[appID].cards === 1 ? `` : `s`}`, clcs, cardIcon, `https://www.steamcardexchange.net/index.php?gamepage-appid-${appID}`);
+        if (settings.wantLimited && limited[appID]) { // if is limited
+            html += genIconHTML(settings.limitedColor, `Game has profile features limited`, llcs, settings.limitedIcon); // ⚙
         }
 
-        if (wantBundles && bundles[appID] && bundles[appID].bundles && bundles[appID].bundles > 0) { // if is bundled and enabled
-            html += genIconHTML(bundleColor, `Game (${appID}) has been in ${bundles[appID].bundles} bundle${bundles[appID].bundles === 1 ? `` : `s`}`, blcs, bundleIcon, `https://barter.vg/steam/app/${appID}/#bundles`);
+        if (settings.wantCards && cards[appID] && cards[appID].cards && cards[appID].cards > 0) { // if has cards and enabled
+            html += genIconHTML(settings.cardColor, `Game (${appID}) has ${cards[appID].cards} ${cards[appID].marketable ? `` : `un`}marketable card${cards[appID].cards === 1 ? `` : `s`}`, clcs, settings.cardIcon, `https://www.steamcardexchange.net/index.php?gamepage-appid-${appID}`);
         }
 
-        if (prefix) {
+        if (settings.wantBundles && bundles[appID] && bundles[appID].bundles && bundles[appID].bundles > 0) { // if is bundled and enabled
+            html += genIconHTML(settings.bundleColor, `Game (${appID}) has been in ${bundles[appID].bundles} bundle${bundles[appID].bundles === 1 ? `` : `s`}`, blcs, settings.bundleIcon, `https://barter.vg/steam/app/${appID}/#bundles`);
+        }
+
+        if (settings.prefix) {
             $(elem).before(genBoxHTML(html, appID));
         } else {
             $(elem).after(genBoxHTML(html, appID));
@@ -360,12 +412,12 @@ function doSub(elem, ownedPackages, lcs) {
         let html;
 
         if (ownedPackages.includes(subID)) { // if owned
-            html = genIconHTML(ownedColor, `Package (${subID}) owned`, lcs, ownedIcon); // ✔
+            html = genIconHTML(settings.ownedColor, `Package (${subID}) owned`, lcs, settings.ownedIcon); // ✔
         } else { // else not owned
-            html = genIconHTML(unownedColor, `Package (${subID}) not owned`, lcs, unownedIcon); // ✖
+            html = genIconHTML(settings.unownedColor, `Package (${subID}) not owned`, lcs, settings.unownedIcon); // ✖
         }
 
-        if (prefix) {
+        if (settings.prefix) {
             $(elem).before(genBoxHTML(html, undefined, subID));
         } else {
             $(elem).after(genBoxHTML(html, undefined, subID));
@@ -391,9 +443,7 @@ function genIconHTML(color, str, lcs, icon, link) {
 
 function genBoxHTML(html, appID, subID) {
     const data = subID ? `subid="${subID}"` : `appid="${appID}"`;
-    const style = boxed ? ` position: relative; padding: 2px 4px 2px 4px; margin: auto 4px auto 4px; border-radius: 5px; background: rgba(0, 0, 0, 0.7);` : ``;
+    const style = settings.boxed ? ` position: relative; padding: 2px 4px 2px 4px; margin: auto 4px auto 4px; border-radius: 5px; background: rgba(0, 0, 0, 0.7);` : ``;
     return `<div class="swi-block" data-${data} style="display: inline-block; line-height: initial;${style}">${html}</div>`;
 }
-
-refresh();
 // ==/Code==
