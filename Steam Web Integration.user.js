@@ -26,7 +26,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.8.8
+// @version      1.8.9
 // ==/UserScript==
 "use strict";
 
@@ -119,6 +119,13 @@ function init(userdata, decommissioned, cards, bundles, limited) {
         `[href*="steamdb.info/app/"]`,
         `[href*="store.steampowered.com/agecheck/app/"]`,
         `[href*="store.steampowered.com/app/"]`,
+        `[style*="cdn.akamai.steamstatic.com/steam/apps/"]`,
+        `[style*="cdn.edgecast.steamstatic.com/steam/apps/"]`,
+        `[style*="steamcdn-a.akamaihd.net/steam/apps/"]`,
+        `[style*="steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/"]`,
+        `[style*="steamcdn-a.opskins.media/steam/apps/"]`,
+        `[style*="steamcdn-a.opskins.media/steamcommunity/public/images/apps/"]`,
+        `[style*="steamdb.info/static/camo/apps/"]`,
         `img[src*="cdn.akamai.steamstatic.com/steam/apps/"]`,
         `img[src*="cdn.edgecast.steamstatic.com/steam/apps/"]`,
         `img[src*="steamcdn-a.akamaihd.net/steam/apps/"]`,
@@ -142,9 +149,9 @@ function init(userdata, decommissioned, cards, bundles, limited) {
         delaySWI = setTimeout(() => {
             console.log(`[Steam Web Integration] Executing`);
             clearTimeout(delaySWI);
-            $(appSelector).get().forEach((elem) => doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, limited, cards, bundles, lcs, dlcs, llcs, clcs, blcs));
-            $(subSelector).get().forEach((elem) => doSub(elem, ownedPackages, lcs), 0);
-        }, 300);
+            $(appSelector, document.body).get().forEach((elem) => doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, limited, cards, bundles, lcs, dlcs, llcs, clcs, blcs));
+            $(subSelector, document.body).get().forEach((elem) => doSub(elem, ownedPackages, lcs), 0);
+        }, 200);
     };
 
     const clearSWI = () => {
@@ -160,8 +167,8 @@ function init(userdata, decommissioned, cards, bundles, limited) {
 
     $(document).ready(() => {
         doSWI();
-        $(document).observe(`added`, appSelector, doSWI);
-        $(document).observe(`added`, subSelector, doSWI);
+        $(document).observe(`added subtree attributes`, appSelector, doSWI);
+        $(document).observe(`added subtree attributes`, subSelector, doSWI);
 
         GM_registerMenuCommand(`Run again`, doSWI);
         GM_registerMenuCommand(`Clear all`, clearSWI);
@@ -352,7 +359,16 @@ function refreshBundles(callback) {
 
 function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, limited, cards, bundles, lcs, dlcs, llcs, clcs, blcs) {
     $(elem).addClass(`swi`);
-    const appID = elem.href ? parseInt(stripURI(elem.href.split(`app/`)[1])) : parseInt(stripURI(elem.src.split(`apps/`)[1]));
+
+    let attrVal;
+    for (const attr of elem.attributes) {
+        attrVal = $(elem).attr(attr.name);
+        if (attrVal.match(/apps?\//g)) {
+            break;
+        }
+    }
+
+    const appID = parseInt(stripURI(attrVal.split(/apps?\//)[1]));
     if (isNaN(appID)) {
         return;
     }
