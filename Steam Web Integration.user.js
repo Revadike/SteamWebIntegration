@@ -1,8 +1,9 @@
 // ==UserScript==
 // @author       Revadike
-// @collaborator Black3ird
-// @collaborator Lex
-// @collaborator Luckz
+// @contributor  Barter.vg
+// @contributor  Black3ird
+// @contributor  Lex
+// @contributor  Luckz
 // @connect      bartervg.com
 // @connect      steam-tracker.com
 // @connect      store.steampowered.com
