@@ -371,7 +371,7 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, limited, 
         if (settings.wantDLC && dlc[appID]) { // if DLC and enabled
             const base = dlc[appID].base_appID;
             const ownsBase = ownedApps.includes(base);
-            html += genIconHTML(settings.dlcColor, `${item} (${appID}) is downloadable content for an ${ownsBase ? `un` : ``}owned base game (${base})`, lcs, settings.dlcIcon); // ⇩
+            html += genIconHTML(settings.dlcColor, `${item} (${appID}) is downloadable content for an ${ownsBase ? `` : `un`}owned base game (${base})`, lcs, settings.dlcIcon); // ⇩
         }
 
         if (settings.wantDecommissioned && decommissioned) { // if decommissioned and have cache or new data
