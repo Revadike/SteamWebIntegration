@@ -28,7 +28,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.9.2
+// @version      1.9.3
 // ==/UserScript==
 
 // ==Code==
@@ -127,16 +127,16 @@
                     callback(json.removed_apps);
                     return;
                 } catch (error) {
-                    console.log(`Unable to parse removed steam games data. Using cached data...`, error);
+                    console.log(`[Steam Web Integration] Unable to parse removed steam games data. Using cached data...`, error);
                 }
                 callback(cachedDecommissioned);
             },
             "onerror": () => {
-                console.log(`An error occurred while refreshing removed steam games data. Using cached data...`);
+                console.log(`[Steam Web Integration] An error occurred while refreshing removed steam games data. Using cached data...`);
                 callback(cachedDecommissioned);
             },
             "ontimeout": () => {
-                console.log(`It took too long to refresh removed steam games data. Using cached data...`);
+                console.log(`[Steam Web Integration] It took too long to refresh removed steam games data. Using cached data...`);
                 callback(cachedDecommissioned);
             }
         });
@@ -170,16 +170,16 @@
                     callback(json);
                     return;
                 } catch (error) {
-                    console.log(`Unable to parse Barter.vg downloadable content data. Using cached data...`, error);
+                    console.log(`[Steam Web Integration] Unable to parse Barter.vg downloadable content data. Using cached data...`, error);
                 }
                 callback(cachedDLC);
             },
             "onerror": (response) => {
-                console.log(`An error occurred while refreshing Barter.vg downloadable content data. Using cached data...`, response);
+                console.log(`[Steam Web Integration] An error occurred while refreshing Barter.vg downloadable content data. Using cached data...`, response);
                 callback(cachedDLC);
             },
             "ontimeout": () => {
-                console.log(`It took too long to refresh Barter.vg downloadable content data. Using cached data...`);
+                console.log(`[Steam Web Integration] It took too long to refresh Barter.vg downloadable content data. Using cached data...`);
                 callback(cachedDLC);
             }
         });
@@ -213,16 +213,16 @@
                     callback(json);
                     return;
                 } catch (error) {
-                    console.log(`Unable to parse Barter.vg low confidence metric data. Using cached data...`, error);
+                    console.log(`[Steam Web Integration] Unable to parse Barter.vg low confidence metric data. Using cached data...`, error);
                 }
                 callback(cachedLimited);
             },
             "onerror": (response) => {
-                console.log(`An error occurred while refreshing Barter.vg low confidence metric data. Using cached data...`, response);
+                console.log(`[Steam Web Integration] An error occurred while refreshing Barter.vg low confidence metric data. Using cached data...`, response);
                 callback(cachedLimited);
             },
             "ontimeout": () => {
-                console.log(`It took too long to refresh Barter.vg low confidence metric data. Using cached data...`);
+                console.log(`[Steam Web Integration] It took too long to refresh Barter.vg low confidence metric data. Using cached data...`);
                 callback(cachedLimited);
             }
         });
@@ -256,16 +256,16 @@
                     callback(json);
                     return;
                 } catch (error) {
-                    console.log(`Unable to parse Barter.vg trading cards data. Using cached data...`, error);
+                    console.log(`[Steam Web Integration] Unable to parse Barter.vg trading cards data. Using cached data...`, error);
                 }
                 callback(cachedCards);
             },
             "onerror": (response) => {
-                console.log(`An error occurred while refreshing Barter.vg trading cards data. Using cached data...`, response);
+                console.log(`[Steam Web Integration] An error occurred while refreshing Barter.vg trading cards data. Using cached data...`, response);
                 callback(cachedCards);
             },
             "ontimeout": () => {
-                console.log(`It took too long to refresh Barter.vg trading cards data. Using cached data...`);
+                console.log(`[Steam Web Integration] It took too long to refresh Barter.vg trading cards data. Using cached data...`);
                 callback(cachedCards);
             }
         });
@@ -299,16 +299,16 @@
                     callback(json);
                     return;
                 } catch (error) {
-                    console.log(`Unable to parse Barter.vg bundles data. Using cached data...`, error);
+                    console.log(`[Steam Web Integration] Unable to parse Barter.vg bundles data. Using cached data...`, error);
                 }
                 callback(cachedBundles);
             },
             "onerror": (response) => {
-                console.log(`An error occurred while refreshing Barter.vg bundles data. Using cached data...`, response);
+                console.log(`[Steam Web Integration] An error occurred while refreshing Barter.vg bundles data. Using cached data...`, response);
                 callback(cachedBundles);
             },
             "ontimeout": () => {
-                console.log(`It took too long to refresh Barter.vg bundles data. Using cached data...`);
+                console.log(`[Steam Web Integration] It took too long to refresh Barter.vg bundles data. Using cached data...`);
                 callback(cachedBundles);
             }
         });
@@ -408,24 +408,11 @@
         }, 0);
     }
 
-    function integrate(userdata, decommissioned, cards, bundles, limited, dlc) {
-        let ignoredApps = Object.keys(userdata.rgIgnoredApps).map((a) => parseInt(a, 10));
-        let ownedApps = userdata.rgOwnedApps;
-        let ownedPackages = userdata.rgOwnedPackages;
-        let wishlist = userdata.rgWishlist;
-        let lastCached = GM_getValue(`swi_last`, 0);
-
-        if (ownedApps.length === 0 && ownedPackages.length === 0 && ignoredApps.length === 0 && wishlist.length === 0) {
-            const parsedCachedJson = JSON.parse(GM_getValue(`swi_data`, null));
-            ignoredApps = parsedCachedJson.rgIgnoredApps;
-            ownedApps = parsedCachedJson.rgOwnedApps;
-            ownedPackages = parsedCachedJson.rgOwnedPackages;
-            wishlist = parsedCachedJson.rgWishlist;
-        } else {
-            lastCached = Date.now();
-            GM_setValue(`swi_last`, lastCached);
-            GM_setValue(`swi_data`, JSON.stringify(userdata));
-        }
+    function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastCached) {
+        const ignoredApps = Object.keys(userdata.rgIgnoredApps).map((a) => parseInt(a, 10));
+        const ownedApps = userdata.rgOwnedApps;
+        const ownedPackages = userdata.rgOwnedPackages;
+        const wishlist = userdata.rgWishlist;
 
         const lcs = settings.dateOverride ? (new Date(lastCached)).toLocaleString(`sv-SE`) : (new Date(lastCached)).toLocaleString();
         const dlcs = (new Date(GM_getValue(`swi_decommissioned_last`, 0))).toLocaleString(settings.dateOverride ? `sv-SE` : undefined);
@@ -502,11 +489,11 @@
 
     function refresh() {
         const cachedJson = GM_getValue(`swi_data`, null);
-        const lastCached = GM_getValue(`swi_last`, 0);
+        let lastCached = GM_getValue(`swi_last`, 0);
 
         if (cachedJson && Date.now() - lastCached < settings.userRefreshInterval * 60000) {
             const userdata = JSON.parse(cachedJson);
-            refreshDecommissioned((decommissioned) => refreshDLC((dlc) => refreshLimited((limited) => refreshCards((cards) => refreshBundles((bundles) => integrate(userdata, decommissioned, cards, bundles, limited, dlc))))));
+            refreshDecommissioned((decommissioned) => refreshDLC((dlc) => refreshLimited((limited) => refreshCards((cards) => refreshBundles((bundles) => integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastCached))))));
             return;
         }
 
@@ -514,8 +501,22 @@
             "method": `GET`,
             "url": `https://store.steampowered.com/dynamicstore/userdata/?t=${Date.now()}`,
             "onload": (response) => {
-                const userdata = JSON.parse(response.responseText);
-                refreshDecommissioned((decommissioned) => refreshDLC((dlc) => refreshLimited((limited) => refreshCards((cards) => refreshBundles((bundles) => integrate(userdata, decommissioned, cards, bundles, limited, dlc))))));
+                let userdata = JSON.parse(response.responseText);
+
+                if (userdata.rgOwnedApps.length === 0 && userdata.rgOwnedPackages.length === 0 && userdata.rgIgnoredApps.length === 0 && userdata.rgWishlist.length === 0) { // not logged in
+                    if (!cachedJson) {
+                        console.log(`[Steam Web Integration] No cached information available. Please login to Steam to fix this.`);
+                        return;
+                    }
+
+                    userdata = JSON.parse(cachedJson);
+                } else {
+                    lastCached = Date.now();
+                    GM_setValue(`swi_last`, lastCached);
+                    GM_setValue(`swi_data`, JSON.stringify(userdata));
+                }
+
+                refreshDecommissioned((decommissioned) => refreshDLC((dlc) => refreshLimited((limited) => refreshCards((cards) => refreshBundles((bundles) => integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastCached))))));
             }
         });
     }
