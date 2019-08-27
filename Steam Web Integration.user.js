@@ -28,7 +28,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.9.1
+// @version      1.9.2
 // ==/UserScript==
 
 // ==Code==
@@ -319,7 +319,7 @@
 
         const attr = settings.attributes.find((a) => /apps?\//g.test($(elem).attr(a)));
         const attrVal = $(elem).attr(attr);
-        const appID = parseInt(attrVal.match(/(?<=apps?\/)[0-9]+/g)[0], 10);
+        const appID = parseInt(attrVal.match(/apps?\/[0-9]+/g)[0].split(/apps?\//)[1], 10);
         if (Number.isNaN(appID)) {
             return;
         }
@@ -384,7 +384,7 @@
 
     function doSub(elem, ownedPackages, lcs) {
         $(elem).addClass(`swi`);
-        const subID = parseInt(elem.href.match(/(?<=sub\/)[0-9]+/g)[0], 10);
+        const subID = parseInt(elem.href.match(/sub\/[0-9]+/g)[0].split(`sub/`)[1], 10);
         if (Number.isNaN(subID)) {
             return;
         }
