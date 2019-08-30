@@ -28,14 +28,15 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.9.3
+// @version      1.9.4
 // ==/UserScript==
 
 // ==Code==
 (() => {
     // eslint-disable-next-line no-multi-assign
     this.$ = this.jQuery = jQuery.noConflict(true);
-    let settings, boxNode;
+    let settings;
+    let boxNode;
 
     function displaySettings() {
         const { name, version, author } = GM_info.script;
@@ -43,12 +44,12 @@
         $(`#settings`).show();
         $(`#notinstalled`).hide();
 
-        Object.keys(settings).forEach((name) => {
-            const value = settings[name];
+        Object.keys(settings).forEach((setting) => {
+            const value = settings[setting];
             if (typeof value === `boolean`) {
-                $(`#${name}`).prop(`checked`, value);
+                $(`#${setting}`).prop(`checked`, value);
             } else {
-                $(`#${name}`).val(value);
+                $(`#${setting}`).val(value);
             }
         });
     }
@@ -454,7 +455,10 @@
             }
 
             delaySWI = setTimeout(() => {
-                console.log(`[Steam Web Integration] Executing`);
+                if (settings.dynamicContent !== `ping`) {
+                    console.log(`[Steam Web Integration] Executing`);
+                }
+
                 clearTimeout(delaySWI);
                 $(appSelector, document.body).get().forEach((elem) => doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, limited, cards, bundles, dlc, lcs, dlcs, dlclcs, llcs, clcs, blcs));
                 $(subSelector, document.body).get().forEach((elem) => doSub(elem, ownedPackages, lcs), 0);
@@ -474,8 +478,6 @@
 
         $(document).ready(() => {
             doSWI(0);
-            $(`body`).observe({ "added": true, "attributes": true, "attributeFilter": settings.attributes }, appSelector, () => doSWI());
-            $(`body`).observe({ "added": true, "attributes": true, "attributeFilter": [`href`] }, subSelector, () => doSWI());
 
             GM_registerMenuCommand(`Run again`, () => doSWI(0));
             GM_registerMenuCommand(`Clear all`, clearSWI);
@@ -484,6 +486,17 @@
             unsafeWindow.doSWI = doSWI;
             unsafeWindow.clearSWI = clearSWI;
             unsafeWindow.reloadSWI = reloadSWI;
+
+            if (settings.dynamicContent === `disabled`) {
+                return;
+            }
+
+            if (settings.dynamicContent === `observe`) {
+                $(`body`).observe({ "added": true, "attributes": true, "attributeFilter": settings.attributes }, appSelector, () => doSWI());
+                $(`body`).observe({ "added": true, "attributes": true, "attributeFilter": [`href`] }, subSelector, () => doSWI());
+            } else if (settings.dynamicContent === `ping`) {
+                setInterval(doSWI, 1500);
+            }
         });
     }
 
@@ -540,6 +553,7 @@
             "dlcColor": `#a655b2`,
             "dlcIcon": `&#8681;`,
             "dlcRefreshInterval": 1440,
+            "dynamicContent": `observe`,
             "ignoredColor": `#808080`,
             "ignoredIcon": `&#128683;&#xFE0E;`,
             "limitedColor": `#00ffff`,
