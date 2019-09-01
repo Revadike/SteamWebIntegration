@@ -579,7 +579,6 @@
             .swi-block {
                 display: inline-block;
                 line-height: initial;
-                z-index: 16777271;
             }
             .swi-block.boxed {
                 background: rgba(0, 0, 0, 0.7);
