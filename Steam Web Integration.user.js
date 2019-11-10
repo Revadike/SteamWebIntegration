@@ -28,7 +28,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.9.4
+// @version      1.9.5
 // ==/UserScript==
 
 // ==Code==
@@ -535,7 +535,7 @@
     }
 
     function init() {
-        const settingsuri = `https://revadike.ga/swi/settings`;
+        const settingsuri = `https://revadike.com/swi/settings`;
 
         const defaults = {
             "attributes": [`href`, `src`, `style`],
