@@ -596,7 +596,7 @@
             }
         `;
 
-        const settingPageCss =`
+        const settingPageCss = `
             body{
                 background-color: #e6fdf9;
             }
