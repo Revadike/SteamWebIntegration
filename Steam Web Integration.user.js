@@ -23,8 +23,8 @@
 // @include      /^https?\:\/\/.+/
 // @name         Steam Web Integration
 // @namespace    Royalgamer06
-// @require      https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js
-// @require      https://raw.githubusercontent.com/kapetan/jquery-observe/master/jquery-observe.js
+// @require      https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.slim.min.js
+// @require      https://cdn.jsdelivr.net/gh/kapetan/jquery-observe@2.0.3/jquery-observe.js
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
@@ -596,6 +596,76 @@
             }
         `;
 
+        const settingPageCss =`
+            body{
+                background-color: #e6fdf9;
+            }
+            #title {
+                text-align: center;
+            }
+            table {
+                font-family: verdana,arial,sans-serif;
+                font-size:11px;
+                color:#333333;
+                border-width: 1px;
+                border-color: #999999;
+                border-collapse: collapse;
+                width: 100%;
+            }
+            table th {
+                background-color:#c3dde0;
+                border-width: 1px;
+                padding: 8px;
+                border-style: solid;
+                border-color: #a9c6c9;
+            }
+            table tr {
+                background-color:#d4e3e5;
+            }
+            table tr:hover {
+                background-color:#ffff66;
+            }
+            table td {
+                border-width: 1px;
+                padding: 8px;
+                border-style: solid;
+                border-color: #a9c6c9;
+            }
+            select{
+                overflow-y: auto;
+            }
+            #attributes{
+                width: 70px;
+                text-align: center;
+            }
+            #attributes::-webkit-scrollbar,body::-webkit-scrollbar {
+                width: 10px;
+                height: 1px;
+            }
+            #attributes::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb {
+                border-radius: 10px;
+                background-color: skyblue;
+                background-image: -webkit-linear-gradient(
+                    45deg,
+                    rgba(255, 255, 255, 0.2) 25%,
+                    transparent 25%,
+                    transparent 50%,
+                    rgba(255, 255, 255, 0.2) 50%,
+                    rgba(255, 255, 255, 0.2) 75%,
+                    transparent 75%,
+                    transparent
+                );
+            }
+            #attributes::-webkit-scrollbar-thumb:hover,body::-webkit-scrollbar-thumb:hover{
+                background-color: #1ab2f1;
+            }
+            #attributes::-webkit-scrollbar-track,body::-webkit-scrollbar-track {
+                box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+                background: #ededed;
+                border-radius: 10px;
+            }
+        `;
+
         settings = JSON.parse(GM_getValue(`swi_settings`, JSON.stringify(defaults)));
         Object.keys(defaults).forEach((setting) => {
             if (settings[setting] !== undefined) {
@@ -610,6 +680,7 @@
             unsafeWindow.scriptInfo = GM_info.script;
             unsafeWindow.settings = settings;
             $(document).ready(displaySettings);
+            GM_addStyle(settingPageCss);
         } else {
             boxNode = createBoxNode();
             GM_addStyle(stylesheet);
