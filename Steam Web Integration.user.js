@@ -23,12 +23,12 @@
 // @include      /^https?\:\/\/.+/
 // @name         Steam Web Integration
 // @namespace    Royalgamer06
-// @require      https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js
-// @require      https://raw.githubusercontent.com/kapetan/jquery-observe/master/jquery-observe.js
+// @require      https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.slim.min.js
+// @require      https://cdn.jsdelivr.net/gh/kapetan/jquery-observe@2.0.3/jquery-observe.js
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.9.5
+// @version      1.9.6
 // ==/UserScript==
 
 // ==Code==
