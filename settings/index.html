@@ -192,6 +192,11 @@
     <form id="swi-form">
       <table>
         <tbody>
+          <tr id="blackListRow">
+            <td><b>blackList</b></td>
+            <td>Enter a list of domains, you don't want this script running on.</td>
+            <td><textarea id="blackList" name="blackList" onchange="onChange(this)" cols="30" rows="5"></textarea></td>
+          </tr>
           <tr id="dynamicContentRow">
             <td><b>dynamicContent</b></td>
             <td>Select which method you prefer to detect dynamically loaded web content.</td>
