@@ -610,7 +610,7 @@ function init() {
         unsafeWindow.scriptInfo = GM_info.script;
         unsafeWindow.settings = settings;
         $(document).ready(displaySettings);
-    } else if (!settings.blackList.split(`\n`).find((url) => unsafeWindow.location.href.contains(url.trim()))) {
+    } else if (!settings.blackList.split(`\n`).find((url) => unsafeWindow.location.href.includes(url.trim()))) {
         boxNode = createBoxNode();
         GM_addStyle(stylesheet);
         GM_registerMenuCommand(`Change settings`, () => unsafeWindow.open(settingsuri, `_blank`));
