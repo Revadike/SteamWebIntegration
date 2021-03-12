@@ -28,7 +28,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.9.9
+// @version      1.9.10
 // ==/UserScript==
 
 // ==Code==
@@ -437,6 +437,7 @@ function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastC
         `[href*="steamdb.info/app/"]`,
         `[href*="store.steampowered.com/agecheck/app/"]`,
         `[href*="store.steampowered.com/app/"]`,
+        `[href*="s.team/a/"]`,
         `[style*="cdn.akamai.steamstatic.com/steam/apps/"]`,
         `[style*="cdn.edgecast.steamstatic.com/steam/apps/"]`,
         `[style*="steamcdn-a.akamaihd.net/steam/apps/"]`,
