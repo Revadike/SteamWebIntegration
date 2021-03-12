@@ -623,8 +623,8 @@ function init() {
         unsafeWindow.settings = settings;
         $(document).ready(displaySettings);
     } else {
-        const matchUrls = settings.blackList.split(`\n`).find((url) => unsafeWindow.location.href.includes(url.trim()))
-        if ((settings.whiteListMode && matchUrls) || (!settings.whiteListMode && !matchUrls)) {
+        const matchUrl = settings.blackList.split(`\n`).find((url) => unsafeWindow.location.href.includes(url.trim()))
+        if ((settings.whiteListMode && matchUrl) || (!settings.whiteListMode && !matchUrl)) {
             boxNode = createBoxNode();
             GM_addStyle(stylesheet);
             GM_registerMenuCommand(`Change settings`, () => unsafeWindow.open(settingsuri, `_blank`));
