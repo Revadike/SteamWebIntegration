@@ -28,7 +28,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.9.8
+// @version      1.9.9
 // ==/UserScript==
 
 // ==Code==
@@ -582,6 +582,7 @@ function init() {
         "wantDLC": true,
         "wantIgnores": true,
         "wantLimited": true,
+        "whiteListMode": false,
         "wishlistColor": `#ff69b4`,
         "wishlistIcon": `&#10084;`
     };
@@ -621,11 +622,14 @@ function init() {
         unsafeWindow.scriptInfo = GM_info.script;
         unsafeWindow.settings = settings;
         $(document).ready(displaySettings);
-    } else if (!settings.blackList.split(`\n`).find((url) => unsafeWindow.location.href.includes(url.trim()))) {
-        boxNode = createBoxNode();
-        GM_addStyle(stylesheet);
-        GM_registerMenuCommand(`Change settings`, () => unsafeWindow.open(settingsuri, `_blank`));
-        refresh();
+    } else {
+        const matchUrls = settings.blackList.split(`\n`).find((url) => unsafeWindow.location.href.includes(url.trim()))
+        if ((settings.whiteListMode && matchUrls) || (!settings.whiteListMode && !matchUrls)) {
+            boxNode = createBoxNode();
+            GM_addStyle(stylesheet);
+            GM_registerMenuCommand(`Change settings`, () => unsafeWindow.open(settingsuri, `_blank`));
+            refresh();
+        }
     }
 }
 
