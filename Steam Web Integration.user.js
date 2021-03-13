@@ -29,7 +29,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.10.0
+// @version      1.10.1
 // ==/UserScript==
 
 // ==Code==
@@ -318,13 +318,13 @@ function refreshBundles(callback) {
 function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, limited, cards, bundles, dlc, lcs, dlcs, dlclcs, llcs, clcs, blcs) {
     $(elem).addClass(`swi`);
 
-    const attr = settings.attributes.find((a) => /a(pps)?\/[0-9]+/g.test($(elem).attr(a)));
+    const attr = settings.attributes.find((a) => /a(pps?)?\/[0-9]+/g.test($(elem).attr(a)));
     if (!attr) {
         return;
     }
 
     const attrVal = $(elem).attr(attr);
-    const appID = parseInt(attrVal.match(/a(?:pps)?\/[0-9]+/g)[0].split(/a(?:pps)?\//)[1], 10);
+    const appID = parseInt(attrVal.match(/a(?:pps?)?\/[0-9]+/g)[0].split(/a(?:pps?)?\//)[1], 10);
     if (Number.isNaN(appID)) {
         return;
     }
