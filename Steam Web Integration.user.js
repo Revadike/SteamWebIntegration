@@ -7,6 +7,7 @@
 // @contributor  Black3ird
 // @contributor  Lex
 // @contributor  Luckz
+// @contributor  観月唯
 // @description  Check every web page for game, dlc and package links to the steam store and mark using icons whether it's owned, unowned, wishlisted, ignored (not interested), DLC, removed/delisted (decommissioned), has low confidence metric, has cards, or is bundled.
 // @downloadURL  https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
 // @exclude      /^https?\:\/\/(.+.steampowered|steamcommunity).com\/(?!groups\/groupbuys).*/
@@ -28,7 +29,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.9.8
+// @version      1.10.0
 // ==/UserScript==
 
 // ==Code==
@@ -317,13 +318,13 @@ function refreshBundles(callback) {
 function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, limited, cards, bundles, dlc, lcs, dlcs, dlclcs, llcs, clcs, blcs) {
     $(elem).addClass(`swi`);
 
-    const attr = settings.attributes.find((a) => /apps?\/[0-9]+/g.test($(elem).attr(a)));
+    const attr = settings.attributes.find((a) => /a(pps?)?\/[0-9]+/g.test($(elem).attr(a)));
     if (!attr) {
         return;
     }
 
     const attrVal = $(elem).attr(attr);
-    const appID = parseInt(attrVal.match(/apps?\/[0-9]+/g)[0].split(/apps?\//)[1], 10);
+    const appID = parseInt(attrVal.match(/a(?:pps?)?\/[0-9]+/g)[0].split(/a(?:pps?)?\//)[1], 10);
     if (Number.isNaN(appID)) {
         return;
     }
@@ -437,6 +438,7 @@ function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastC
         `[href*="steamdb.info/app/"]`,
         `[href*="store.steampowered.com/agecheck/app/"]`,
         `[href*="store.steampowered.com/app/"]`,
+        `[href*="s.team/a/"]`,
         `[style*="cdn.akamai.steamstatic.com/steam/apps/"]`,
         `[style*="cdn.edgecast.steamstatic.com/steam/apps/"]`,
         `[style*="steamcdn-a.akamaihd.net/steam/apps/"]`,
@@ -582,6 +584,7 @@ function init() {
         "wantDLC": true,
         "wantIgnores": true,
         "wantLimited": true,
+        "whiteListMode": false,
         "wishlistColor": `#ff69b4`,
         "wishlistIcon": `&#10084;`
     };
@@ -621,11 +624,14 @@ function init() {
         unsafeWindow.scriptInfo = GM_info.script;
         unsafeWindow.settings = settings;
         $(document).ready(displaySettings);
-    } else if (!settings.blackList.split(`\n`).find((url) => unsafeWindow.location.href.includes(url.trim()))) {
-        boxNode = createBoxNode();
-        GM_addStyle(stylesheet);
-        GM_registerMenuCommand(`Change settings`, () => unsafeWindow.open(settingsuri, `_blank`));
-        refresh();
+    } else {
+        const matchUrl = settings.blackList.split(`\n`).find((url) => unsafeWindow.location.href.includes(url.trim()))
+        if ((settings.whiteListMode && matchUrl) || (!settings.whiteListMode && !matchUrl)) {
+            boxNode = createBoxNode();
+            GM_addStyle(stylesheet);
+            GM_registerMenuCommand(`Change settings`, () => unsafeWindow.open(settingsuri, `_blank`));
+            refresh();
+        }
     }
 }
 
