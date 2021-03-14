@@ -29,7 +29,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.10.0
+// @version      1.11.0
 // ==/UserScript==
 
 // ==Code==
@@ -315,7 +315,7 @@ function refreshBundles(callback) {
     });
 }
 
-function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, limited, cards, bundles, dlc, lcs, dlcs, dlclcs, llcs, clcs, blcs) {
+function doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissioned, limited, cards, bundles, dlc, lcs, dlcs, dlclcs, llcs, clcs, blcs) {
     $(elem).addClass(`swi`);
 
     const attr = settings.attributes.find((a) => /a(pps?)?\/[0-9]+/g.test($(elem).attr(a)));
@@ -346,6 +346,10 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, limited, 
             html = getIconHTML(settings.wishlistColor, `${subject} (${appID}) wishlisted`, lcs, settings.wishlistIcon); // ❤
         } else { // else not owned and not wishlisted
             html = getIconHTML(settings.unownedColor, `${subject} (${appID}) not owned`, lcs, settings.unownedIcon); // ✘
+        }
+
+        if (settings.wantFollowed && followedApps && followedApps.includes(appID)) {
+            html += getIconHTML(settings.followedColor, `${subject} (${appID}) followed`, lcs, settings.followedIcon); // ★
         }
 
         if (settings.wantIgnores && ignoredApps && ignoredApps.includes(appID)) { // if ignored and enabled
@@ -424,6 +428,7 @@ function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastC
     const ignoredApps = Object.keys(userdata.rgIgnoredApps).map((a) => parseInt(a, 10));
     const ownedApps = userdata.rgOwnedApps;
     const ownedPackages = userdata.rgOwnedPackages;
+    const followedApps = userdata.rgFollowedApps;
     const wishlist = userdata.rgWishlist;
 
     const lcs = settings.dateOverride ? new Date(lastCached).toLocaleString(`sv-SE`) : new Date(lastCached).toLocaleString();
@@ -472,7 +477,7 @@ function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastC
             }
 
             clearTimeout(delaySWI);
-            $(appSelector, document.body).get().forEach((elem) => doApp(elem, wishlist, ownedApps, ignoredApps, decommissioned, limited, cards, bundles, dlc, lcs, dlcs, dlclcs, llcs, clcs, blcs));
+            $(appSelector, document.body).get().forEach((elem) => doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissioned, limited, cards, bundles, dlc, lcs, dlcs, dlclcs, llcs, clcs, blcs));
             $(subSelector, document.body).get().forEach((elem) => doSub(elem, ownedPackages, lcs), 0);
         }, delay);
     };
@@ -528,7 +533,7 @@ function refresh() {
         "onload": (response) => {
             let userdata = JSON.parse(response.responseText);
 
-            if (userdata.rgOwnedApps.length === 0 && userdata.rgOwnedPackages.length === 0 && userdata.rgIgnoredApps.length === 0 && userdata.rgWishlist.length === 0) { // not logged in
+            if (userdata.rgOwnedApps.length === 0 && userdata.rgOwnedPackages.length === 0 && userdata.rgIgnoredApps.length === 0 && userdata.rgWishlist.length === 0 && userdata.rgFollowedApps.length === 0) { // not logged in
                 if (!cachedJson) {
                     console.log(`[Steam Web Integration] No cached information available. Please login to Steam to fix this.`);
                     return;
@@ -567,6 +572,8 @@ function init() {
         "dlcIcon": `&#8681;`,
         "dlcRefreshInterval": 1440,
         "dynamicContent": `observe`,
+        "followedColor": "#f7dc6f",
+        "followedIcon": "&#9733;",
         "ignoredColor": `#808080`,
         "ignoredIcon": `&#128683;&#xFE0E;`,
         "limitedColor": `#00ffff`,
@@ -582,6 +589,7 @@ function init() {
         "wantCards": true,
         "wantDecommissioned": true,
         "wantDLC": true,
+        "wantFollowed": true,
         "wantIgnores": true,
         "wantLimited": true,
         "whiteListMode": false,
@@ -625,7 +633,7 @@ function init() {
         unsafeWindow.settings = settings;
         $(document).ready(displaySettings);
     } else {
-        const matchUrl = settings.blackList.split(`\n`).find((url) => unsafeWindow.location.href.includes(url.trim()))
+        const matchUrl = settings.blackList.split(`\n`).find((url) => unsafeWindow.location.href.includes(url.trim()));
         if ((settings.whiteListMode && matchUrl) || (!settings.whiteListMode && !matchUrl)) {
             boxNode = createBoxNode();
             GM_addStyle(stylesheet);

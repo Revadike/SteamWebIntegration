@@ -238,6 +238,12 @@
               apps.</td>
             <td><input id="wantIgnores" name="wantIgnores" checked="" type="checkbox" onclick="onChange(this)"></td>
           </tr>
+          <tr id="wantFollowedRow">
+            <td><b>wantFollowed</b></td>
+            <td>Whether (checked) or not (unchecked) you want to display an extra icon for followed (not interested)
+              apps.</td>
+            <td><input id="wantFollowed" name="wantFollowed" checked="" type="checkbox" onclick="onChange(this)"></td>
+          </tr>
           <tr id="wantDLCRow">
             <td><b>wantDLC</b></td>
             <td>Whether (checked) or not (unchecked) you want to display an extra icon for downloadable content (DLC).
@@ -294,6 +300,19 @@
             <td><b>wishlistColor</b></td>
             <td>Color of the icon for wishlisted apps.</td>
             <td><input id="wishlistColor" name="wishlistColor" value="#ff69b4" type="color" onchange="onChange(this)">
+            </td>
+          </tr>
+          <tr id="followedIconRow">
+            <td><b>followedIcon</b></td>
+            <td>HTML entity code for '&#9733;' (default).</td>
+            <td><input id="followedIcon" name="followedIcon" value="&amp;#9733;" type="text" oninput="onChange(this)">
+              (More HTML Codes <a href="https://www.toptal.com/designers/htmlarrows/symbols/" target="_blank">here</a>)
+            </td>
+          </tr>
+          <tr id="followedColorRow">
+            <td><b>followedColor</b></td>
+            <td>Color of the icon for followed apps.</td>
+            <td><input id="followedColor" name="followedColor" value="#f7dc6f" type="color" onchange="onChange(this)">
             </td>
           </tr>
           <tr id="ownedIconRow">
