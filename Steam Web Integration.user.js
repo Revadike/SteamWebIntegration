@@ -75,7 +75,7 @@ function onChange(elem) {
 
 function createBoxNode() {
     return $(`<div/>`, {
-        "class": `swi-block${settings.boxed ? ` boxed` : ``}`
+        "class": `swi-block${settings.boxed ? ` swi-boxed` : ``}`
     });
 }
 
@@ -602,7 +602,7 @@ function init() {
                 display: inline-block;
                 line-height: initial;
             }
-            .swi-block.boxed {
+            .swi-block.swi-boxed {
                 background: rgba(0, 0, 0, 0.7);
                 border-radius: 5px;
                 margin: auto 4px auto 4px;
