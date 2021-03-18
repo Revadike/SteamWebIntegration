@@ -29,7 +29,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.11.1
+// @version      1.11.2
 // ==/UserScript==
 
 // ==Code==
@@ -637,10 +637,12 @@ function init() {
         if ((settings.whiteListMode && matchUrl) || (!settings.whiteListMode && !matchUrl)) {
             boxNode = createBoxNode();
             GM_addStyle(stylesheet);
-            GM_registerMenuCommand(`Change settings`, () => unsafeWindow.open(settingsuri, `_blank`));
             refresh();
         }
     }
+
+    // Open the setup page on any web page.
+    GM_registerMenuCommand(`Change settings`, () => unsafeWindow.open(settingsuri, `_blank`));
 }
 
 init();
