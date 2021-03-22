@@ -576,8 +576,8 @@ function init() {
         "dlcIcon": `&#8681;`,
         "dlcRefreshInterval": 1440,
         "dynamicContent": `observe`,
-        "followedColor": "#f7dc6f",
-        "followedIcon": "&#9733;",
+        "followedColor": `#f7dc6f`,
+        "followedIcon": `&#9733;`,
         "ignoredColor": `#808080`,
         "ignoredIcon": `&#128683;&#xFE0E;`,
         "limitedColor": `#00ffff`,
@@ -638,7 +638,7 @@ function init() {
         $(document).ready(displaySettings);
     } else {
         const matchUrl = settings.blackList.split(`\n`).find((url) => unsafeWindow.location.href.includes(url.trim()));
-        if ((settings.whiteListMode && matchUrl) || (!settings.whiteListMode && !matchUrl)) {
+        if (settings.whiteListMode && matchUrl || !settings.whiteListMode && !matchUrl) {
             boxNode = createBoxNode();
             GM_addStyle(stylesheet);
             refresh();
