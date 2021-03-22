@@ -29,7 +29,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.11.2
+// @version      1.11.3
 // ==/UserScript==
 
 // ==Code==
@@ -448,6 +448,8 @@ function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastC
         `[style*="cdn.edgecast.steamstatic.com/steam/apps/"]`,
         `[style*="steamcdn-a.akamaihd.net/steam/apps/"]`,
         `[style*="steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/"]`,
+        `[style*="cdn.cloudflare.steamstatic.com/steam/apps/"]`,
+        `[style*="cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/"]`,
         `[style*="steamcdn-a.opskins.media/steam/apps/"]`,
         `[style*="steamcdn-a.opskins.media/steamcommunity/public/images/apps/"]`,
         `[style*="steamdb.info/static/camo/apps/"]`,
@@ -455,6 +457,8 @@ function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastC
         `img[src*="cdn.edgecast.steamstatic.com/steam/apps/"]`,
         `img[src*="steamcdn-a.akamaihd.net/steam/apps/"]`,
         `img[src*="steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/"]`,
+        `img[src*="cdn.cloudflare.steamstatic.com/steam/apps/"]`,
+        `img[src*="cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/"]`,
         `img[src*="steamcdn-a.opskins.media/steam/apps/"]`,
         `img[src*="steamcdn-a.opskins.media/steamcommunity/public/images/apps/"]`,
         `img[src*="steamdb.info/static/camo/apps/"]`
