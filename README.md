@@ -8,7 +8,7 @@
 [![GitHub license](https://img.shields.io/github/license/Revadike/SteamWebIntegration)](https://github.com/Revadike/SteamWebIntegration/blob/master/LICENSE)
 
 > Integrate your personal Steam information on the web, at your convenience!
-___
+> 
 ## Features
  * Checks web pages for links or images of steam games or DLC
  * Displays informative icons next to the link or image
@@ -28,16 +28,13 @@ ___
  * Context menu options
  * Highly configurable ([here](https://revadike.com/swi/settings/))
 
-___
 ## Prerequisites 
  * Userscript manager, such as [Tampermonkey](http://tampermonkey.net/) (recommended)
 
-___
 ## Download
  * [Direct download](https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js) (latest)
  * [All releases](https://github.com/Revadike/SteamWebIntegration/releases)
 
-___
 ## FAQ
 
 ### How do I change the settings?
@@ -62,7 +59,6 @@ Even better! Submit your Pull Requests [here](https://github.com/Revadike/SteamW
 ### My question isn't listed?
 Try searching [GitHub issues](https://github.com/Revadike/SteamWebIntegration/issues) or the [SteamGifts topic](https://www.steamgifts.com/discussion/y9vVm/) for your answer.
 
-___
 ## Changelog
 **Later versions can be found [here](https://github.com/Revadike/SteamWebIntegration/releases)**
 
