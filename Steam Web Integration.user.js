@@ -12,8 +12,10 @@
 // @downloadURL  https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
 // @exclude      /^https?\:\/\/(.+.steampowered|steamcommunity).com\/(?!groups\/groupbuys).*/
 // @grant        GM_addStyle
+// @grant        GM_deleteValue
 // @grant        GM_getValue
 // @grant        GM_info
+// @grant        GM_listValues
 // @grant        GM_openInTab
 // @grant        GM_registerMenuCommand
 // @grant        GM_setValue
@@ -29,7 +31,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.11.3
+// @version      1.11.4
 // ==/UserScript==
 
 // ==Code==
@@ -37,6 +39,15 @@
 this.$ = this.jQuery = jQuery.noConflict(true);
 let settings;
 let boxNode;
+
+function factoryReset() {
+    if (unsafeWindow.confirm(`Are you sure you want to reset all settings and cached data?`)) {
+        const keys = GM_listValues();
+        keys.forEach((key) => GM_deleteValue(key));
+        console.log(`[Steam Web Integration] Factory reset completed!`);
+        unsafeWindow.alert(`Factory reset completed!`);
+    }
+}
 
 function displaySettings() {
     const { name, version, author } = GM_info.script;
@@ -647,6 +658,9 @@ function init() {
 
     // Open the setup page on any web page.
     GM_registerMenuCommand(`Change settings`, () => unsafeWindow.open(settingsuri, `_blank`));
+
+    // Factory reset on any web page.
+    GM_registerMenuCommand(`Factory reset`, factoryReset);
 }
 
 init();
