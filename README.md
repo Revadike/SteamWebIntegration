@@ -1,14 +1,23 @@
-![image](https://user-images.githubusercontent.com/4411977/116749354-1a6d6c00-aa01-11eb-8f5c-ae7a6936532a.png)
 
 # [UserScript] Steam Web Integration
 
-[![Tampermonkey](https://img.shields.io/badge/Tampermonkey-up%20to%20date-green.svg)](https://tampermonkey.net/)
+
+[![GitHub license](https://img.shields.io/github/license/Revadike/SteamWebIntegration)](https://github.com/Revadike/SteamWebIntegration/blob/master/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/Revadike/SteamWebIntegration)](https://github.com/Revadike/SteamWebIntegration/issues)
 [![GitHub stars](https://img.shields.io/github/stars/Revadike/SteamWebIntegration)](https://github.com/Revadike/SteamWebIntegration/stargazers)
-[![GitHub license](https://img.shields.io/github/license/Revadike/SteamWebIntegration)](https://github.com/Revadike/SteamWebIntegration/blob/master/LICENSE)
+[![Github stable release downloads](https://img.shields.io/github/downloads/Revadike/SteamWebIntegration/latest/total.svg?label=Downloads&maxAge=600)](https://github.com/Revadike/SteamWebIntegration/releases/latest)
+[![GitHub stable release date](https://img.shields.io/github/release-date/Revadike/SteamWebIntegration.svg?label=Released&maxAge=600)](https://github.com/Revadike/SteamWebIntegration/releases/latest)
+[![GitHub stable release version](https://img.shields.io/github/release/Revadike/SteamWebIntegration.svg?label=Stable&maxAge=600)](https://github.com/Revadike/SteamWebIntegration/releases/latest)
+[![Bitcoin donate](https://img.shields.io/badge/Bitcoin-donate-yellow.svg)](https://www.blockchain.com/btc/payment_request?address=133YTipt9VUuB7EsYnkPFuVGutNc9UzswF)
+[![Steam donate](https://img.shields.io/badge/Steam-donate-yellow.svg)](https://steamcommunity.com/tradeoffer/new/?partner=82699538&token=V7DQVtra)
+
 
 > Integrate your personal Steam information on the web, at your convenience!
 > 
+
+## Screenshot
+![image](https://user-images.githubusercontent.com/4411977/116749354-1a6d6c00-aa01-11eb-8f5c-ae7a6936532a.png)
+
 ## Features
  * Checks web pages for links or images of steam games or DLC
  * Displays informative icons next to the link or image
