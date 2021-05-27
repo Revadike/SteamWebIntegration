@@ -31,7 +31,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.11.4
+// @version      1.11.5
 // ==/UserScript==
 
 // ==Code==
