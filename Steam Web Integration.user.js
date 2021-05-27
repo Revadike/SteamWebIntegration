@@ -117,7 +117,10 @@ function refreshDecommissioned(callback) {
         return;
     }
 
-    const cachedDecommissioned = JSON.parse(GM_getValue(`swi_decommissioned`, null));
+    let cachedDecommissioned = JSON.parse(GM_getValue(`swi_decommissioned`, null));
+    if (Array.isArray(cachedDecommissioned)) { // TODO: temporary code to transition from Array to Object; can delete this in ~2022 and change 'let' above back to 'const'
+        cachedDecommissioned = null;
+    }
     const lastCachedDecommissioned = GM_getValue(`swi_decommissioned_last`, 0);
     if (cachedDecommissioned && Date.now() - lastCachedDecommissioned < settings.decommissionedRefreshInterval * 60000) {
         callback(cachedDecommissioned);
@@ -133,11 +136,13 @@ function refreshDecommissioned(callback) {
             try {
                 json = JSON.parse(response.responseText);
                 if (json.success) {
-                    GM_setValue(`swi_decommissioned`, JSON.stringify(json.removed_apps));
+                    const responseAsObject = json.removed_apps.reduce((obj, item) => (obj[item.appid] = item, obj), {}); // convert to object
+                    // could delete item.appid from each entry to save minor storage space, but might hurt performance and increase complexity?
+                    GM_setValue(`swi_decommissioned`, JSON.stringify(responseAsObject));
                     GM_setValue(`swi_decommissioned_last`, Date.now());
+                    callback(responseAsObject);
+                    return;
                 }
-                callback(json.removed_apps);
-                return;
             } catch (error) {
                 console.log(`[Steam Web Integration] Unable to parse removed steam games data. Using cached data...`, error);
             }
@@ -178,9 +183,9 @@ function refreshDLC(callback) {
                 if (Object.keys(json).length > 7000) { // sanity check
                     GM_setValue(`swi_dlc`, JSON.stringify(json));
                     GM_setValue(`swi_dlc_last`, Date.now());
+                    callback(json);
+                    return;
                 }
-                callback(json);
-                return;
             } catch (error) {
                 console.log(`[Steam Web Integration] Unable to parse Barter.vg downloadable content data. Using cached data...`, error);
             }
@@ -221,9 +226,9 @@ function refreshLimited(callback) {
                 if (Object.keys(json).length > 7000) { // sanity check
                     GM_setValue(`swi_limited`, JSON.stringify(json));
                     GM_setValue(`swi_limited_last`, Date.now());
+                    callback(json);
+                    return;
                 }
-                callback(json);
-                return;
             } catch (error) {
                 console.log(`[Steam Web Integration] Unable to parse Barter.vg low confidence metric data. Using cached data...`, error);
             }
@@ -264,9 +269,9 @@ function refreshCards(callback) {
                 if (Object.keys(json).length > 7000) { // sanity check
                     GM_setValue(`swi_tradingcards`, JSON.stringify(json));
                     GM_setValue(`swi_tradingcards_last`, Date.now());
+                    callback(json);
+                    return;
                 }
-                callback(json);
-                return;
             } catch (error) {
                 console.log(`[Steam Web Integration] Unable to parse Barter.vg trading cards data. Using cached data...`, error);
             }
@@ -307,9 +312,9 @@ function refreshBundles(callback) {
                 if (Object.keys(json).length > 7000) { // sanity check
                     GM_setValue(`swi_bundles`, JSON.stringify(json));
                     GM_setValue(`swi_bundles_last`, Date.now());
+                    callback(json);
+                    return;
                 }
-                callback(json);
-                return;
             } catch (error) {
                 console.log(`[Steam Web Integration] Unable to parse Barter.vg bundles data. Using cached data...`, error);
             }
@@ -373,14 +378,12 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissio
             html += getIconHTML(settings.dlcColor, `${subject} (${appID}) is downloadable content for an ${ownsBase ? `` : `un`}owned base game (${base})`, dlclcs, settings.dlcIcon); // ⇩
         }
 
-        if (settings.wantDecommissioned && decommissioned) { // if decommissioned and have cache or new data
-            const app = decommissioned.find((obj) => obj.appid === appID.toString());
-            if (app) { // if decommissioned?
-                html += getIconHTML(settings.decommissionedColor, `The ${app.type} '${app.name.replace(/"|'/g, ``)}' (${appID}) is ${app.category.toLowerCase()} and has only ${app.count} confirmed owner${app.count === 1 ? `` : `s`} on Steam`, dlcs, settings.decommissionedIcon, `https://steam-tracker.com/app/${appID}/`); // 🗑
-            }
+        if (settings.wantDecommissioned && decommissioned && decommissioned[appID]) { // if decommissioned and enabled
+            const app = decommissioned[appID];
+            html += getIconHTML(settings.decommissionedColor, `The ${app.type} '${app.name.replace(/"|'/g, ``)}' (${appID}) is ${app.category.toLowerCase()} and has only ${app.count} confirmed owner${app.count === 1 ? `` : `s`} on Steam`, dlcs, settings.decommissionedIcon, `https://steam-tracker.com/app/${appID}/`); // 🗑
         }
 
-        if (settings.wantLimited && limited && limited[appID]) { // if is limited
+        if (settings.wantLimited && limited && limited[appID]) { // if limited and enabled
             html += getIconHTML(settings.limitedColor, `Game (${appID}) has profile features limited`, llcs, settings.limitedIcon); // ⚙
         }
 
@@ -388,7 +391,7 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissio
             html += getIconHTML(settings.cardColor, `Game (${appID}) has ${cards[appID].cards} ${cards[appID].marketable ? `` : `un`}marketable card${cards[appID].cards === 1 ? `` : `s`}`, clcs, settings.cardIcon, `https://www.steamcardexchange.net/index.php?gamepage-appid-${appID}`);
         }
 
-        if (settings.wantBundles && bundles && bundles[appID] && bundles[appID].bundles && bundles[appID].bundles > 0) { // if is bundled and enabled
+        if (settings.wantBundles && bundles && bundles[appID] && bundles[appID].bundles && bundles[appID].bundles > 0) { // if bundled and enabled
             html += getIconHTML(settings.bundleColor, `Game (${appID}) has been in ${bundles[appID].bundles} bundle${bundles[appID].bundles === 1 ? `` : `s`}`, blcs, settings.bundleIcon, `https://barter.vg/steam/app/${appID}/#bundles`);
         }
 
