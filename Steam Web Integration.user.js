@@ -353,7 +353,7 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissio
         return;
     }
 
-    setTimeout(() => {
+    setTimeout(() => { // avoids having the page hang when loading, because it is waiting on our script execution
         let html;
         let subject;
         if (dlc && dlc[appID]) {
