@@ -84,6 +84,14 @@ function onChange(elem) {
     showToast();
 }
 
+function arrayToObject(array, key) {
+    if (!key) {
+        return array.reduce((obj, item) => Object.assign(obj, { [item]: 1 }), {});
+    }
+
+    return array.reduce((obj, item) => Object.assign(obj, { [item[key]]: item }), {});
+}
+
 function createBoxNode() {
     return $(`<div/>`, {
         "class": `swi-block${settings.boxed ? ` swi-boxed` : ``}`
@@ -118,9 +126,10 @@ function refreshDecommissioned(callback) {
     }
 
     let cachedDecommissioned = JSON.parse(GM_getValue(`swi_decommissioned`, null));
-    if (Array.isArray(cachedDecommissioned)) { // TODO: temporary code to transition from Array to Object; can delete this in ~2022 and change 'let' above back to 'const'
-        cachedDecommissioned = null;
+    if (Array.isArray(cachedDecommissioned)) { // fix old data format
+        cachedDecommissioned = arrayToObject(cachedDecommissioned, `appid`);
     }
+
     const lastCachedDecommissioned = GM_getValue(`swi_decommissioned_last`, 0);
     if (cachedDecommissioned && Date.now() - lastCachedDecommissioned < settings.decommissionedRefreshInterval * 60000) {
         callback(cachedDecommissioned);
@@ -136,8 +145,7 @@ function refreshDecommissioned(callback) {
             try {
                 json = JSON.parse(response.responseText);
                 if (json.success) {
-                    const responseAsObject = json.removed_apps.reduce((obj, item) => (obj[item.appid] = item, obj), {}); // convert to object
-                    // could delete item.appid from each entry to save minor storage space, but might hurt performance and increase complexity?
+                    const responseAsObject = arrayToObject(json.removed_apps, `appid`);
                     GM_setValue(`swi_decommissioned`, JSON.stringify(responseAsObject));
                     GM_setValue(`swi_decommissioned_last`, Date.now());
                     callback(responseAsObject);
@@ -345,64 +353,62 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissio
         return;
     }
 
-    setTimeout(() => {
-        let html;
-        let subject;
-        if (dlc && dlc[appID]) {
-            subject = `DLC`;
-        } else if (!dlc) {
-            subject = `Game or DLC`;
-        } else {
-            subject = `Game`;
-        }
+    let html;
+    let subject;
+    if (dlc && dlc[appID]) {
+        subject = `DLC`;
+    } else if (!dlc) {
+        subject = `Game or DLC`;
+    } else {
+        subject = `Game`;
+    }
 
-        if (ownedApps && ownedApps.includes(appID)) { // if owned
-            html = getIconHTML(settings.ownedColor, `${subject} (${appID}) owned`, lcs, settings.ownedIcon); // ✔
-        } else if (wishlist.includes(appID)) { // if not owned and wishlisted
-            html = getIconHTML(settings.wishlistColor, `${subject} (${appID}) wishlisted`, lcs, settings.wishlistIcon); // ❤
-        } else { // else not owned and not wishlisted
-            html = getIconHTML(settings.unownedColor, `${subject} (${appID}) not owned`, lcs, settings.unownedIcon); // ✘
-        }
+    if (ownedApps && ownedApps[appID]) { // if owned
+        html = getIconHTML(settings.ownedColor, `${subject} (${appID}) owned`, lcs, settings.ownedIcon); // ✔
+    } else if (wishlist[appID]) { // if not owned and wishlisted
+        html = getIconHTML(settings.wishlistColor, `${subject} (${appID}) wishlisted`, lcs, settings.wishlistIcon); // ❤
+    } else { // else not owned and not wishlisted
+        html = getIconHTML(settings.unownedColor, `${subject} (${appID}) not owned`, lcs, settings.unownedIcon); // ✘
+    }
 
-        if (settings.wantFollowed && followedApps && followedApps.includes(appID)) {
-            html += getIconHTML(settings.followedColor, `${subject} (${appID}) followed`, lcs, settings.followedIcon); // ★
-        }
+    if (settings.wantFollowed && followedApps && followedApps[appID]) {
+        html += getIconHTML(settings.followedColor, `${subject} (${appID}) followed`, lcs, settings.followedIcon); // ★
+    }
 
-        if (settings.wantIgnores && ignoredApps && ignoredApps.includes(appID)) { // if ignored and enabled
-            html += getIconHTML(settings.ignoredColor, `${subject} (${appID}) ignored`, llcs, settings.ignoredIcon); // 🛇
-        }
+    if (settings.wantIgnores && ignoredApps && ignoredApps[appID]) { // if ignored and enabled
+        html += getIconHTML(settings.ignoredColor, `${subject} (${appID}) ignored`, llcs, settings.ignoredIcon); // 🛇
+    }
 
-        if (settings.wantDLC && dlc && dlc[appID]) { // if DLC and enabled
-            const base = dlc[appID].base_appID;
-            const ownsBase = ownedApps.includes(base);
-            html += getIconHTML(settings.dlcColor, `${subject} (${appID}) is downloadable content for an ${ownsBase ? `` : `un`}owned base game (${base})`, dlclcs, settings.dlcIcon); // ⇩
-        }
+    if (settings.wantDLC && dlc && dlc[appID]) { // if DLC and enabled
+        const base = dlc[appID].base_appID;
+        const ownsBase = Boolean(ownedApps[base]);
+        html += getIconHTML(settings.dlcColor, `${subject} (${appID}) is downloadable content for an ${ownsBase ? `` : `un`}owned base game (${base})`, dlclcs, settings.dlcIcon); // ⇩
+    }
 
-        if (settings.wantDecommissioned && decommissioned && decommissioned[appID]) { // if decommissioned and enabled
-            const app = decommissioned[appID];
-            html += getIconHTML(settings.decommissionedColor, `The ${app.type} '${app.name.replace(/"|'/g, ``)}' (${appID}) is ${app.category.toLowerCase()} and has only ${app.count} confirmed owner${app.count === 1 ? `` : `s`} on Steam`, dlcs, settings.decommissionedIcon, `https://steam-tracker.com/app/${appID}/`); // 🗑
-        }
+    if (settings.wantDecommissioned && decommissioned && decommissioned[appID]) { // if decommissioned and enabled
+        const app = decommissioned[appID];
+        html += getIconHTML(settings.decommissionedColor, `The ${app.type} '${app.name.replace(/"|'/g, ``)}' (${appID}) is ${app.category.toLowerCase()} and has only ${app.count} confirmed owner${app.count === 1 ? `` : `s`} on Steam`, dlcs, settings.decommissionedIcon, `https://steam-tracker.com/app/${appID}/`); // 🗑
+    }
 
-        if (settings.wantLimited && limited && limited[appID]) { // if limited and enabled
-            html += getIconHTML(settings.limitedColor, `Game (${appID}) has profile features limited`, llcs, settings.limitedIcon); // ⚙
-        }
+    if (settings.wantLimited && limited && limited[appID]) { // if limited and enabled
+        html += getIconHTML(settings.limitedColor, `Game (${appID}) has profile features limited`, llcs, settings.limitedIcon); // ⚙
+    }
 
-        if (settings.wantCards && cards && cards[appID] && cards[appID].cards && cards[appID].cards > 0) { // if has cards and enabled
-            html += getIconHTML(settings.cardColor, `Game (${appID}) has ${cards[appID].cards} ${cards[appID].marketable ? `` : `un`}marketable card${cards[appID].cards === 1 ? `` : `s`}`, clcs, settings.cardIcon, `https://www.steamcardexchange.net/index.php?gamepage-appid-${appID}`);
-        }
+    if (settings.wantCards && cards && cards[appID] && cards[appID].cards && cards[appID].cards > 0) { // if has cards and enabled
+        html += getIconHTML(settings.cardColor, `Game (${appID}) has ${cards[appID].cards} ${cards[appID].marketable ? `` : `un`}marketable card${cards[appID].cards === 1 ? `` : `s`}`, clcs, settings.cardIcon, `https://www.steamcardexchange.net/index.php?gamepage-appid-${appID}`);
+    }
 
-        if (settings.wantBundles && bundles && bundles[appID] && bundles[appID].bundles && bundles[appID].bundles > 0) { // if bundled and enabled
-            html += getIconHTML(settings.bundleColor, `Game (${appID}) has been in ${bundles[appID].bundles} bundle${bundles[appID].bundles === 1 ? `` : `s`}`, blcs, settings.bundleIcon, `https://barter.vg/steam/app/${appID}/#bundles`);
-        }
+    if (settings.wantBundles && bundles && bundles[appID] && bundles[appID].bundles && bundles[appID].bundles > 0) { // if bundled and enabled
+        html += getIconHTML(settings.bundleColor, `Game (${appID}) has been in ${bundles[appID].bundles} bundle${bundles[appID].bundles === 1 ? `` : `s`}`, blcs, settings.bundleIcon, `https://barter.vg/steam/app/${appID}/#bundles`);
+    }
 
-        if (settings.prefix) {
-            $(elem).before(getBoxNode(html, appID));
-        } else {
-            $(elem).after(getBoxNode(html, appID));
-        }
+    if (settings.prefix) {
+        $(elem).before(getBoxNode(html, appID));
+    } else {
+        $(elem).after(getBoxNode(html, appID));
+    }
 
-        $(elem).parent().css(`overflow`, `visible`);
-    }, 0);
+    $(elem).parent().css(`overflow`, `visible`);
 }
 
 function doSub(elem, ownedPackages, lcs) {
@@ -422,7 +428,7 @@ function doSub(elem, ownedPackages, lcs) {
     setTimeout(() => {
         let html;
 
-        if (ownedPackages.includes(subID)) { // if owned
+        if (ownedPackages[subID]) { // if owned
             html = getIconHTML(settings.ownedColor, `Package (${subID}) owned`, lcs, settings.ownedIcon); // ✔
         } else { // else not owned
             html = getIconHTML(settings.unownedColor, `Package (${subID}) not owned`, lcs, settings.unownedIcon); // ✖
@@ -439,12 +445,7 @@ function doSub(elem, ownedPackages, lcs) {
 }
 
 function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastCached) {
-    const ignoredApps = Object.keys(userdata.rgIgnoredApps).map((a) => parseInt(a, 10));
-    const ownedApps = userdata.rgOwnedApps;
-    const ownedPackages = userdata.rgOwnedPackages;
-    const followedApps = userdata.rgFollowedApps;
-    const wishlist = userdata.rgWishlist;
-
+    const { ignoredApps, ownedApps, ownedPackages, followedApps, wishlist } = userdata;
     const lcs = settings.dateOverride ? new Date(lastCached).toLocaleString(`sv-SE`) : new Date(lastCached).toLocaleString();
     const dlcs = new Date(GM_getValue(`swi_decommissioned_last`, 0)).toLocaleString(settings.dateOverride ? `sv-SE` : undefined);
     const dlclcs = new Date(GM_getValue(`swi_dlc_last`, 0)).toLocaleString(settings.dateOverride ? `sv-SE` : undefined);
@@ -535,12 +536,25 @@ function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastC
     });
 }
 
+function processUserData(userdata) {
+    const ignoredApps = arrayToObject(Object.keys(userdata.rgIgnoredApps)); // change 0 values to 1
+    const ownedApps = arrayToObject(userdata.rgOwnedApps);
+    const ownedPackages = arrayToObject(userdata.rgOwnedPackages);
+    const followedApps = arrayToObject(userdata.rgFollowedApps);
+    const wishlist = arrayToObject(userdata.rgWishlist);
+    return { ignoredApps, ownedApps, ownedPackages, followedApps, wishlist };
+}
+
 function refresh() {
     const cachedJson = GM_getValue(`swi_data`, null);
     let lastCached = GM_getValue(`swi_last`, 0);
 
     if (cachedJson && Date.now() - lastCached < settings.userRefreshInterval * 60000) {
-        const userdata = JSON.parse(cachedJson);
+        let userdata = JSON.parse(cachedJson);
+        if (userdata.rgOwnedApps) { // fix old data format
+            userdata = processUserData(userdata);
+        }
+
         refreshDecommissioned((decommissioned) => refreshDLC((dlc) => refreshLimited((limited) => refreshCards((cards) => refreshBundles((bundles) => integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastCached))))));
         return;
     }
@@ -551,7 +565,7 @@ function refresh() {
         "onload": (response) => {
             let userdata = JSON.parse(response.responseText);
 
-            if (userdata.rgOwnedApps.length === 0 && userdata.rgOwnedPackages.length === 0 && userdata.rgIgnoredApps.length === 0 && userdata.rgWishlist.length === 0 && userdata.rgFollowedApps.length === 0) { // not logged in
+            if (userdata.rgOwnedApps.length === 0 && userdata.rgOwnedPackages.length === 0) { // not logged in
                 if (!cachedJson) {
                     console.log(`[Steam Web Integration] No cached information available. Please login to Steam to fix this.`);
                     return;
@@ -559,9 +573,10 @@ function refresh() {
 
                 userdata = JSON.parse(cachedJson);
             } else {
+                userdata = processUserData(userdata);
                 lastCached = Date.now();
-                GM_setValue(`swi_last`, lastCached);
                 GM_setValue(`swi_data`, JSON.stringify(userdata));
+                GM_setValue(`swi_last`, lastCached);
             }
 
             refreshDecommissioned((decommissioned) => refreshDLC((dlc) => refreshLimited((limited) => refreshCards((cards) => refreshBundles((bundles) => integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastCached))))));
@@ -570,7 +585,7 @@ function refresh() {
 }
 
 function init() {
-    const settingsuri = `https://revadike.com/swi/settings`;
+    const settingsUrl = `https://revadike.com/swi/settings`;
 
     const defaults = {
         "attributes": [`href`, `src`, `style`],
@@ -616,25 +631,26 @@ function init() {
     };
 
     const stylesheet = `
-            .swi-block {
-                display: inline-block;
-                line-height: initial;
-            }
-            .swi-block.swi-boxed {
-                background: rgba(0, 0, 0, 0.7);
-                border-radius: 5px;
-                margin: auto 4px auto 4px;
-                padding: 2px 4px 2px 4px;
-                position: relative;
-            }
-            .swi-block span {
-                cursor: help;
-                margin: 2px;
-            }
-            .swi-block a {
-                text-decoration: none;
-            }
-        `;
+        .swi-block {
+            display: inline-block;
+            line-height: initial;
+        }
+        .swi-block.swi-boxed {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 5px;
+            margin: auto 4px auto 4px;
+            padding: 2px 4px 2px 4px;
+            position: relative;
+        }
+        .swi-block > span {
+            cursor: help;
+            margin: 2px;
+        }
+        .swi-block > span > a {
+            cursor: help;
+            text-decoration: none;
+        }
+    `;
 
     settings = JSON.parse(GM_getValue(`swi_settings`, JSON.stringify(defaults)));
     Object.keys(defaults).forEach((setting) => {
@@ -645,7 +661,7 @@ function init() {
         settings[setting] = defaults[setting];
     });
 
-    if (unsafeWindow.location.href.startsWith(settingsuri)) {
+    if (unsafeWindow.location.href.startsWith(settingsUrl)) {
         unsafeWindow.onChange = onChange;
         unsafeWindow.scriptInfo = GM_info.script;
         unsafeWindow.settings = settings;
@@ -660,7 +676,7 @@ function init() {
     }
 
     // Open the setup page on any web page.
-    GM_registerMenuCommand(`Change settings`, () => unsafeWindow.open(settingsuri, `_blank`));
+    GM_registerMenuCommand(`Change settings`, () => unsafeWindow.open(settingsUrl, `_blank`));
 
     // Factory reset on any web page.
     GM_registerMenuCommand(`Factory reset`, factoryReset);
