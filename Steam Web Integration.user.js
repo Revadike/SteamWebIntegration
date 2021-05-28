@@ -353,62 +353,64 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissio
         return;
     }
 
-    let html;
-    let subject;
-    if (dlc && dlc[appID]) {
-        subject = `DLC`;
-    } else if (!dlc) {
-        subject = `Game or DLC`;
-    } else {
-        subject = `Game`;
-    }
+    setTimeout(() => {
+        let html;
+        let subject;
+        if (dlc && dlc[appID]) {
+            subject = `DLC`;
+        } else if (!dlc) {
+            subject = `Game or DLC`;
+        } else {
+            subject = `Game`;
+        }
 
-    if (ownedApps && ownedApps[appID]) { // if owned
-        html = getIconHTML(settings.ownedColor, `${subject} (${appID}) owned`, lcs, settings.ownedIcon); // ✔
-    } else if (wishlist[appID]) { // if not owned and wishlisted
-        html = getIconHTML(settings.wishlistColor, `${subject} (${appID}) wishlisted`, lcs, settings.wishlistIcon); // ❤
-    } else { // else not owned and not wishlisted
-        html = getIconHTML(settings.unownedColor, `${subject} (${appID}) not owned`, lcs, settings.unownedIcon); // ✘
-    }
+        if (ownedApps && ownedApps[appID]) { // if owned
+            html = getIconHTML(settings.ownedColor, `${subject} (${appID}) owned`, lcs, settings.ownedIcon); // ✔
+        } else if (wishlist[appID]) { // if not owned and wishlisted
+            html = getIconHTML(settings.wishlistColor, `${subject} (${appID}) wishlisted`, lcs, settings.wishlistIcon); // ❤
+        } else { // else not owned and not wishlisted
+            html = getIconHTML(settings.unownedColor, `${subject} (${appID}) not owned`, lcs, settings.unownedIcon); // ✘
+        }
 
-    if (settings.wantFollowed && followedApps && followedApps[appID]) {
-        html += getIconHTML(settings.followedColor, `${subject} (${appID}) followed`, lcs, settings.followedIcon); // ★
-    }
+        if (settings.wantFollowed && followedApps && followedApps[appID]) {
+            html += getIconHTML(settings.followedColor, `${subject} (${appID}) followed`, lcs, settings.followedIcon); // ★
+        }
 
-    if (settings.wantIgnores && ignoredApps && ignoredApps[appID]) { // if ignored and enabled
-        html += getIconHTML(settings.ignoredColor, `${subject} (${appID}) ignored`, llcs, settings.ignoredIcon); // 🛇
-    }
+        if (settings.wantIgnores && ignoredApps && ignoredApps[appID]) { // if ignored and enabled
+            html += getIconHTML(settings.ignoredColor, `${subject} (${appID}) ignored`, llcs, settings.ignoredIcon); // 🛇
+        }
 
-    if (settings.wantDLC && dlc && dlc[appID]) { // if DLC and enabled
-        const base = dlc[appID].base_appID;
-        const ownsBase = Boolean(ownedApps[base]);
-        html += getIconHTML(settings.dlcColor, `${subject} (${appID}) is downloadable content for an ${ownsBase ? `` : `un`}owned base game (${base})`, dlclcs, settings.dlcIcon); // ⇩
-    }
+        if (settings.wantDLC && dlc && dlc[appID]) { // if DLC and enabled
+            const base = dlc[appID].base_appID;
+            const ownsBase = Boolean(ownedApps[base]);
+            html += getIconHTML(settings.dlcColor, `${subject} (${appID}) is downloadable content for an ${ownsBase ? `` : `un`}owned base game (${base})`, dlclcs, settings.dlcIcon); // ⇩
+        }
 
-    if (settings.wantDecommissioned && decommissioned && decommissioned[appID]) { // if decommissioned and enabled
-        const app = decommissioned[appID];
-        html += getIconHTML(settings.decommissionedColor, `The ${app.type} '${app.name.replace(/"|'/g, ``)}' (${appID}) is ${app.category.toLowerCase()} and has only ${app.count} confirmed owner${app.count === 1 ? `` : `s`} on Steam`, dlcs, settings.decommissionedIcon, `https://steam-tracker.com/app/${appID}/`); // 🗑
-    }
+        if (settings.wantDecommissioned && decommissioned && decommissioned[appID]) { // if decommissioned and enabled
+            const app = decommissioned[appID];
+            html += getIconHTML(settings.decommissionedColor, `The ${app.type} '${app.name.replace(/"|'/g, ``)}' (${appID}) is ${app.category.toLowerCase()} and has only ${app.count} confirmed owner${app.count === 1 ? `` : `s`} on Steam`, dlcs, settings.decommissionedIcon, `https://steam-tracker.com/app/${appID}/`); // 🗑
+        }
 
-    if (settings.wantLimited && limited && limited[appID]) { // if limited and enabled
-        html += getIconHTML(settings.limitedColor, `Game (${appID}) has profile features limited`, llcs, settings.limitedIcon); // ⚙
-    }
+        if (settings.wantLimited && limited && limited[appID]) { // if limited and enabled
+            html += getIconHTML(settings.limitedColor, `Game (${appID}) has profile features limited`, llcs, settings.limitedIcon); // ⚙
+        }
 
-    if (settings.wantCards && cards && cards[appID] && cards[appID].cards && cards[appID].cards > 0) { // if has cards and enabled
-        html += getIconHTML(settings.cardColor, `Game (${appID}) has ${cards[appID].cards} ${cards[appID].marketable ? `` : `un`}marketable card${cards[appID].cards === 1 ? `` : `s`}`, clcs, settings.cardIcon, `https://www.steamcardexchange.net/index.php?gamepage-appid-${appID}`);
-    }
+        if (settings.wantCards && cards && cards[appID] && cards[appID].cards && cards[appID].cards > 0) { // if has cards and enabled
+            html += getIconHTML(settings.cardColor, `Game (${appID}) has ${cards[appID].cards} ${cards[appID].marketable ? `` : `un`}marketable card${cards[appID].cards === 1 ? `` : `s`}`, clcs, settings.cardIcon, `https://www.steamcardexchange.net/index.php?gamepage-appid-${appID}`);
+        }
 
-    if (settings.wantBundles && bundles && bundles[appID] && bundles[appID].bundles && bundles[appID].bundles > 0) { // if bundled and enabled
-        html += getIconHTML(settings.bundleColor, `Game (${appID}) has been in ${bundles[appID].bundles} bundle${bundles[appID].bundles === 1 ? `` : `s`}`, blcs, settings.bundleIcon, `https://barter.vg/steam/app/${appID}/#bundles`);
-    }
+        if (settings.wantBundles && bundles && bundles[appID] && bundles[appID].bundles && bundles[appID].bundles > 0) { // if bundled and enabled
+            html += getIconHTML(settings.bundleColor, `Game (${appID}) has been in ${bundles[appID].bundles} bundle${bundles[appID].bundles === 1 ? `` : `s`}`, blcs, settings.bundleIcon, `https://barter.vg/steam/app/${appID}/#bundles`);
+        }
 
-    if (settings.prefix) {
-        $(elem).before(getBoxNode(html, appID));
-    } else {
-        $(elem).after(getBoxNode(html, appID));
-    }
+        if (settings.prefix) {
+            $(elem).before(getBoxNode(html, appID));
+        } else {
+            $(elem).after(getBoxNode(html, appID));
+        }
 
-    $(elem).parent().css(`overflow`, `visible`);
+        $(elem).parent().css(`overflow`, `visible`);
+    }, 0);
 }
 
 function doSub(elem, ownedPackages, lcs) {
