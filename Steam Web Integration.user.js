@@ -50,6 +50,7 @@ function factoryReset() {
 }
 
 function displaySettings() {
+    // eslint-disable-next-line camelcase
     const { name, version, author } = GM_info.script;
     $(`#title`).text(`${name} (${version}) by ${author}`);
     $(`#settings`).show();
@@ -99,6 +100,7 @@ function createBoxNode() {
 }
 
 function getIconHTML(color, str, lcs, icon, link) {
+    // eslint-disable-next-line camelcase
     const { name, version, author } = GM_info.script;
     const titlePlus = `\nLast updated at ${lcs}\n${name} (${version}) by ${author}`;
     if (link) {
@@ -403,6 +405,11 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissio
             html += getIconHTML(settings.bundleColor, `Game (${appID}) has been in ${bundles[appID].bundles} bundle${bundles[appID].bundles === 1 ? `` : `s`}`, blcs, settings.bundleIcon, `https://barter.vg/steam/app/${appID}/#bundles`);
         }
 
+        const today = new Date().toLocaleString(`sv-SE`);
+        if (today.includes(`-04-01 `)) {
+            html += getIconHTML(`green`, `April Fools!\nClick for the joke :)`, today, `&#129313;&#xFE0E;`, `https://steamcommunity.com/groups/RemGC`);
+        }
+
         if (settings.prefix) {
             $(elem).before(getBoxNode(html, appID));
         } else {
@@ -665,6 +672,7 @@ function init() {
 
     if (unsafeWindow.location.href.startsWith(settingsUrl)) {
         unsafeWindow.onChange = onChange;
+        // eslint-disable-next-line camelcase
         unsafeWindow.scriptInfo = GM_info.script;
         unsafeWindow.settings = settings;
         $(document).ready(displaySettings);
