@@ -31,7 +31,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.12.0
+// @version      1.12.1
 // ==/UserScript==
 
 // ==Code==
@@ -416,7 +416,8 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissio
         if (settings.wantDLC && dlc && dlc[appID]) { // if DLC and enabled
             const base = dlc[appID].base_appID;
             const ownsBase = Boolean(ownedApps[base]);
-            html += getIconHTML(settings.dlcColor, `${subject} (${appID}) is downloadable content for an ${ownsBase ? "" : "un"}owned base game (${base})`, dlclcs, settings.dlcIcon); // ⇩
+            const extraIcon = `<span style="color: ${ownsBase ? settings.ownedColor : settings.unownedColor};">${ownsBase ? "⁺" : "⁻"}</span>`;
+            html += getIconHTML(settings.dlcColor, `${subject} (${appID}) is downloadable content for an ${ownsBase ? "" : "un"}owned base game (${base})`, dlclcs, settings.dlcIcon + extraIcon); // ⇩
             iconsEncoding += 6;
         }
 
