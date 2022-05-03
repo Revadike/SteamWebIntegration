@@ -55,6 +55,7 @@ function displaySettings() {
     $("#title").text(`${name} (${version}) by ${author}`);
     $("#settings").show();
     $("#notinstalled").hide();
+    $("#blackList").attr('placeholder', 'example1.com' + '\n' + 'domain2' + '\n' + '/bundle/');
 
     Object.keys(settings).forEach((setting) => {
         const value = settings[setting];
