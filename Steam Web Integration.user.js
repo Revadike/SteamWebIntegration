@@ -10,7 +10,7 @@
 // @contributor  観月唯
 // @description  Check every web page for game, dlc and package links to the steam store and mark using icons whether it's owned, unowned, wishlisted, ignored (not interested), DLC, removed/delisted (decommissioned), has low confidence metric, has cards, or is bundled.
 // @downloadURL  https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @exclude      /^https?\:\/\/(.+.steampowered|steamcommunity).com\/(?!groups\/groupbuys).*/
+// @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com\/(?!groups\/groupbuys).*/
 // @grant        GM_addStyle
 // @grant        GM_deleteValue
 // @grant        GM_getValue
