@@ -201,13 +201,13 @@
           <tbody>
             <tr id="blackListRow">
               <td><b>blackList</b></td>
-              <td>Enter a list of domains or partial URLs you don't want this script to run on – separated by line breaks (enter/return).</td>
+              <td>Enter a list of domains (or partial URLs!) you don't want this script to run on – separated by line breaks (enter/return).</td>
               <td><textarea id="blackList" name="blackList" onchange="onChange(this)" cols="30" rows="5"></textarea>
               </td>
             </tr>
             <tr id="whiteListModeRow">
               <td><b>whiteListMode</b></td>
-              <td>Reverse the black list to the white list.</td>
+              <td>Invert the <a href="#blackListRow">blackList</a>, so that this script will only run on matching domains (or partial URLs).</td>
               <td><input id="whiteListMode" name="whiteListMode" type="checkbox" onclick="onChange(this)"></td>
             </tr>
             <tr id="dynamicContentRow">
@@ -221,9 +221,8 @@
             </tr>
             <tr id="pingIntervalRow">
               <td><b>pingInterval</b></td>
-              <td>The number of ms in between page checks (when <a href="#dynamicContentRow">dynamicContent</a> is set
-                to
-                periodically check web page).</td>
+              <td>The number of ms in between page checks (only when <a href="#dynamicContentRow">dynamicContent</a> is set
+                to "Periodically check web page").</td>
               <td><input id="pingInterval" name="pingInterval" value="1500" min="1000" step="100" type="number"
                   oninput="onChange(this)"></td>
             </tr>
