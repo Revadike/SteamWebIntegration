@@ -31,7 +31,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.12.2
+// @version      1.12.1
 // ==/UserScript==
 
 // ==Code==
@@ -55,7 +55,7 @@ function displaySettings() {
     $("#title").text(`${name} (${version}) by ${author}`);
     $("#settings").show();
     $("#notinstalled").hide();
-    $("#blackList").attr("placeholder", "example1.com" + "\n" + "domain2" + "\n" + "/bundle/");
+    $("#blackList").attr("placeholder", "example.com\nftp://\n/bundle/");
 
     Object.keys(settings).forEach((setting) => {
         const value = settings[setting];
