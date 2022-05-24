@@ -31,7 +31,7 @@
 // @run-at       document-start
 // @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.12.1
+// @version      1.12.2
 // ==/UserScript==
 
 // ==Code==
@@ -459,7 +459,7 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissio
     }, 0);
 }
 
-function doSub(elem, ownedPackages, lcs) {
+function doSub(elem, ownedPackages, bundles, lcs, blcs) {
     $(elem).addClass("swi");
 
     /* Example detectable links:
@@ -489,6 +489,11 @@ function doSub(elem, ownedPackages, lcs) {
         } else { // else not owned
             html = getIconHTML(settings.unownedColor, `Package (${subID}) not owned`, lcs, settings.unownedIcon); // ✖
             iconsEncoding += 2;
+        }
+
+        if (settings.wantBundles && bundles && bundles[subID] && bundles[subID].bundles && bundles[subID].bundles > 0) { // if bundled and enabled
+            html += getIconHTML(settings.bundleColor, `Package (${subID}) has been in ${bundles[subID].bundles} bundle${bundles[subID].bundles === 1 ? "" : "s"}`, blcs, settings.bundleIcon, `https://barter.vg/steam/sub/${subID}/#bundles`); // 🎁︎
+            iconsEncoding += 10;
         }
 
         if (settings.prefix) {
@@ -558,7 +563,7 @@ function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastC
             $(appSelector, document.body).get()
                 .forEach((elem) => doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissioned, limited, cards, bundles, dlc, lcs, dlcs, dlclcs, llcs, clcs, blcs));
             $(subSelector, document.body).get()
-                .forEach((elem) => doSub(elem, ownedPackages, lcs), 0);
+                .forEach((elem) => doSub(elem, ownedPackages, bundles, lcs, blcs), 0);
         }, delay);
     };
 

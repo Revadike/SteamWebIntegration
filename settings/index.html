@@ -201,13 +201,16 @@
           <tbody>
             <tr id="blackListRow">
               <td><b>blackList</b></td>
-              <td>Enter a list of domains (or partial URLs!) you don't want this script to run on – separated by line breaks (enter/return).</td>
+              <td>Enter a list of domains or (partial) URLs you don't want SWI to run on – separated by line
+                breaks (enter/return).</td>
               <td><textarea id="blackList" name="blackList" onchange="onChange(this)" cols="30" rows="5"></textarea>
               </td>
             </tr>
             <tr id="whiteListModeRow">
               <td><b>whiteListMode</b></td>
-              <td>Invert the <a href="#blackListRow">blackList</a>, so that this script will only run on matching domains (or partial URLs).</td>
+              <td>Convert the <a href="#blackListRow">blackList</a> to a whitelist, such that SWI will only run on
+                matching
+                domains (or partial URLs).</td>
               <td><input id="whiteListMode" name="whiteListMode" type="checkbox" onclick="onChange(this)"></td>
             </tr>
             <tr id="dynamicContentRow">
@@ -221,14 +224,15 @@
             </tr>
             <tr id="pingIntervalRow">
               <td><b>pingInterval</b></td>
-              <td>The number of ms in between page checks (only when <a href="#dynamicContentRow">dynamicContent</a> is set
+              <td>The number of ms in between page checks (only when <a href="#dynamicContentRow">dynamicContent</a> is
+                set
                 to "Periodically check web page").</td>
               <td><input id="pingInterval" name="pingInterval" value="1500" min="1000" step="100" type="number"
                   oninput="onChange(this)"></td>
             </tr>
             <tr id="prefixRow">
               <td><b>prefix</b></td>
-              <td>Prefix (checked) instead of suffix (unchecked) position icon.</td>
+              <td>Prefix (checked) instead of suffix (unchecked) position for the icons placement.</td>
               <td><input id="prefix" name="prefix" type="checkbox" onclick="onChange(this)"></td>
             </tr>
             <tr id="boxedRow">
@@ -280,44 +284,44 @@
             </tr>
             <tr id="wantIgnoresRow">
               <td><b>wantIgnores</b></td>
-              <td>Whether (checked) or not (unchecked) you want to display an extra icon for ignored (not interested)
+              <td>Whether (checked) or not (unchecked) you want to display an icon for ignored (not interested)
                 apps.</td>
               <td><input id="wantIgnores" name="wantIgnores" checked="" type="checkbox" onclick="onChange(this)"></td>
             </tr>
             <tr id="wantFollowedRow">
               <td><b>wantFollowed</b></td>
-              <td>Whether (checked) or not (unchecked) you want to display an extra icon for followed (not interested)
+              <td>Whether (checked) or not (unchecked) you want to display an icon for followed (not interested)
                 apps.</td>
               <td><input id="wantFollowed" name="wantFollowed" checked="" type="checkbox" onclick="onChange(this)"></td>
             </tr>
             <tr id="wantDLCRow">
               <td><b>wantDLC</b></td>
-              <td>Whether (checked) or not (unchecked) you want to display an extra icon for downloadable content (DLC).
+              <td>Whether (checked) or not (unchecked) you want to display an icon for downloadable content (DLC).
               </td>
               <td><input id="wantDLC" name="wantDLC" checked="" type="checkbox" onclick="onChange(this)"></td>
             </tr>
             <tr id="wantDecommissionedRow">
               <td><b>wantDecommissioned</b></td>
-              <td>Whether (checked) or not (unchecked) you want to display an extra icon for removed or delisted
+              <td>Whether (checked) or not (unchecked) you want to display an icon for removed or delisted
                 (decommissioned) apps.</td>
               <td><input id="wantDecommissioned" name="wantDecommissioned" checked="" type="checkbox"
                   onclick="onChange(this)"></td>
             </tr>
             <tr id="wantLimitedRow">
               <td><b>wantLimited</b></td>
-              <td>Whether (checked) or not (unchecked) you want to display an extra icon for low confidence metric apps.
+              <td>Whether (checked) or not (unchecked) you want to display an icon for low confidence metric apps.
               </td>
               <td><input id="wantLimited" name="wantLimited" checked="" type="checkbox" onclick="onChange(this)"></td>
             </tr>
             <tr id="wantCardsRow">
               <td><b>wantCards</b></td>
-              <td>Whether (checked) or not (unchecked) you want to display an extra icon for apps with cards.</td>
+              <td>Whether (checked) or not (unchecked) you want to display an icon for apps with cards.</td>
               <td><input id="wantCards" name="wantCards" checked="" type="checkbox" onclick="onChange(this)">
               </td>
             </tr>
             <tr id="wantBundlesRow">
               <td><b>wantBundles</b></td>
-              <td>Whether (checked) or not (unchecked) you want to display an extra icon for previously bundled apps.
+              <td>Whether (checked) or not (unchecked) you want to display an icon for previously bundled apps.
               </td>
               <td><input id="wantBundles" name="wantBundles" checked="" type="checkbox" onclick="onChange(this)"></td>
             </tr>
