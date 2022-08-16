@@ -90,4 +90,4 @@ Try searching [GitHub issues](https://github.com/Revadike/SteamWebIntegration/is
  * Initial release
  
  # Sponsors
- Thanks to @Dokiiin for help funding this project!
+ Thanks to [@Dokiiin](https://github.com/dokiiin) for help funding this project!
