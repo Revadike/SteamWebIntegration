@@ -88,3 +88,6 @@ Try searching [GitHub issues](https://github.com/Revadike/SteamWebIntegration/is
 
 **Version 1.0**
  * Initial release
+ 
+ # Sponsors
+ Thanks to @Dokiiin for help funding this project!
