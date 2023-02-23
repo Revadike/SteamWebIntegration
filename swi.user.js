@@ -567,15 +567,24 @@ function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastC
         }, delay);
     };
 
+    let pinger = null;
     const clearSWI = () => {
         console.log("[Steam Web Integration] Clearing");
         $(".swi-block").remove();
         $(".swi").removeClass("swi");
+        if (pinger) {
+            clearInterval(pinger);
+            pinger = null;
+        }
     };
 
     const reloadSWI = () => {
         clearSWI();
-        doSWI(0);
+        if (settings.dynamicContent === "ping") {
+            pinger = setInterval(doSWI, settings.pingInterval);
+        } else {
+            doSWI(0);
+        }
     };
 
     $(document).ready(() => {
@@ -597,7 +606,7 @@ function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastC
             $("body").observe({ "added": true, "attributes": true, "attributeFilter": settings.attributes }, appSelector, () => doSWI());
             $("body").observe({ "added": true, "attributes": true, "attributeFilter": ["href"] }, subSelector, () => doSWI());
         } else if (settings.dynamicContent === "ping") {
-            setInterval(doSWI, settings.pingInterval);
+            pinger = setInterval(doSWI, settings.pingInterval);
         }
     });
 }

@@ -1,20 +1,23 @@
 {
     "env": {
-        "greasemonkey": true,
-        "jquery": true,
         "browser": true,
         "commonjs": true,
         "es6": true,
         "es2017": true,
         "es2020": true,
-        "es2021": true
+        "es2021": true,
+        "node": true,
+        "webextensions": true
     },
     "extends": "eslint:recommended",
     "parser": "@babel/eslint-parser",
     "parserOptions": {
         "requireConfigFile": false
     },
-
+    "globals": {
+        "importScripts": "readonly",
+        "ext": "readonly"
+    },
     "rules": {
         "accessor-pairs": ["error"],
         "array-bracket-newline": ["error", {

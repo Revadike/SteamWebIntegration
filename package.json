@@ -1,0 +1,26 @@
+{
+  "name": "steamwebintegration",
+  "version": "2.0.0",
+  "description": "Integrate your personal Steam information on the web, at your convenience!",
+  "main": "manifest.json",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:firefox": "(cp manifest.firefox.jsonc manifest.json) || (xcopy manifest.firefox.json manifest.json)",
+    "build:chromium": "(cp manifest.chromium.jsonc manifest.json) || (xcopy manifest.chromium.json manifest.json)"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/revadike/steamwebintegration.git"
+  },
+  "author": "Revadike",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/revadike/steamwebintegration/issues"
+  },
+  "homepage": "https://github.com/revadike/steamwebintegration#readme",
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.19.1",
+    "eslint": "^8.34.0"
+  }
+}
