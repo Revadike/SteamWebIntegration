@@ -294,6 +294,7 @@ function integrate(settings, userdata, decommissioned, cards, bundles, limited, 
             return;
         }
 
+        // TODO: Implement observe mode
         if (settings.dynamicContent === "observe") {
             // $("body").observe({ "added": true, "attributes": true, "attributeFilter": settings.attributes }, appSelector, () => doSWI());
             // $("body").observe({ "added": true, "attributes": true, "attributeFilter": ["href"] }, subSelector, () => doSWI());

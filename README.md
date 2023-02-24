@@ -1,6 +1,5 @@
 
-# [UserScript] Steam Web Integration
-
+# Steam Web Integration
 
 [![GitHub license](https://img.shields.io/github/license/Revadike/SteamWebIntegration)](https://github.com/Revadike/SteamWebIntegration/blob/master/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/Revadike/SteamWebIntegration)](https://github.com/Revadike/SteamWebIntegration/issues)
@@ -8,7 +7,6 @@
 [![Github stable release downloads](https://img.shields.io/github/downloads/Revadike/SteamWebIntegration/latest/total.svg?label=Downloads&maxAge=600)](https://github.com/Revadike/SteamWebIntegration/releases/latest)
 [![GitHub stable release date](https://img.shields.io/github/release-date/Revadike/SteamWebIntegration.svg?label=Released&maxAge=600)](https://github.com/Revadike/SteamWebIntegration/releases/latest)
 [![GitHub stable release version](https://img.shields.io/github/release/Revadike/SteamWebIntegration.svg?label=Stable&maxAge=600)](https://github.com/Revadike/SteamWebIntegration/releases/latest)
-[![Bitcoin donate](https://img.shields.io/badge/Bitcoin-donate-yellow.svg)](https://www.blockchain.com/btc/payment_request?address=133YTipt9VUuB7EsYnkPFuVGutNc9UzswF)
 [![Steam donate](https://img.shields.io/badge/Steam-donate-yellow.svg)](https://steamcommunity.com/tradeoffer/new/?partner=82699538&token=V7DQVtra)
 
 
@@ -16,7 +14,7 @@
 > 
 
 ## Screenshot
-![image](https://user-images.githubusercontent.com/4411977/116749354-1a6d6c00-aa01-11eb-8f5c-ae7a6936532a.png)
+![image](https://user-images.githubusercontent.com/4411977/221296248-1abfbc0a-bb3b-409f-bb97-639593e85379.png)
 
 ## Features
  * Checks web pages for links or images of steam games or DLC
@@ -33,30 +31,17 @@
    * Steam Trading Cards
    * Game bundle history
  * Caching of data
- * Support for dynamically changing web content
- * Context menu options
- * Highly configurable ([here](https://revadike.com/swi/settings/))
-
-## Prerequisites 
- * Userscript manager, such as [Tampermonkey](http://tampermonkey.net/) (recommended)
-
-## Download
- * [Direct download](https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js) (latest)
- * [All releases](https://github.com/Revadike/SteamWebIntegration/releases)
+ * Support for dynamically changing web content (**Currently unavailable**)
+ * Context menu options (**Currently unavailable**)
+ * Highly configurable
 
 ## FAQ
 
-### How do I change the settings?
-Right [here](https://revadike.com/swi/settings/).
+### Why does it not work?
+Make sure you are logged in to steam with the right account in your web browser and visit [this page](http://store.steampowered.com/dynamicstore/userdata/) and refresh until you can see all your data is loaded (you will see [this](https://i.imgur.com/ShKcuay.png) if it is _not_ loaded). If that does not work, try factory reset.
 
-### How can I blacklist a domain?
-Right [here](https://revadike.com/swi/settings/).
-
-### Why are the ownership/wishlist icons not working or incorrect?
-Make sure you are logged in to steam with the right account in your web browser and visit [this page](http://store.steampowered.com/dynamicstore/userdata/) and refresh until you can see all your data is loaded (you will see [this](https://i.imgur.com/ShKcuay.png) if it is not loaded). If that does not work, try factory reset.
-
-### Why doesn't it work for me?
-I don't know. Try factory reset. Otherwise, be sure to contact me and provide me the log/error from the JavaScript console, if there is any.
+### Why does it _still_ not work?
+I don't know. Try factory reset. Otherwise, be sure to contact me and provide me the log/error from the extension, if there is any.
 Post it [here](https://github.com/Revadike/SteamWebIntegration/issues).
 
 ### Can I suggest a feature?

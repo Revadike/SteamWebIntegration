@@ -17,7 +17,7 @@ async function getSettings() {
         "bundleIcon":                    "gift",
         "bundlesRefreshInterval":        2880,
         "cardColor":                     "#0000ff",
-        "cardIcon":                      "cards",
+        "cardIcon":                      "money-bills fa-rotate-90",
         "cardsRefreshInterval":          2880,
         "dateOverride":                  false,
         "decommissionedColor":           "#ffffff",
@@ -164,21 +164,14 @@ async function getData() {
     const cards = await getFromStorage("swi_cards", null);
     const bundles = await getFromStorage("swi_bundles", null);
     const limited = await getFromStorage("swi_limited", null);
-    // const lastCached = {
-    //     "userdata":       await getFromStorage("swi_userdata_last", 0),
-    //     "decommissioned": await getFromStorage("swi_decommissioned_last", 0),
-    //     "dlcs":           await getFromStorage("swi_dlc_last", 0),
-    //     "cards":          await getFromStorage("swi_cards_last", 0),
-    //     "bundles":        await getFromStorage("swi_bundles_last", 0),
-    //     "limited":        await getFromStorage("swi_limited_last", 0),
-    // };
-    const lastCached = {};
-    lastCached.userdata = await getFromStorage("swi_userdata_last", 0);
-    lastCached.decommissioned = await getFromStorage("swi_decommissioned_last", 0);
-    lastCached.dlcs = await getFromStorage("swi_dlc_last", 0);
-    lastCached.cards = await getFromStorage("swi_cards_last", 0);
-    lastCached.bundles = await getFromStorage("swi_bundles_last", 0);
-    lastCached.limited = await getFromStorage("swi_limited_last", 0);
+    const lastCached = {
+        "userdata":       await getFromStorage("swi_userdata_last", 0),
+        "decommissioned": await getFromStorage("swi_decommissioned_last", 0),
+        "dlcs":           await getFromStorage("swi_dlc_last", 0),
+        "cards":          await getFromStorage("swi_cards_last", 0),
+        "bundles":        await getFromStorage("swi_bundles_last", 0),
+        "limited":        await getFromStorage("swi_limited_last", 0),
+    };
 
     const data = { userdata, decommissioned, dlcs, cards, bundles, limited, lastCached };
 
