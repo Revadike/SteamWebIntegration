@@ -1,0 +1,220 @@
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+#actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 10px 0;
+}
+
+#actions button {
+    width: 100%;
+    font-size: large;
+    padding: 10px;
+    margin: 0 5px;
+}
+
+
+#actions button:hover {
+    cursor: pointer;
+}
+
+#actions button:active {
+    background-color: #e6e6e6;
+}
+
+#actions button:focus {
+    outline: none;
+}
+
+#actions button:disabled {
+    background-color: #e6e6e6;
+    color: #999999;
+    cursor: not-allowed;
+}
+
+#snackbar {
+    background-color: #333;
+    border-radius: 2px;
+    border: 2px solid #999;
+    bottom: 30px;
+    color: #fff;
+    font-family: sans-serif;
+    font-size: 0.9em;
+    left: 50%;
+    margin-left: -125px;
+    min-width: 250px;
+    padding: 16px;
+    position: fixed;
+    text-align: center;
+    visibility: hidden;
+    z-index: 1;
+}
+
+#snackbar.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+    from {
+        bottom: 0;
+        opacity: 0;
+    }
+
+    to {
+        bottom: 30px;
+        opacity: 1;
+    }
+}
+
+@keyframes fadein {
+    from {
+        bottom: 0;
+        opacity: 0;
+    }
+
+    to {
+        bottom: 30px;
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes fadeout {
+    from {
+        bottom: 30px;
+        opacity: 1;
+    }
+
+    to {
+        bottom: 0;
+        opacity: 0;
+    }
+}
+
+@keyframes fadeout {
+    from {
+        bottom: 30px;
+        opacity: 1;
+    }
+
+    to {
+        bottom: 0;
+        opacity: 0;
+    }
+}
+
+:root {
+    --page-bg-color: white;
+    --text-color: #222;
+    --link-color: rgb(90, 90, 90);
+    --visited-link-color: #91e;
+    --code-color: #456658;
+    --row-color: rgba(0, 0, 0, 0.05);
+    --table-header-color: #999;
+    color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --page-bg-color: #141414;
+        --text-color: #eee;
+        --link-color: #2af;
+        --visited-link-color: #c5f;
+        --code-color: #e7e7e7;
+        --row-color: rgba(255, 255, 255, 0.05);
+        --table-header-color: #555;
+        color-scheme: dark;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--page-bg-color);
+    color: var(--text-color);
+    overflow-wrap: break-word;
+}
+
+:link {
+    color: var(--link-color);
+}
+
+:visited {
+    color: var(--visited-link-color);
+}
+
+code,
+tt,
+kbd,
+pre {
+    font-family: "JetBrains Mono", "IBM Plex Mono", "Source Code Pro",
+        "Cascadia Code", ui-monospace, Menlo, "Ubuntu Monospace", "Inconsolata",
+        "Fira Code", "Deja Vu Sans Mono", "Bitstream Vera Sans Mono", Monaco,
+        "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", Consolas, monospace;
+    font-size: 90%;
+    color: var(--code-color);
+}
+
+pre code,
+pre tt,
+pre kbd {
+    font-size: 100%;
+}
+
+table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+
+table thead tr {
+    background-color: var(--table-header-color);
+    color: var(--text-color);
+    text-align: left;
+}
+
+
+table th,
+table td {
+    padding: 12px 15px;
+}
+
+
+table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+table tbody tr:nth-of-type(even) {
+    background-color: var(--row-color);
+}
+
+table tbody tr:last-of-type {
+    border-bottom: 2px solid #dddddd;
+}
+
+#title {
+    text-align: center;
+}
+
+select {
+    overflow-y: auto;
+}
+
+#attributes {
+    width: 70px;
+    text-align: center;
+}
