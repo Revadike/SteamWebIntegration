@@ -4,45 +4,65 @@
     justify-content: center;
 }
 
-/* The snackbar - position it at the bottom and in the middle of the screen */
-#snackbar {
-    visibility: hidden;
-    /* Hidden by default. Visible on click */
-    min-width: 250px;
-    /* Set a default minimum width */
-    margin-left: -125px;
-    /* Divide value of min-width by 2 */
-    background-color: #333;
-    /* Black background color */
-    color: #fff;
-    /* White text color */
-    text-align: center;
-    /* Centered text */
-    border-radius: 2px;
-    /* Rounded borders */
-    padding: 16px;
-    /* Padding */
-    position: fixed;
-    /* Sit on top of the screen */
-    z-index: 1;
-    /* Add a z-index if needed */
-    left: 50%;
-    /* Center the snackbar */
-    bottom: 30px;
-    /* 30px from the bottom */
+
+#actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 10px 0;
 }
 
-/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#actions button {
+    width: 100%;
+    font-size: large;
+    padding: 10px;
+    margin: 0 5px;
+}
+
+
+#actions button:hover {
+    cursor: pointer;
+}
+
+#actions button:active {
+    background-color: #e6e6e6;
+}
+
+#actions button:focus {
+    outline: none;
+}
+
+#actions button:disabled {
+    background-color: #e6e6e6;
+    color: #999999;
+    cursor: not-allowed;
+}
+
+#snackbar {
+    background-color: #333;
+    border-radius: 2px;
+    border: 2px solid #999;
+    bottom: 30px;
+    color: #fff;
+    font-family: sans-serif;
+    font-size: 0.9em;
+    left: 50%;
+    margin-left: -125px;
+    min-width: 250px;
+    padding: 16px;
+    position: fixed;
+    text-align: center;
+    visibility: hidden;
+    z-index: 1;
+}
+
 #snackbar.show {
     visibility: visible;
-    /* Show the snackbar */
-    /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
-            However, delay the fade out process for 2.5 seconds */
     -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
     animation: fadein 0.5s, fadeout 0.5s 2.5s;
 }
 
-/* Animations to fade the snackbar in and out */
 @-webkit-keyframes fadein {
     from {
         bottom: 0;
@@ -91,45 +111,103 @@
     }
 }
 
+:root {
+    --page-bg-color: white;
+    --text-color: #222;
+    --link-color: rgb(90, 90, 90);
+    --visited-link-color: #91e;
+    --code-color: #456658;
+    --row-color: rgba(0, 0, 0, 0.05);
+    --table-header-color: #999;
+    color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --page-bg-color: #141414;
+        --text-color: #eee;
+        --link-color: #2af;
+        --visited-link-color: #c5f;
+        --code-color: #e7e7e7;
+        --row-color: rgba(255, 255, 255, 0.05);
+        --table-header-color: #555;
+        color-scheme: dark;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    background-color: #e6fdf9;
+    background-color: var(--page-bg-color);
+    color: var(--text-color);
+    overflow-wrap: break-word;
+}
+
+:link {
+    color: var(--link-color);
+}
+
+:visited {
+    color: var(--visited-link-color);
+}
+
+code,
+tt,
+kbd,
+pre {
+    font-family: "JetBrains Mono", "IBM Plex Mono", "Source Code Pro",
+        "Cascadia Code", ui-monospace, Menlo, "Ubuntu Monospace", "Inconsolata",
+        "Fira Code", "Deja Vu Sans Mono", "Bitstream Vera Sans Mono", Monaco,
+        "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", Consolas, monospace;
+    font-size: 90%;
+    color: var(--code-color);
+}
+
+pre code,
+pre tt,
+pre kbd {
+    font-size: 100%;
+}
+
+table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+
+table thead tr {
+    background-color: var(--table-header-color);
+    color: var(--text-color);
+    text-align: left;
+}
+
+
+table th,
+table td {
+    padding: 12px 15px;
+}
+
+
+table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+table tbody tr:nth-of-type(even) {
+    background-color: var(--row-color);
+}
+
+table tbody tr:last-of-type {
+    border-bottom: 2px solid #dddddd;
 }
 
 #title {
     text-align: center;
-}
-
-table {
-    font-family: verdana, arial, sans-serif;
-    font-size: 11px;
-    color: #333333;
-    border-width: 1px;
-    border-color: #999999;
-    border-collapse: collapse;
-    width: 100%;
-}
-
-table th {
-    background-color: #c3dde0;
-    border-width: 1px;
-    padding: 8px;
-    border-style: solid;
-    border-color: #a9c6c9;
-}
-
-table tr {
-    background-color: #d4e3e5;
-}
-
-table tr:hover {
-    background-color: #ffff66;
-}
-
-table td {
-    border-width: 1px;
-    padding: 8px;
-    border-style: solid;
-    border-color: #a9c6c9;
 }
 
 select {
@@ -139,36 +217,4 @@ select {
 #attributes {
     width: 70px;
     text-align: center;
-}
-
-#attributes::-webkit-scrollbar,
-body::-webkit-scrollbar {
-    width: 10px;
-    height: 1px;
-}
-
-#attributes::-webkit-scrollbar-thumb,
-body::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background-color: skyblue;
-    background-image: -webkit-linear-gradient(45deg,
-            rgba(255, 255, 255, 0.2) 25%,
-            transparent 25%,
-            transparent 50%,
-            rgba(255, 255, 255, 0.2) 50%,
-            rgba(255, 255, 255, 0.2) 75%,
-            transparent 75%,
-            transparent);
-}
-
-#attributes::-webkit-scrollbar-thumb:hover,
-body::-webkit-scrollbar-thumb:hover {
-    background-color: #1ab2f1;
-}
-
-#attributes::-webkit-scrollbar-track,
-body::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: #ededed;
-    border-radius: 10px;
 }

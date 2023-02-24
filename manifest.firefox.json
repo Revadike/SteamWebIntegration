@@ -8,10 +8,10 @@
   "action": {
     "default_popup": "popup/popup.html",
     "default_title": "Steam Web Integration",
-    "default_icon": "images/icon.png"
+    "default_icon": "images/icon.svg"
   },
   "icons": {
-    "1484": "images/icon.png"
+    "48": "images/icon.svg"
   },
   "content_scripts": [
     {
@@ -35,9 +35,9 @@
     "scripting",
     "unlimitedStorage"
   ],
-  // TODO: Request host permission depending on the user's settings
   "host_permissions": [
-    "https://*/*",
-    "http://*/*"
+    "https://bartervg.com/*",
+    "https://store.steampowered.com/*",
+    "https://steam-tracker.com/*"
   ]
 }

@@ -1,7 +1,8 @@
 let dataPromise = null;
 
-function getFromStorage(key, defaultValue) {
-    return chrome.storage.local.get({ [key]: defaultValue })[key];
+async function getFromStorage(key, defaultValue) {
+    let response = await chrome.storage.local.get({ [key]: defaultValue });
+    return response[key];
 }
 
 async function getSettings() {
@@ -54,12 +55,14 @@ async function getSettings() {
         "wishlistIcon":                  "&#10084;",
     };
 
+    let settingsFromStorage = await getFromStorage("swi_settings", {});
+
     let settings = {
         ...defaults,
-        ...await chrome.storage.local.get("swi_settings"),
+        ...settingsFromStorage,
     };
 
-    await chrome.storage.local.set({ settings });
+    await chrome.storage.local.set({ "swi_settings": settings });
     return settings;
 }
 
@@ -176,7 +179,6 @@ async function getData() {
     lastCached.cards = await getFromStorage("swi_cards_last", 0);
     lastCached.bundles = await getFromStorage("swi_bundles_last", 0);
     lastCached.limited = await getFromStorage("swi_limited_last", 0);
-    console.log(JSON.stringify(lastCached)); // Why tf is this empty????
 
     const data = { userdata, decommissioned, dlcs, cards, bundles, limited, lastCached };
 
@@ -221,7 +223,6 @@ async function getData() {
 
     await Promise.all(tasks.map(async(task) => {
         let timeExpired = Date.now() - lastCached[task.key]; // time since last cache
-        console.log(Boolean(data[task.key]), timeExpired < task.refresh * 60000, { timeExpired, "refresh": task.refresh, lastCached, "key": task.key, "val": lastCached[task.key] });
         if (data[task.key] && timeExpired < task.refresh * 60000) {
             return;
         }
@@ -243,13 +244,23 @@ async function getData() {
 }
 
 async function onMessage(message) {
-    console.log({ message });
+    console.log("[Steam Web Integration] Received message: ", message);
     switch (message.action) {
         case "getData":
             dataPromise = dataPromise || getData();
             return dataPromise;
         case "getSettings":
             return getSettings();
+        case "runSWI":
+        case "reloadSWI":
+        case "clearSWI":
+            return chrome.tabs.query({
+                "active":        true,
+                "currentWindow": true,
+            }, (tabs) => {
+                let myTabId = tabs[0].id;
+                chrome.tabs.sendMessage(myTabId, message);
+            });
         default:
             throw new Error("Unknown message action");
     }

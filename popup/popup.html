@@ -1,13 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang=en>
 
   <head>
+    <meta charset=UTF-8>
     <title>Steam Web Integration Settings</title>
     <script type="application/javascript" src="popup.js"></script>
     <link rel="stylesheet" type="text/css" href="popup.css">
   </head>
 
   <body>
+    <div id="actions">
+      <button id="reload">Reload</button>
+      <button id="clear">Clear</button>
+      <button id="run">Run</button>
+      <button id="factoryReset">Factory Reset</button>
+    </div>
     <div id="snackbar">Saved!</div>
     <div id="settings">
       <h1 id="title"></h1>
@@ -25,7 +32,7 @@
               <td><b>blackList</b></td>
               <td>Enter a list of domains or (partial) URLs you don't want SWI to run on – separated by line
                 breaks (enter/return).</td>
-              <td><textarea id="blackList" name="blackList" onchange="onChange(this)" cols="30" rows="5"></textarea>
+              <td><textarea id="blackList" name="blackList" class="setting" cols="30" rows="5"></textarea>
               </td>
             </tr>
             <tr id="whiteListModeRow">
@@ -33,12 +40,12 @@
               <td>Convert the <a href="#blackListRow">blackList</a> to a whitelist, such that SWI will only run on
                 matching
                 domains (or partial URLs).</td>
-              <td><input id="whiteListMode" name="whiteListMode" type="checkbox" onclick="onChange(this)"></td>
+              <td><input id="whiteListMode" name="whiteListMode" type="checkbox" class="setting"></td>
             </tr>
             <tr id="dynamicContentRow">
               <td><b>dynamicContent</b></td>
               <td>Select which method you prefer to detect dynamically loaded web content.</td>
-              <td><select id="dynamicContent" name="dynamicContent" onchange="onChange(this)">
+              <td><select id="dynamicContent" name="dynamicContent" class="setting">
                   <option value="observe" selected="">Observe web page content</option>
                   <option value="ping">Periodically check web page</option>
                   <option value="disabled">Disabled (only check once)</option>
@@ -50,36 +57,36 @@
                 set
                 to "Periodically check web page").</td>
               <td><input id="pingInterval" name="pingInterval" value="1500" min="1000" step="100" type="number"
-                  oninput="onChange(this)"></td>
+                  class="setting"></td>
             </tr>
             <tr id="prefixRow">
               <td><b>prefix</b></td>
               <td>Prefix (checked) instead of suffix (unchecked) position for the icons placement.</td>
-              <td><input id="prefix" name="prefix" type="checkbox" onclick="onChange(this)"></td>
+              <td><input id="prefix" name="prefix" type="checkbox" class="setting"></td>
             </tr>
             <tr id="boxedRow">
               <td><b>boxed</b></td>
               <td>Whether (checked) or not (unchecked) you want the icons to be displayed in a boxed container.</td>
-              <td><input id="boxed" name="boxed" checked="" type="checkbox" onclick="onChange(this)"></td>
+              <td><input id="boxed" name="boxed" checked="" type="checkbox" class="setting"></td>
             </tr>
             <tr id="boxOpacityRow">
               <td><b>boxOpacity</b></td>
               <td>The opacity percentage of the boxed container, between 0 and 1 (<a href="#boxedRow">boxed</a> has to
                 be enabled).</td>
               <td><input id="boxOpacity" name="boxOpacity" value="0.7" min="0" max="1" step="0.1" type="number"
-                  oninput="onChange(this)"></td>
+                  class="setting"></td>
             </tr>
             <tr id="boxColorRow">
               <td><b>boxColor</b></td>
               <td>The background color of the boxed container (<a href="#boxedRow">boxed</a> has to be enabled).</td>
-              <td><input id="boxColor" name="boxColor" value="#000000" type="color" onchange="onChange(this)">
+              <td><input id="boxColor" name="boxColor" value="#000000" type="color" class="setting">
               </td>
             </tr>
             <tr id="boxDynamicColorRow">
               <td><b>boxDynamicColor</b></td>
               <td>Whether (checked) or not (unchecked) you want a dynamic background color of the boxed container, based
                 on the set of icons (<a href="#boxColorRow">boxColor</a> will be ignored).</td>
-              <td><input id="boxDynamicColor" name="boxDynamicColor" type="checkbox" onclick="onChange(this)"></td>
+              <td><input id="boxDynamicColor" name="boxDynamicColor" type="checkbox" class="setting"></td>
             </tr>
             <tr id="attributesRow">
               <td><b>attributes</b></td>
@@ -87,7 +94,7 @@
                 "style" are for images.<br>Hold down the Ctrl (Windows) / Command (Mac) button to select multiple
                 options.
               </td>
-              <td><select id="attributes" name="attributes" multiple="" onchange="onChange(this)">
+              <td><select id="attributes" name="attributes" multiple="" class="setting">
                   <option value="href" selected>href</option>
                   <option value="src" selected>src</option>
                   <option value="style" selected>style</option>
@@ -96,76 +103,75 @@
             <tr id="iconsBoldRow">
               <td><b>iconsBold</b></td>
               <td>Whether (checked) or not (unchecked) you want the icons to appear bold.</td>
-              <td><input id="iconsBold" name="iconsBold" checked="" type="checkbox" onclick="onChange(this)"></td>
+              <td><input id="iconsBold" name="iconsBold" checked="" type="checkbox" class="setting"></td>
             </tr>
             <tr id="iconsScaleRow">
               <td><b>iconsScale</b></td>
               <td>The scale of the icons (1 = 100% = default).</td>
-              <td><input id="iconsScale" name="iconsScale" value="1" min="0" step="0.1" type="number"
-                  oninput="onChange(this)"></td>
+              <td><input id="iconsScale" name="iconsScale" value="1" min="0" step="0.1" type="number" class="setting">
+              </td>
             </tr>
             <tr id="wantIgnoresRow">
               <td><b>wantIgnores</b></td>
               <td>Whether (checked) or not (unchecked) you want to display an icon for ignored (not interested)
                 apps.</td>
-              <td><input id="wantIgnores" name="wantIgnores" checked="" type="checkbox" onclick="onChange(this)"></td>
+              <td><input id="wantIgnores" name="wantIgnores" checked="" type="checkbox" class="setting"></td>
             </tr>
             <tr id="wantFollowedRow">
               <td><b>wantFollowed</b></td>
               <td>Whether (checked) or not (unchecked) you want to display an icon for followed (not interested)
                 apps.</td>
-              <td><input id="wantFollowed" name="wantFollowed" checked="" type="checkbox" onclick="onChange(this)"></td>
+              <td><input id="wantFollowed" name="wantFollowed" checked="" type="checkbox" class="setting"></td>
             </tr>
             <tr id="wantDLCRow">
               <td><b>wantDLC</b></td>
               <td>Whether (checked) or not (unchecked) you want to display an icon for downloadable content (DLC).
               </td>
-              <td><input id="wantDLC" name="wantDLC" checked="" type="checkbox" onclick="onChange(this)"></td>
+              <td><input id="wantDLC" name="wantDLC" checked="" type="checkbox" class="setting"></td>
             </tr>
             <tr id="wantDecommissionedRow">
               <td><b>wantDecommissioned</b></td>
               <td>Whether (checked) or not (unchecked) you want to display an icon for removed or delisted
                 (decommissioned) apps.</td>
-              <td><input id="wantDecommissioned" name="wantDecommissioned" checked="" type="checkbox"
-                  onclick="onChange(this)"></td>
+              <td><input id="wantDecommissioned" name="wantDecommissioned" checked="" type="checkbox" class="setting">
+              </td>
             </tr>
             <tr id="wantLimitedRow">
               <td><b>wantLimited</b></td>
               <td>Whether (checked) or not (unchecked) you want to display an icon for low confidence metric apps.
               </td>
-              <td><input id="wantLimited" name="wantLimited" checked="" type="checkbox" onclick="onChange(this)"></td>
+              <td><input id="wantLimited" name="wantLimited" checked="" type="checkbox" class="setting"></td>
             </tr>
             <tr id="wantCardsRow">
               <td><b>wantCards</b></td>
               <td>Whether (checked) or not (unchecked) you want to display an icon for apps with cards.</td>
-              <td><input id="wantCards" name="wantCards" checked="" type="checkbox" onclick="onChange(this)">
+              <td><input id="wantCards" name="wantCards" checked="" type="checkbox" class="setting">
               </td>
             </tr>
             <tr id="wantBundlesRow">
               <td><b>wantBundles</b></td>
               <td>Whether (checked) or not (unchecked) you want to display an icon for previously bundled apps.
               </td>
-              <td><input id="wantBundles" name="wantBundles" checked="" type="checkbox" onclick="onChange(this)"></td>
+              <td><input id="wantBundles" name="wantBundles" checked="" type="checkbox" class="setting"></td>
             </tr>
             <tr id="ignoredIconRow">
               <td><b>ignoredIcon</b></td>
               <td>HTML entity code for '&#128683;&#xFE0E;' (default).</td>
               <td><input id="ignoredIcon" name="ignoredIcon" value="&amp;#128683;&amp;#xFE0E;" type="text"
-                  oninput="onChange(this)"> (More HTML Codes <a
-                  href="https://www.toptal.com/designers/htmlarrows/symbols/" target="_blank">here</a>)
+                  class="setting"> (More HTML Codes <a href="https://www.toptal.com/designers/htmlarrows/symbols/"
+                  target="_blank">here</a>)
               </td>
             </tr>
             <tr id="ignoredColorRow">
               <td><b>ignoredColor</b></td>
               <td>Color of the icon for ignored (not interested) apps.</td>
-              <td><input id="ignoredColor" name="ignoredColor" value="#808080" type="color" onchange="onChange(this)">
+              <td><input id="ignoredColor" name="ignoredColor" value="#808080" type="color" class="setting">
               </td>
             </tr>
             <tr id="wishlistIconRow">
               <td><b>wishlistIcon</b></td>
               <td>HTML entity code for '&#10084;' (default).</td>
-              <td><input id="wishlistIcon" name="wishlistIcon" value="&amp;#10084;" type="text"
-                  oninput="onChange(this)">
+              <td><input id="wishlistIcon" name="wishlistIcon" value="&amp;#10084;" type="text" class="setting">
                 (More HTML Codes <a href="https://www.toptal.com/designers/htmlarrows/symbols/"
                   target="_blank">here</a>)
               </td>
@@ -173,13 +179,13 @@
             <tr id="wishlistColorRow">
               <td><b>wishlistColor</b></td>
               <td>Color of the icon for wishlisted apps.</td>
-              <td><input id="wishlistColor" name="wishlistColor" value="#ff69b4" type="color" onchange="onChange(this)">
+              <td><input id="wishlistColor" name="wishlistColor" value="#ff69b4" type="color" class="setting">
               </td>
             </tr>
             <tr id="followedIconRow">
               <td><b>followedIcon</b></td>
               <td>HTML entity code for '&#9733;' (default).</td>
-              <td><input id="followedIcon" name="followedIcon" value="&amp;#9733;" type="text" oninput="onChange(this)">
+              <td><input id="followedIcon" name="followedIcon" value="&amp;#9733;" type="text" class="setting">
                 (More HTML Codes <a href="https://www.toptal.com/designers/htmlarrows/symbols/"
                   target="_blank">here</a>)
               </td>
@@ -187,13 +193,13 @@
             <tr id="followedColorRow">
               <td><b>followedColor</b></td>
               <td>Color of the icon for followed apps.</td>
-              <td><input id="followedColor" name="followedColor" value="#f7dc6f" type="color" onchange="onChange(this)">
+              <td><input id="followedColor" name="followedColor" value="#f7dc6f" type="color" class="setting">
               </td>
             </tr>
             <tr id="ownedIconRow">
               <td><b>ownedIcon</b></td>
               <td>HTML entity code for '&#10004;' (default).</td>
-              <td><input id="ownedIcon" name="ownedIcon" value="&amp;#10004;" type="text" oninput="onChange(this)">
+              <td><input id="ownedIcon" name="ownedIcon" value="&amp;#10004;" type="text" class="setting">
                 (More
                 HTML Codes <a href="https://www.toptal.com/designers/htmlarrows/symbols/" target="_blank">here</a>)
               </td>
@@ -201,12 +207,12 @@
             <tr id="ownedColorRow">
               <td><b>ownedColor</b></td>
               <td>Color of the icon for owned apps and subs.</td>
-              <td><input id="ownedColor" name="ownedColor" value="#008000" type="color" onchange="onChange(this)"></td>
+              <td><input id="ownedColor" name="ownedColor" value="#008000" type="color" class="setting"></td>
             </tr>
             <tr id="unownedIconRow">
               <td><b>unownedIcon</b></td>
               <td>HTML entity code for '&#10008;' (default).</td>
-              <td><input id="unownedIcon" name="unownedIcon" value="&amp;#10008;" type="text" oninput="onChange(this)">
+              <td><input id="unownedIcon" name="unownedIcon" value="&amp;#10008;" type="text" class="setting">
                 (More HTML Codes <a href="https://www.toptal.com/designers/htmlarrows/symbols/"
                   target="_blank">here</a>)
               </td>
@@ -214,13 +220,13 @@
             <tr id="unownedColorRow">
               <td><b>unownedColor</b></td>
               <td>Color of the icon for unowned apps and subs.</td>
-              <td><input id="unownedColor" name="unownedColor" value="#ff0000" type="color" onchange="onChange(this)">
+              <td><input id="unownedColor" name="unownedColor" value="#ff0000" type="color" class="setting">
               </td>
             </tr>
             <tr id="dlcIconRow">
               <td><b>dlcIcon</b></td>
               <td>HTML entity code for '&#8681;' (default).</td>
-              <td><input id="dlcIcon" name="dlcIcon" value="&amp;#8681;" type="text" oninput="onChange(this)"> (More
+              <td><input id="dlcIcon" name="dlcIcon" value="&amp;#8681;" type="text" class="setting"> (More
                 HTML
                 Codes <a href="https://www.toptal.com/designers/htmlarrows/symbols/" target="_blank">here</a>)
               </td>
@@ -228,26 +234,26 @@
             <tr id="dlcColorRow">
               <td><b>dlcColor</b></td>
               <td>Color of the icon for downloadable content (DLC).</td>
-              <td><input id="dlcColor" name="dlcColor" value="#a655b2" type="color" onchange="onChange(this)"></td>
+              <td><input id="dlcColor" name="dlcColor" value="#a655b2" type="color" class="setting"></td>
             </tr>
             <tr id="decommissionedIconRow">
               <td><b>decommissionedIcon</b></td>
               <td>HTML entity code for '&#9760;' (default).</td>
               <td><input id="decommissionedIcon" name="decommissionedIcon" value="&amp;#9760;" type="text"
-                  oninput="onChange(this)"> (More HTML Codes <a
-                  href="https://www.toptal.com/designers/htmlarrows/symbols/" target="_blank">here</a>)
+                  class="setting"> (More HTML Codes <a href="https://www.toptal.com/designers/htmlarrows/symbols/"
+                  target="_blank">here</a>)
               </td>
             </tr>
             <tr id="decommissionedColorRow">
               <td><b>decommissionedColor</b></td>
               <td>Color of the icon for removed or delisted apps and subs.</td>
               <td><input id="decommissionedColor" name="decommissionedColor" value="#ffffff" type="color"
-                  onchange="onChange(this)"></td>
+                  class="setting"></td>
             </tr>
             <tr id="limitedIconRow">
               <td><b>limitedIcon</b></td>
               <td>HTML entity code for '&#9881;' (default).</td>
-              <td><input id="limitedIcon" name="limitedIcon" value="&amp;#9881;" type="text" oninput="onChange(this)">
+              <td><input id="limitedIcon" name="limitedIcon" value="&amp;#9881;" type="text" class="setting">
                 (More HTML Codes <a href="https://www.toptal.com/designers/htmlarrows/symbols/"
                   target="_blank">here</a>)
               </td>
@@ -255,7 +261,7 @@
             <tr id="limitedColorRow">
               <td><b>limitedColor</b></td>
               <td>Color of the icon for low confidence metric apps.</td>
-              <td><input id="limitedColor" name="limitedColor" value="#00ffff" type="color" onchange="onChange(this)">
+              <td><input id="limitedColor" name="limitedColor" value="#00ffff" type="color" class="setting">
               </td>
             </tr>
             <tr id="cardIconRow">
@@ -263,14 +269,14 @@
               <td>HTML entity code for '&#x1F0A1' (default). '&spades;' (&amp;spades;) is an alternative if this symbol
                 is
                 unavailable.</td>
-              <td><input id="cardIcon" name="cardIcon" value="&amp;#x1F0A1" type="text" oninput="onChange(this)"> (More
+              <td><input id="cardIcon" name="cardIcon" value="&amp;#x1F0A1" type="text" class="setting"> (More
                 HTML Codes <a href="https://www.toptal.com/designers/htmlarrows/symbols/" target="_blank">here</a>)
               </td>
             </tr>
             <tr id="cardColorRow">
               <td><b>cardColor</b></td>
               <td>Color of the icon for cards.</td>
-              <td><input id="cardColor" name="cardColor" value="#0000ff" type="color" onchange="onChange(this)"></td>
+              <td><input id="cardColor" name="cardColor" value="#0000ff" type="color" class="setting"></td>
             </tr>
             <tr id="bundleIconRow">
               <td><b>bundleIcon</b></td>
@@ -278,61 +284,61 @@
                 (&amp;#10045;).
               </td>
               <td><input id="bundleIcon" name="bundleIcon" value="&amp;#127873;&amp;#xFE0E;" type="text"
-                  oninput="onChange(this)"> (More HTML Codes <a
-                  href="https://www.toptal.com/designers/htmlarrows/symbols/" target="_blank">here</a>)
+                  class="setting"> (More HTML Codes <a href="https://www.toptal.com/designers/htmlarrows/symbols/"
+                  target="_blank">here</a>)
               </td>
             </tr>
             <tr id="bundleColorRow">
               <td><b>bundleColor</b></td>
               <td>Color of the icon for bundled apps.</td>
-              <td><input id="bundleColor" name="bundleColor" value="#ffff00" type="color" onchange="onChange(this)">
+              <td><input id="bundleColor" name="bundleColor" value="#ffff00" type="color" class="setting">
               </td>
             </tr>
             <tr id="userRefreshIntervalRow">
               <td><b>userRefreshInterval</b></td>
               <td>Number of minutes to wait to refresh cached userdata. 0 = always stay up-to-date.</td>
-              <td><input id="userRefreshInterval" name="userRefreshInterval" value="1" type="number"
-                  oninput="onChange(this)"></td>
+              <td><input id="userRefreshInterval" name="userRefreshInterval" value="1" type="number" class="setting">
+              </td>
             </tr>
             <tr id="dlcRefreshIntervalRow">
               <td><b>dlcRefreshInterval</b></td>
               <td>Number of minutes to wait to refresh cached DLC data. 0 = always stay up-to-date, but not recommended.
               </td>
-              <td><input id="dlcRefreshInterval" name="dlcRefreshInterval" value="1440" type="number"
-                  oninput="onChange(this)"></td>
+              <td><input id="dlcRefreshInterval" name="dlcRefreshInterval" value="1440" type="number" class="setting">
+              </td>
             </tr>
             <tr id="decommissionedRefreshIntervalRow">
               <td><b>decommissionedRefreshInterval</b></td>
               <td>Number of minutes to wait to refresh cached removed games data. 0 = always stay up-to-date, but not
                 recommended.</td>
               <td><input id="decommissionedRefreshInterval" name="decommissionedRefreshInterval" value="1440"
-                  type="number" oninput="onChange(this)"></td>
+                  type="number" class="setting"></td>
             </tr>
             <tr id="limitedRefreshIntervalRow">
               <td><b>limitedRefreshInterval</b></td>
               <td>Number of minutes to wait to refresh cached limited data. 0 = always stay up-to-date, but not
                 recommended.</td>
               <td><input id="limitedRefreshInterval" name="limitedRefreshInterval" value="2880" type="number"
-                  oninput="onChange(this)"></td>
+                  class="setting"></td>
             </tr>
             <tr id="cardsRefreshIntervalRow">
               <td><b>cardsRefreshInterval</b></td>
               <td>Number of minutes to wait to refresh cached trading card data. 0 = always stay up-to-date, but not
                 recommended.</td>
               <td><input id="cardsRefreshInterval" name="cardsRefreshInterval" value="2880" type="number"
-                  oninput="onChange(this)"></td>
+                  class="setting"></td>
             </tr>
             <tr id="bundlesRefreshIntervalRow">
               <td><b>bundlesRefreshInterval</b></td>
               <td>Number of minutes to wait to refresh cached bundle data. 0 = always stay up-to-date, but not
                 recommended.</td>
               <td><input id="bundlesRefreshInterval" name="bundlesRefreshInterval" value="2880" type="number"
-                  oninput="onChange(this)"></td>
+                  class="setting"></td>
             </tr>
             <tr id="dateOverrideRow">
               <td><b>dateOverride</b></td>
               <td>Force date display in YYYY-MM-DD HH:MM:SS style; otherwise matches system locale.</td>
-              <td><input id="dateOverride" name="dateOverride" type="checkbox" onclick="onChange(this)"></td>
+              <td><input id="dateOverride" name="dateOverride" type="checkbox" class="setting"></td>
             </tr>
           </tbody>
         </table>

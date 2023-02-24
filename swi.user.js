@@ -34,6 +34,8 @@
 // @version      1.12.2
 // ==/UserScript==
 
+/* global $ GM_addStyle, GM_deleteValue, GM_getValue, GM_info, GM_listValues, GM_registerMenuCommand, GM_setValue, GM_xmlhttpRequest, unsafeWindow */
+
 // ==Code==
 // eslint-disable-next-line
 this.$ = this.jQuery = jQuery.noConflict(true);

@@ -1,4 +1,6 @@
 manifest.json
+bin/
+build/
 
 # Logs
 logs

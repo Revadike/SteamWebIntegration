@@ -258,32 +258,38 @@ function integrate(settings, userdata, decommissioned, cards, bundles, limited, 
     };
 
     let pinger = null;
-    // const clearSWI = () => {
-    //     console.log("[Steam Web Integration] Clearing");
-    //     $(".swi-block").remove();
-    //     $(".swi").removeClass("swi");
-    //     if (pinger) {
-    //         clearInterval(pinger);
-    //         pinger = null;
-    //     }
-    // };
+    const clearSWI = () => {
+        console.log("[Steam Web Integration] Clearing");
+        [...document.body.querySelectorAll(".swi-block")].forEach((e) => e.remove());
+        [...document.body.querySelectorAll(".swi")].forEach((e) => e.classList.remove("swi"));
+        if (pinger) {
+            clearInterval(pinger);
+            pinger = null;
+        }
+    };
 
-    // const reloadSWI = () => {
-    //     clearSWI();
-    //     if (settings.dynamicContent === "ping") {
-    //         pinger = setInterval(doSWI, settings.pingInterval);
-    //     } else {
-    //         doSWI(0);
-    //     }
-    // };
+    const reloadSWI = () => {
+        clearSWI();
+        if (settings.dynamicContent === "ping") {
+            pinger = setInterval(doSWI, settings.pingInterval);
+        } else {
+            doSWI(0);
+        }
+    };
 
     let setupSWI = () => {
         console.log("[Steam Web Integration] Executing");
         doSWI(0);
 
-        // GM_registerMenuCommand("Run again", () => doSWI(0));
-        // GM_registerMenuCommand("Clear all", clearSWI);
-        // GM_registerMenuCommand("Clear and run (reload)", reloadSWI);
+        chrome.runtime.onMessage.addListener((message) => {
+            if (message.action === "runSWI") {
+                doSWI(0);
+            } else if (message.action === "clearSWI") {
+                clearSWI();
+            } else if (message.action === "reloadSWI") {
+                reloadSWI();
+            }
+        });
 
         if (settings.dynamicContent === "disabled") {
             return;
@@ -341,7 +347,6 @@ async function init() {
     if ((settings.whiteListMode && matchUrl) || (!settings.whiteListMode && !matchUrl)) {
         boxNode = createBoxNode(settings.boxed);
         let data = await chrome.runtime.sendMessage({ "action": "getData" });
-        console.log({ data });
         let { userdata, decommissioned, cards, bundles, limited, dlcs, lastCached } = data;
         addStyle(css);
         integrate(settings, userdata, decommissioned, cards, bundles, limited, dlcs, lastCached);
