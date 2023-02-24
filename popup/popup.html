@@ -5,6 +5,7 @@
     <meta charset=UTF-8>
     <title>Steam Web Integration Settings</title>
     <script type="application/javascript" src="popup.js"></script>
+    <script type="application/javascript" src="jscolor.min.js"></script>
     <link rel="stylesheet" type="text/css" href="popup.css">
   </head>
 
@@ -79,7 +80,7 @@
             <tr id="boxColorRow">
               <td><b>boxColor</b></td>
               <td>The background color of the boxed container (<a href="#boxedRow">boxed</a> has to be enabled).</td>
-              <td><input id="boxColor" name="boxColor" value="#000000" type="color" class="setting">
+              <td><input id="boxColor" name="boxColor" value="#000000" data-jscolor="{}" class="setting">
               </td>
             </tr>
             <tr id="boxDynamicColorRow">
@@ -165,7 +166,7 @@
             <tr id="ignoredColorRow">
               <td><b>ignoredColor</b></td>
               <td>Color of the icon for ignored (not interested) apps.</td>
-              <td><input id="ignoredColor" name="ignoredColor" value="#808080" type="color" class="setting">
+              <td><input id="ignoredColor" name="ignoredColor" value="#808080" data-jscolor="{}" class="setting">
               </td>
             </tr>
             <tr id="wishlistIconRow">
@@ -179,7 +180,7 @@
             <tr id="wishlistColorRow">
               <td><b>wishlistColor</b></td>
               <td>Color of the icon for wishlisted apps.</td>
-              <td><input id="wishlistColor" name="wishlistColor" value="#ff69b4" type="color" class="setting">
+              <td><input id="wishlistColor" name="wishlistColor" value="#ff69b4" data-jscolor="{}" class="setting">
               </td>
             </tr>
             <tr id="followedIconRow">
@@ -193,7 +194,7 @@
             <tr id="followedColorRow">
               <td><b>followedColor</b></td>
               <td>Color of the icon for followed apps.</td>
-              <td><input id="followedColor" name="followedColor" value="#f7dc6f" type="color" class="setting">
+              <td><input id="followedColor" name="followedColor" value="#f7dc6f" data-jscolor="{}" class="setting">
               </td>
             </tr>
             <tr id="ownedIconRow">
@@ -207,7 +208,7 @@
             <tr id="ownedColorRow">
               <td><b>ownedColor</b></td>
               <td>Color of the icon for owned apps and subs.</td>
-              <td><input id="ownedColor" name="ownedColor" value="#008000" type="color" class="setting"></td>
+              <td><input id="ownedColor" name="ownedColor" value="#008000" data-jscolor="{}" class="setting"></td>
             </tr>
             <tr id="unownedIconRow">
               <td><b>unownedIcon</b></td>
@@ -220,7 +221,7 @@
             <tr id="unownedColorRow">
               <td><b>unownedColor</b></td>
               <td>Color of the icon for unowned apps and subs.</td>
-              <td><input id="unownedColor" name="unownedColor" value="#ff0000" type="color" class="setting">
+              <td><input id="unownedColor" name="unownedColor" value="#ff0000" data-jscolor="{}" class="setting">
               </td>
             </tr>
             <tr id="dlcIconRow">
@@ -234,7 +235,7 @@
             <tr id="dlcColorRow">
               <td><b>dlcColor</b></td>
               <td>Color of the icon for downloadable content (DLC).</td>
-              <td><input id="dlcColor" name="dlcColor" value="#a655b2" type="color" class="setting"></td>
+              <td><input id="dlcColor" name="dlcColor" value="#a655b2" data-jscolor="{}" class="setting"></td>
             </tr>
             <tr id="decommissionedIconRow">
               <td><b>decommissionedIcon</b></td>
@@ -247,7 +248,7 @@
             <tr id="decommissionedColorRow">
               <td><b>decommissionedColor</b></td>
               <td>Color of the icon for removed or delisted apps and subs.</td>
-              <td><input id="decommissionedColor" name="decommissionedColor" value="#ffffff" type="color"
+              <td><input id="decommissionedColor" name="decommissionedColor" value="#ffffff" data-jscolor="{}"
                   class="setting"></td>
             </tr>
             <tr id="limitedIconRow">
@@ -261,7 +262,7 @@
             <tr id="limitedColorRow">
               <td><b>limitedColor</b></td>
               <td>Color of the icon for low confidence metric apps.</td>
-              <td><input id="limitedColor" name="limitedColor" value="#00ffff" type="color" class="setting">
+              <td><input id="limitedColor" name="limitedColor" value="#00ffff" data-jscolor="{}" class="setting">
               </td>
             </tr>
             <tr id="cardIconRow">
@@ -276,7 +277,7 @@
             <tr id="cardColorRow">
               <td><b>cardColor</b></td>
               <td>Color of the icon for cards.</td>
-              <td><input id="cardColor" name="cardColor" value="#0000ff" type="color" class="setting"></td>
+              <td><input id="cardColor" name="cardColor" value="#0000ff" data-jscolor="{}" class="setting"></td>
             </tr>
             <tr id="bundleIconRow">
               <td><b>bundleIcon</b></td>
@@ -291,7 +292,7 @@
             <tr id="bundleColorRow">
               <td><b>bundleColor</b></td>
               <td>Color of the icon for bundled apps.</td>
-              <td><input id="bundleColor" name="bundleColor" value="#ffff00" type="color" class="setting">
+              <td><input id="bundleColor" name="bundleColor" value="#ffff00" data-jscolor="{}" class="setting">
               </td>
             </tr>
             <tr id="userRefreshIntervalRow">
