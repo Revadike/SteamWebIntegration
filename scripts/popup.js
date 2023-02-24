@@ -16,14 +16,38 @@ function showToast() {
     setTimeout(() => toast.classList.remove("show"), 3000);
 }
 
+function getSelectValues(select) {
+    let result = [];
+    let options = select && select.options;
+    let opt;
+
+    for (let i = 0, iLen = options.length; i < iLen; i++) {
+        opt = options[i];
+
+        if (opt.selected) {
+            result.push(opt.value || opt.text);
+        }
+    }
+    return result;
+}
+
 function onChange(elem) {
-    const { name, value } = elem;
+    const { name, value, type, checked } = elem;
     const newSettings = {};
 
-    if (elem.type === "checkbox") {
-        newSettings[name] = Boolean(elem.checked);
+    // TODO: Remove this when the mode is implemented
+    if (name === "dynamicContent" && value === "observe") {
+        // eslint-disable-next-line no-alert
+        alert("This mode is not yet implemented. Please select a different mode for now.");
+        return;
+    }
+
+    if (type === "checkbox") {
+        newSettings[name] = Boolean(checked);
+    } else if (type === "select-multiple") {
+        newSettings[name] = getSelectValues(elem);
     } else {
-        newSettings[elem.name] = Number.isFinite(value) ? Number(value) : value;
+        newSettings[name] = Number.isFinite(value) ? Number(value) : value;
     }
 
     setSettings(newSettings);
@@ -41,6 +65,10 @@ document.addEventListener("DOMContentLoaded", async() => {
 
         if (typeof value === "boolean") {
             node.checked = value;
+        } else if (Array.isArray(value)) {
+            for (let option of node.options) {
+                option.selected = value.includes(option.value);
+            }
         } else {
             node.value = value;
         }

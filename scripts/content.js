@@ -9,15 +9,15 @@ function createBoxNode(boxed) {
     return div;
 }
 
-function getIconHTML(color, str, lcs, icon, link) {
+function getIconHTML(color, str, lcs, icon, link, extraIcon = "") {
     // eslint-disable-next-line camelcase
     const { name, version, author } = chrome.runtime.getManifest();
     const titlePlus = `\nLast updated at ${lcs}\n${name} (${version}) by ${author}`;
     if (link) {
-        return `<span title="${str}\n${titlePlus}"><a style="color: ${color} !important;" href="${link}" target="_blank"><i class="fa-solid fa-${icon}"></i></a></span>`;
+        return `<span title="${str}\n${titlePlus}"><a style="color: ${color} !important;" href="${link}" target="_blank"><i class="fa-solid fa-${icon}"></i>${extraIcon}</a></span>`;
     }
 
-    return `<span style="color: ${color} !important;" title="${str} on Steam\n${titlePlus}"><i class="fa-solid fa-${icon}"></i></span>`;
+    return `<span style="color: ${color} !important;" title="${str} on Steam\n${titlePlus}"><i class="fa-solid fa-${icon}"></i>${extraIcon}</span>`;
 }
 
 function convertToRGB(color) {
@@ -85,52 +85,52 @@ function doApp(settings, elem, wishlist, ownedApps, ignoredApps, followedApps, d
         }
 
         if (ownedApps && ownedApps[appID]) { // if owned
-            html = getIconHTML(settings.ownedColor, `${subject} (${appID}) owned`, lcs, settings.ownedIcon); // ✔
+            html = getIconHTML(settings.ownedColor, `${subject} (${appID}) owned`, lcs, settings.ownedIcon);
             iconsEncoding += 1;
         } else if (wishlist[appID]) { // if not owned and wishlisted
-            html = getIconHTML(settings.wishlistColor, `${subject} (${appID}) wishlisted`, lcs, settings.wishlistIcon); // ❤
+            html = getIconHTML(settings.wishlistColor, `${subject} (${appID}) wishlisted`, lcs, settings.wishlistIcon);
             iconsEncoding += 3;
         } else { // else not owned and not wishlisted
-            html = getIconHTML(settings.unownedColor, `${subject} (${appID}) not owned`, lcs, settings.unownedIcon); // ✘
+            html = getIconHTML(settings.unownedColor, `${subject} (${appID}) not owned`, lcs, settings.unownedIcon);
             iconsEncoding += 2;
         }
 
         if (settings.wantFollowed && followedApps && followedApps[appID]) {
-            html += getIconHTML(settings.followedColor, `${subject} (${appID}) followed`, lcs, settings.followedIcon); // ★
+            html += getIconHTML(settings.followedColor, `${subject} (${appID}) followed`, lcs, settings.followedIcon);
             iconsEncoding += 4;
         }
 
         if (settings.wantIgnores && ignoredApps && ignoredApps[appID]) { // if ignored and enabled
-            html += getIconHTML(settings.ignoredColor, `${subject} (${appID}) ignored`, llcs, settings.ignoredIcon); // 🛇
+            html += getIconHTML(settings.ignoredColor, `${subject} (${appID}) ignored`, llcs, settings.ignoredIcon);
             iconsEncoding += 5;
         }
 
         if (settings.wantDLC && dlc && dlc[appID]) { // if DLC and enabled
             const base = dlc[appID].base_appID;
             const ownsBase = Boolean(ownedApps[base]);
-            const extraIcon = `<span style="color: ${ownsBase ? settings.ownedColor : settings.unownedColor};">${ownsBase ? "⁺" : "⁻"}</span>`;
-            html += getIconHTML(settings.dlcColor, `${subject} (${appID}) is downloadable content for an ${ownsBase ? "" : "un"}owned base game (${base})`, dlclcs, settings.dlcIcon + extraIcon); // ⇩
+            const extraIcon = `<span style="color: ${ownsBase ? settings.ownedColor : settings.unownedColor}; font-weight: bold; font-size: 66%; position: absolute; margin: -4% 0% 0% -4%;">${ownsBase ? "<i class=\"fa-solid fa-plus\"></i>" : "<i class=\"fa-solid fa-minus\"></i>"}</span>&nbsp;`;
+            html += getIconHTML(settings.dlcColor, `${subject} (${appID}) is downloadable content for an ${ownsBase ? "" : "un"}owned base game (${base})`, dlclcs, settings.dlcIcon, undefined, extraIcon);
             iconsEncoding += 6;
         }
 
         if (settings.wantDecommissioned && decommissioned && decommissioned[appID]) { // if decommissioned and enabled
             const app = decommissioned[appID];
-            html += getIconHTML(settings.decommissionedColor, `The ${app.type} '${app.name.replace(/"|'/g, "")}' (${appID}) is ${app.category.toLowerCase()} and has only ${app.count} confirmed owner${app.count === 1 ? "" : "s"} on Steam`, dlcs, settings.decommissionedIcon, `https://steam-tracker.com/app/${appID}/`); // 🗑
+            html += getIconHTML(settings.decommissionedColor, `The ${app.type} '${app.name.replace(/"|'/g, "")}' (${appID}) is ${app.category.toLowerCase()} and has only ${app.count} confirmed owner${app.count === 1 ? "" : "s"} on Steam`, dlcs, settings.decommissionedIcon, `https://steam-tracker.com/app/${appID}/`);
             iconsEncoding += 7;
         }
 
         if (settings.wantLimited && limited && limited[appID]) { // if limited and enabled
-            html += getIconHTML(settings.limitedColor, `Game (${appID}) has profile features limited`, llcs, settings.limitedIcon); // ⚙
+            html += getIconHTML(settings.limitedColor, `Game (${appID}) has profile features limited`, llcs, settings.limitedIcon);
             iconsEncoding += 8;
         }
 
         if (settings.wantCards && cards && cards[appID] && cards[appID].cards && cards[appID].cards > 0) { // if has cards and enabled
-            html += getIconHTML(settings.cardColor, `Game (${appID}) has ${cards[appID].cards} ${cards[appID].marketable ? "" : "un"}marketable card${cards[appID].cards === 1 ? "" : "s"}`, clcs, settings.cardIcon, `https://www.steamcardexchange.net/index.php?gamepage-appid-${appID}`); // 🂡
+            html += getIconHTML(settings.cardColor, `Game (${appID}) has ${cards[appID].cards} ${cards[appID].marketable ? "" : "un"}marketable card${cards[appID].cards === 1 ? "" : "s"}`, clcs, settings.cardIcon, `https://www.steamcardexchange.net/index.php?gamepage-appid-${appID}`);
             iconsEncoding += 9;
         }
 
         if (settings.wantBundles && bundles && bundles[appID] && bundles[appID].bundles && bundles[appID].bundles > 0) { // if bundled and enabled
-            html += getIconHTML(settings.bundleColor, `Game (${appID}) has been in ${bundles[appID].bundles} bundle${bundles[appID].bundles === 1 ? "" : "s"}`, blcs, settings.bundleIcon, `https://barter.vg/steam/app/${appID}/#bundles`); // 🎁︎
+            html += getIconHTML(settings.bundleColor, `Game (${appID}) has been in ${bundles[appID].bundles} bundle${bundles[appID].bundles === 1 ? "" : "s"}`, blcs, settings.bundleIcon, `https://barter.vg/steam/app/${appID}/#bundles`);
             iconsEncoding += 10;
         }
 
@@ -174,15 +174,15 @@ function doSub(settings, elem, ownedPackages, bundles, lcs, blcs) {
         let iconsEncoding = 0;
 
         if (ownedPackages[subID]) { // if owned
-            html = getIconHTML(settings.ownedColor, `Package (${subID}) owned`, lcs, settings.ownedIcon); // ✔
+            html = getIconHTML(settings.ownedColor, `Package (${subID}) owned`, lcs, settings.ownedIcon);
             iconsEncoding += 1;
         } else { // else not owned
-            html = getIconHTML(settings.unownedColor, `Package (${subID}) not owned`, lcs, settings.unownedIcon); // ✖
+            html = getIconHTML(settings.unownedColor, `Package (${subID}) not owned`, lcs, settings.unownedIcon);
             iconsEncoding += 2;
         }
 
         if (settings.wantBundles && bundles && bundles[subID] && bundles[subID].bundles && bundles[subID].bundles > 0) { // if bundled and enabled
-            html += getIconHTML(settings.bundleColor, `Package (${subID}) has been in ${bundles[subID].bundles} bundle${bundles[subID].bundles === 1 ? "" : "s"}`, blcs, settings.bundleIcon, `https://barter.vg/steam/sub/${subID}/#bundles`); // 🎁︎
+            html += getIconHTML(settings.bundleColor, `Package (${subID}) has been in ${bundles[subID].bundles} bundle${bundles[subID].bundles === 1 ? "" : "s"}`, blcs, settings.bundleIcon, `https://barter.vg/steam/sub/${subID}/#bundles`);
             iconsEncoding += 10;
         }
 
@@ -278,7 +278,6 @@ function integrate(settings, userdata, decommissioned, cards, bundles, limited, 
     };
 
     let setupSWI = () => {
-        console.log("[Steam Web Integration] Executing");
         doSWI(0);
 
         chrome.runtime.onMessage.addListener((message) => {
