@@ -14,10 +14,10 @@ function getIconHTML(color, str, lcs, icon, link) {
     const { name, version, author } = chrome.runtime.getManifest();
     const titlePlus = `\nLast updated at ${lcs}\n${name} (${version}) by ${author}`;
     if (link) {
-        return `<span title="${str}\n${titlePlus}"><a style="color: ${color} !important;" href="${link}" target="_blank">${icon}</a></span>`;
+        return `<span title="${str}\n${titlePlus}"><a style="color: ${color} !important;" href="${link}" target="_blank"><i class="fa-solid fa-${icon}"></i></a></span>`;
     }
 
-    return `<span style="color: ${color} !important;" title="${str} on Steam\n${titlePlus}">${icon}</span>`;
+    return `<span style="color: ${color} !important;" title="${str} on Steam\n${titlePlus}"><i class="fa-solid fa-${icon}"></i></span>`;
 }
 
 function convertToRGB(color) {
@@ -136,7 +136,7 @@ function doApp(settings, elem, wishlist, ownedApps, ignoredApps, followedApps, d
 
         const today = new Date().toLocaleString("sv-SE");
         if (today.includes("-04-01 ")) {
-            html += getIconHTML("green", "April Fools!\nClick for the joke :)", today, "&#129313;&#xFE0E;", "https://steamcommunity.com/groups/RemGC");
+            html += getIconHTML("green", "April Fools!\nClick for the joke :)", today, "triangle-exclamation", "https://steamcommunity.com/groups/RemGC");
         }
 
         if (settings.prefix) {
@@ -311,6 +311,13 @@ function integrate(settings, userdata, decommissioned, cards, bundles, limited, 
     document.addEventListener("DOMContentLoaded", setupSWI);
 }
 
+function addStylesheet(url) {
+    let link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = chrome.runtime.getURL(url);
+    document.head.appendChild(link);
+}
+
 function addStyle(css) {
     let style = document.createElement("style");
     style.innerHTML = css;
@@ -349,6 +356,8 @@ async function init() {
         let data = await chrome.runtime.sendMessage({ "action": "getData" });
         let { userdata, decommissioned, cards, bundles, limited, dlcs, lastCached } = data;
         addStyle(css);
+        addStylesheet("/css/fontawesome.min.css");
+        addStylesheet("/css/solid.min.css");
         integrate(settings, userdata, decommissioned, cards, bundles, limited, dlcs, lastCached);
     }
 }

@@ -32,6 +32,7 @@ function onChange(elem) {
 
 document.addEventListener("DOMContentLoaded", async() => {
     console.log("[Steam Web Integration] Popup loaded");
+
     let settings = await chrome.runtime.sendMessage({ "action": "getSettings" });
     document.getElementById("blackList").placeholder = "example.com\nftp://\n/bundle/";
     for (let node of document.getElementsByClassName("setting")) {

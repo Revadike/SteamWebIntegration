@@ -6,7 +6,7 @@
   "author": "Revadike",
   "manifest_version": 3,
   "action": {
-    "default_popup": "popup/popup.html",
+    "default_popup": "popup.html",
     "default_title": "Steam Web Integration",
     "default_icon": "images/icon.svg"
   },
@@ -17,7 +17,11 @@
     {
       "run_at": "document_start",
       "js": [
-        "scripts/foreground.js"
+        "scripts/content.js"
+      ],
+      "css": [
+        "css/fontawesome.min.css",
+        "css/solid.min.css"
       ],
       "matches": [
         "https://*/*",
@@ -28,9 +32,22 @@
   "background": {
     "service_worker": "scripts/background.js"
   },
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "https://*/*",
+        "http://*/*"
+      ],
+      "resources": [
+        "webfonts/fa-solid-900.woff2",
+        "webfonts/fa-solid-900.ttf",
+        "css/fontawesome.min.css",
+        "css/solid.min.css"
+      ]
+    }
+  ],
   "permissions": [
     "storage",
-    "scripting",
     "unlimitedStorage"
   ],
   "host_permissions": [

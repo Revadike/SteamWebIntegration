@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "mkdir build && cp manifest.json build/manifest.json && cp LICENSE build/LICENSE && cp -r --parents images build && cp -r --parents popup build && cp -r --parents scripts build",
+    "build": "mkdir build && cp manifest.json build/manifest.json && cp popup.html build/popup.html && cp LICENSE build/LICENSE && cp -r --parents images build && cp -r --parents css build && cp -r --parents webfonts build && cp -r --parents scripts build",
     "build:firefox": "cp manifest.firefox.json manifest.json",
     "build:chromium": "cp manifest.chromium.json manifest.json",
     "build:xpi": "npm run build:firefox && npm run build && (cd build && zip -r ../bin/steamwebintegration.xpi .) && npm run build:clear",
