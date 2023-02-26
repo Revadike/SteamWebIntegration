@@ -2,8 +2,13 @@
   "name": "Steam Web Integration",
   "description": "Integrate your personal Steam information on the web, at your convenience!.",
   "homepage_url": "https://github.com/revadike/steamwebintegration",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": "Revadike",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "revadike@outlook.com"
+    }
+  },
   "manifest_version": 3,
   "action": {
     "default_popup": "popup.html",
@@ -20,6 +25,7 @@
         "scripts/content.js"
       ],
       "css": [
+        "css/content.css",
         "css/fontawesome.min.css",
         "css/solid.min.css"
       ],
@@ -43,6 +49,7 @@
       "resources": [
         "webfonts/fa-solid-900.woff2",
         "webfonts/fa-solid-900.ttf",
+        "css/content.css",
         "css/fontawesome.min.css",
         "css/solid.min.css"
       ]

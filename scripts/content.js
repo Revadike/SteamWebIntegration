@@ -14,10 +14,10 @@ function getIconHTML(color, str, lcs, icon, link, extraIcon = "") {
     const { name, version, author } = chrome.runtime.getManifest();
     const titlePlus = `\nLast updated at ${lcs}\n${name} (${version}) by ${author}`;
     if (link) {
-        return `<span title="${str}\n${titlePlus}"><a style="color: ${color} !important;" href="${link}" target="_blank"><i class="fa-solid fa-${icon}"></i>${extraIcon}</a></span>`;
+        return `<span title="${str}\n${titlePlus}"><a style="color: ${color} !important;" href="${link}" target="_blank"><i class="swi fa-solid fa-${icon}"></i>${extraIcon}</a></span>`;
     }
 
-    return `<span style="color: ${color} !important;" title="${str} on Steam\n${titlePlus}"><i class="fa-solid fa-${icon}"></i>${extraIcon}</span>`;
+    return `<span style="color: ${color} !important;" title="${str} on Steam\n${titlePlus}"><i class="swi fa-solid fa-${icon}"></i>${extraIcon}</span>`;
 }
 
 function convertToRGB(color) {
@@ -108,7 +108,7 @@ function doApp(settings, elem, wishlist, ownedApps, ignoredApps, followedApps, d
         if (settings.wantDLC && dlc && dlc[appID]) { // if DLC and enabled
             const base = dlc[appID].base_appID;
             const ownsBase = Boolean(ownedApps[base]);
-            const extraIcon = `<span style="color: ${ownsBase ? settings.ownedColor : settings.unownedColor}; font-weight: bold; font-size: 66%; position: absolute; margin: -4% 0% 0% -4%;">${ownsBase ? "<i class=\"fa-solid fa-plus\"></i>" : "<i class=\"fa-solid fa-minus\"></i>"}</span>&nbsp;`;
+            const extraIcon = `<span style="color: ${ownsBase ? settings.ownedColor : settings.unownedColor}; font-weight: bold; font-size: 66%; position: absolute; margin: -4% 0% 0% -4%;">${ownsBase ? "<i class=\"swi fa-solid fa-plus\"></i>" : "<i class=\"swi fa-solid fa-minus\"></i>"}</span>&nbsp;`;
             html += getIconHTML(settings.dlcColor, `${subject} (${appID}) is downloadable content for an ${ownsBase ? "" : "un"}owned base game (${base})`, dlclcs, settings.dlcIcon, undefined, extraIcon);
             iconsEncoding += 6;
         }
@@ -294,11 +294,30 @@ function integrate(settings, userdata, decommissioned, cards, bundles, limited, 
             return;
         }
 
-        // TODO: Implement observe mode
         if (settings.dynamicContent === "observe") {
-            // $("body").observe({ "added": true, "attributes": true, "attributeFilter": settings.attributes }, appSelector, () => doSWI());
-            // $("body").observe({ "added": true, "attributes": true, "attributeFilter": ["href"] }, subSelector, () => doSWI());
-            console.log("[Steam Web Integration] Observe not implemented yet!");
+            let observer = new MutationObserver((mutationsList) => {
+                for (let mutation of mutationsList) {
+                    if (mutation.type === "childList") {
+                        doSWI();
+                    } else if (mutation.type === "attributes" && mutation.target.classList.contains("swi")) {
+                        let { previousSibling, nextSibling } = mutation.target;
+                        if (previousSibling.classList.contains("swi-block")) {
+                            previousSibling.remove();
+                        } else if (nextSibling.classList.contains("swi-block")) {
+                            nextSibling.remove();
+                        }
+                        mutation.target.classList.remove("swi");
+                        doSWI();
+                    }
+                }
+            });
+
+            observer.observe(document, {
+                "childList":       true,
+                "subtree":         true,
+                "attributes":      true,
+                "attributeFilter": settings.attributes,
+            });
         } else if (settings.dynamicContent === "ping") {
             pinger = setInterval(doSWI, settings.pingInterval);
         }
@@ -326,29 +345,11 @@ function addStyle(css) {
 
 async function init() {
     let settings = await chrome.runtime.sendMessage({ "action": "getSettings" });
-    let css = `
-        .swi-block {
-            display: inline-block;
-            line-height: initial;
-            font-size: ${settings.iconsScale}em;
-            font-weight: ${settings.iconsBold ? "bold" : "normal"};
-        }
-        .swi-block.swi-boxed {
-            background: rgba(${convertToRGB(settings.boxColor).join(", ")}, ${settings.boxOpacity});
-            border-radius: 5px;
-            margin: auto 4px auto 4px;
-            padding: 2px 4px 2px 4px;
-            position: relative;
-        }
-        .swi-block > span {
-            cursor: help;
-            margin: 2px;
-        }
-        .swi-block > span > a {
-            cursor: help;
-            text-decoration: none;
-        }
-    `;
+    let css = `:root {
+        --swi-font-size: ${settings.iconsScale}em;
+        --swi-font-weight: ${settings.iconsBold ? "bold" : "normal"};
+        --swi-boxed-bg: rgba(${convertToRGB(settings.boxColor).join(", ")}, ${settings.boxOpacity})
+    }`;
 
     const matchUrl = settings.blackList.split("\n").find((url) => location.href.includes(url.trim()));
     if ((settings.whiteListMode && matchUrl) || (!settings.whiteListMode && !matchUrl)) {
@@ -356,6 +357,7 @@ async function init() {
         let data = await chrome.runtime.sendMessage({ "action": "getData" });
         let { userdata, decommissioned, cards, bundles, limited, dlcs, lastCached } = data;
         addStyle(css);
+        addStylesheet("/css/content.css");
         addStylesheet("/css/fontawesome.min.css");
         addStylesheet("/css/solid.min.css");
         integrate(settings, userdata, decommissioned, cards, bundles, limited, dlcs, lastCached);

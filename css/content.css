@@ -1,0 +1,24 @@
+.swi-block {
+    display: inline-block;
+    line-height: initial;
+    font-size: var(--swi-font-size);
+    font-weight: var(--swi-font-weight);
+}
+
+.swi-block.swi-boxed {
+    background: var(--swi-boxed-bg);
+    border-radius: 5px;
+    margin: auto 4px auto 4px;
+    padding: 2px 4px 2px 4px;
+    position: relative;
+}
+
+.swi-block>span {
+    cursor: help;
+    margin: 2px;
+}
+
+.swi-block>span>a {
+    cursor: help;
+    text-decoration: none;
+}

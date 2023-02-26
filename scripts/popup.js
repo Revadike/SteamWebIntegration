@@ -35,13 +35,6 @@ function onChange(elem) {
     const { name, value, type, checked } = elem;
     const newSettings = {};
 
-    // TODO: Remove this when the mode is implemented
-    if (name === "dynamicContent" && value === "observe") {
-        // eslint-disable-next-line no-alert
-        alert("This mode is not yet implemented. Please select a different mode for now.");
-        return;
-    }
-
     if (type === "checkbox") {
         newSettings[name] = Boolean(checked);
     } else if (type === "select-multiple") {

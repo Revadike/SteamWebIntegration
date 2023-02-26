@@ -8,7 +8,7 @@ async function getFromStorage(key, defaultValue) {
 async function getSettings() {
     const defaults = {
         "attributes":                    ["href", "src", "style"],
-        "blackList":                     "",
+        "blackList":                     "https://store.steampowered.com/\nhttps://steamcommunity.com/",
         "boxColor":                      "#000000",
         "boxDynamicColor":               false,
         "boxed":                         true,
