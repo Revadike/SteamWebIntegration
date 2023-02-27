@@ -13,10 +13,14 @@
   "action": {
     "default_popup": "popup.html",
     "default_title": "Steam Web Integration",
-    "default_icon": "images/icon.svg"
+    "default_icon": "images/icon256.png"
   },
   "icons": {
-    "48": "images/icon.svg"
+    "16": "images/icon16.png",
+    "32": "images/icon32.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png",
+    "256": "images/icon256.png"
   },
   "content_scripts": [
     {
@@ -57,11 +61,10 @@
   ],
   "permissions": [
     "storage",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "contextMenus"
   ],
   "host_permissions": [
-    "https://bartervg.com/*",
-    "https://store.steampowered.com/*",
-    "https://steam-tracker.com/*"
+    "https://store.steampowered.com/*"
   ]
 }

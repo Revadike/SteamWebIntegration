@@ -16,6 +16,11 @@
 ## Screenshot
 ![image](https://user-images.githubusercontent.com/4411977/221296248-1abfbc0a-bb3b-409f-bb97-639593e85379.png)
 
+## Download
+
+ * [FireFox Addon](https://addons.mozilla.org/en-US/firefox/addon/steam-web-integration/)
+ * [Chrome Extension](https://chrome.google.com/webstore/detail/steam-web-integration/bcjlaaocogjkkhbmjhlhonmpnngnlogn)
+
 ## Features
  * Checks web pages for links or images of steam games or DLC
  * Displays informative icons next to the link or image
@@ -31,8 +36,8 @@
    * Steam Trading Cards
    * Game bundle history
  * Caching of data
- * Support for dynamically changing web content (**Currently unavailable**)
- * Context menu options (**Currently unavailable**)
+ * Support for dynamically changing web content
+ * Context menu options
  * Highly configurable
 
 ## FAQ

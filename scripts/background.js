@@ -260,3 +260,34 @@ async function onMessage(message) {
 }
 
 chrome.runtime.onMessage.addListener(onMessage);
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+    switch (info.menuItemId) {
+        case "run-swi":
+            chrome.tabs.sendMessage(tab.id, { "action": "runSWI" });
+            break;
+        case "reload-swi":
+            chrome.tabs.sendMessage(tab.id, { "action": "reloadSWI" });
+            break;
+        case "clear-swi":
+            chrome.tabs.sendMessage(tab.id, { "action": "clearSWI" });
+            break;
+        default:
+            break;
+    }
+});
+chrome.contextMenus.create({
+    "id":       "run-swi",
+    "title":    "Run",
+    "contexts": ["page"],
+});
+chrome.contextMenus.create({
+    "id":       "reload-swi",
+    "title":    "Reload",
+    "contexts": ["page"],
+});
+chrome.contextMenus.create({
+    "id":       "clear-swi",
+    "title":    "Clear",
+    "contexts": ["page"],
+});

@@ -2,10 +2,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
 }
 
-
-#actions {
+.action-buttons {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -13,27 +13,26 @@
     margin: 0 0 10px 0;
 }
 
-#actions button {
+.action-buttons button {
     width: 100%;
     font-size: large;
     padding: 10px;
     margin: 0 5px;
 }
 
-
-#actions button:hover {
+.action-buttons button:hover {
     cursor: pointer;
 }
 
-#actions button:active {
+.action-buttons button:active {
     background-color: #e6e6e6;
 }
 
-#actions button:focus {
+.action-buttons button:focus {
     outline: none;
 }
 
-#actions button:disabled {
+.action-buttons button:disabled {
     background-color: #e6e6e6;
     color: #999999;
     cursor: not-allowed;
@@ -171,6 +170,7 @@ pre kbd {
     font-size: 100%;
 }
 
+body,
 table {
     border-collapse: collapse;
     margin: 25px 0;

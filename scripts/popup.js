@@ -50,6 +50,31 @@ function onChange(elem) {
 document.addEventListener("DOMContentLoaded", async() => {
     console.log("[Steam Web Integration] Popup loaded");
 
+    const permissions = {
+        "origins": ["https://store.steampowered.com/*", "http://*/*", "https://*/*"],
+        // "permissions": ["storage", "unlimitedStorage", "contextMenus"],
+    };
+
+    let granted = await chrome.permissions.contains(permissions);
+    if (!granted) {
+        document.getElementById("setup-block").style.display = "block";
+        document.getElementById("ready-block").style.display = "none";
+        document.getElementById("setup").addEventListener("click", () => {
+            chrome.permissions.request(permissions, (granted) => {
+                if (granted) {
+                    location.reload();
+                } else {
+                    // eslint-disable-next-line no-alert
+                    alert("You must grant the permissions to use this extension.");
+                }
+            });
+            window.close();
+        });
+        return;
+    }
+
+    document.getElementById("setup-block").style.display = "none";
+    document.getElementById("ready-block").style.display = "block";
     let settings = await chrome.runtime.sendMessage({ "action": "getSettings" });
     document.getElementById("blackList").placeholder = "example.com\nftp://\n/bundle/";
     for (let node of document.getElementsByClassName("setting")) {
