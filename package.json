@@ -1,6 +1,6 @@
 {
   "name": "steamwebintegration",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Integrate your personal Steam information on the web, at your convenience!",
   "main": "manifest.json",
   "type": "module",
@@ -27,6 +27,6 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.19.1",
     "crx": "^5.0.1",
-    "eslint": "^8.34.0"
+    "eslint": "^8.35.0"
   }
 }

@@ -222,7 +222,7 @@ async function getData() {
 
         console.log(`[Steam Web Integration] Refreshing '${task.key}' data`);
         data[task.key] = await task.promise().catch((error) => {
-            console.error(error);
+            console.error(`[Steam Web Integration] Error while refreshing '${task.key}' data:`, error);
             return data[task.key];
         });
         data.lastCached[task.key] = Date.now();
@@ -236,27 +236,32 @@ async function getData() {
     return data;
 }
 
-async function onMessage(message) {
+function onMessage(message, sender, sendResponse) {
     console.log("[Steam Web Integration] Received message: ", message);
     switch (message.action) {
         case "getData":
             dataPromise = dataPromise || getData();
-            return dataPromise;
+            dataPromise.then((data) => sendResponse(data));
+            break;
         case "getSettings":
-            return getSettings();
+            getSettings().then((settings) => sendResponse(settings));
+            break;
         case "runSWI":
         case "reloadSWI":
         case "clearSWI":
-            return chrome.tabs.query({
+            chrome.tabs.query({
                 "active":        true,
                 "currentWindow": true,
             }, (tabs) => {
                 let myTabId = tabs[0].id;
                 chrome.tabs.sendMessage(myTabId, message);
             });
+            sendResponse(true);
+            break;
         default:
             throw new Error("Unknown message action");
     }
+    return true;
 }
 
 chrome.runtime.onMessage.addListener(onMessage);
