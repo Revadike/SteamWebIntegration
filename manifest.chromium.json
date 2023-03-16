@@ -2,7 +2,7 @@
   "name": "Steam Web Integration",
   "description": "Integrate your personal Steam information on the web, at your convenience!.",
   "homepage_url": "https://github.com/revadike/steamwebintegration",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "author": "Revadike",
   "manifest_version": 3,
   "action": {

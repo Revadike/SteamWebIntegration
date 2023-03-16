@@ -5,7 +5,7 @@ async function getFromStorage(key, defaultValue) {
     return response[key];
 }
 
-async function getSettings() {
+async function getSettings(newSettings = {}) {
     const defaults = {
         "attributes":                    ["href", "src", "style"],
         "blackList":                     "https://store.steampowered.com/\nhttps://steamcommunity.com/",
@@ -26,7 +26,7 @@ async function getSettings() {
         "dlcColor":                      "#a655b2",
         "dlcIcon":                       "download",
         "dlcRefreshInterval":            1440,
-        "dynamicContent":                "disabled",
+        "dynamicContent":                "ping",
         "followedColor":                 "#f7dc6f",
         "followedIcon":                  "star",
         "iconsBold":                     false,
@@ -64,6 +64,18 @@ async function getSettings() {
 
     await chrome.storage.local.set({ "swi_settings": settings });
     return settings;
+}
+
+async function addToBlacklist(url) {
+    let settings = await getSettings();
+    let uri = new URL(url);
+    settings.blackList = [
+        ...new Set(
+            [...settings.blackList.split("\n"), uri.host],
+        ),
+    ].join("\n");
+
+    await chrome.storage.local.set({ "swi_settings": settings });
 }
 
 function arrayToObject(array, key) {
@@ -277,6 +289,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         case "clear-swi":
             chrome.tabs.sendMessage(tab.id, { "action": "clearSWI" });
             break;
+        case "add-to-blacklist":
+            addToBlacklist(tab.url);
+            break;
         default:
             break;
     }
@@ -294,5 +309,10 @@ chrome.contextMenus.create({
 chrome.contextMenus.create({
     "id":       "clear-swi",
     "title":    "Clear",
+    "contexts": ["page"],
+});
+chrome.contextMenus.create({
+    "id":       "add-to-blacklist",
+    "title":    "Add to whitelist/blacklist",
     "contexts": ["page"],
 });

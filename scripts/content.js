@@ -318,16 +318,19 @@ function integrate(settings, userdata, decommissioned, cards, bundles, limited, 
                 "attributes":      true,
                 "attributeFilter": settings.attributes,
             });
-        } else if (settings.dynamicContent === "ping") {
-            pinger = setInterval(doSWI, settings.pingInterval);
         }
     };
 
-    if (document.readyState === "complete" || document.readyState === "loaded") {
-        setupSWI();
+    if (settings.dynamicContent === "ping") {
+        pinger = setInterval(doSWI, settings.pingInterval, 0);
+        return;
     }
 
-    document.addEventListener("DOMContentLoaded", setupSWI);
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        setupSWI();
+    } else {
+        document.addEventListener("DOMContentLoaded", setupSWI);
+    }
 }
 
 function addStylesheet(url) {
