@@ -39,6 +39,10 @@
  * Context menu options
  * Highly configurable
 
+## Used Libraries
+  * [JSColor](https://github.com/EastDesire/jscolor)
+  * [FontAwesome](https://fontawesome.com/)
+
 ## FAQ
 
 ### Why does it not work?
