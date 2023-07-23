@@ -1,13 +1,12 @@
 
 # Steam Web Integration
 
-[![GitHub license](https://img.shields.io/github/license/Revadike/SteamWebIntegration)](https://github.com/Revadike/SteamWebIntegration/blob/master/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/Revadike/SteamWebIntegration)](https://github.com/Revadike/SteamWebIntegration/issues)
-[![GitHub stars](https://img.shields.io/github/stars/Revadike/SteamWebIntegration)](https://github.com/Revadike/SteamWebIntegration/stargazers)
-[![Github stable release downloads](https://img.shields.io/github/downloads/Revadike/SteamWebIntegration/latest/total.svg?label=Downloads&maxAge=600)](https://github.com/Revadike/SteamWebIntegration/releases/latest)
-[![GitHub stable release date](https://img.shields.io/github/release-date/Revadike/SteamWebIntegration.svg?label=Released&maxAge=600)](https://github.com/Revadike/SteamWebIntegration/releases/latest)
-[![GitHub stable release version](https://img.shields.io/github/release/Revadike/SteamWebIntegration.svg?label=Stable&maxAge=600)](https://github.com/Revadike/SteamWebIntegration/releases/latest)
-[![Steam donate](https://img.shields.io/badge/Steam-donate-yellow.svg)](https://steamcommunity.com/tradeoffer/new/?partner=82699538&token=V7DQVtra)
+[![GitHub license](https://img.shields.io/github/license/Revadike/SteamWebIntegration?style=for-the-badge&logo=github)](https://github.com/Revadike/SteamWebIntegration/blob/master/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/Revadike/SteamWebIntegration?style=for-the-badge&logo=github)](https://github.com/Revadike/SteamWebIntegration/issues)
+[![GitHub stars](https://img.shields.io/github/stars/Revadike/SteamWebIntegration?style=for-the-badge&logo=github)](https://github.com/Revadike/SteamWebIntegration/stargazers)
+[![GitHub stable release date](https://img.shields.io/github/release-date/Revadike/SteamWebIntegration.svg?label=Released&maxAge=600&style=for-the-badge)](https://github.com/Revadike/SteamWebIntegration/releases/latest)
+[![GitHub stable release version](https://img.shields.io/github/release/Revadike/SteamWebIntegration.svg?label=Stable&maxAge=600&style=for-the-badge)](https://github.com/Revadike/SteamWebIntegration/releases/latest)
+[![Steam donate](https://img.shields.io/badge/Steam-donate-yellow.svg?logo=steam&style=for-the-badge)](https://steamcommunity.com/tradeoffer/new/?partner=82699538&token=V7DQVtra)
 
 
 > Integrate your personal Steam information on the web, at your convenience!
@@ -18,8 +17,8 @@
 
 ## Download
 
- * [FireFox Addon](https://addons.mozilla.org/en-US/firefox/addon/steam-web-integration/)
- * [Chrome Extension](https://chrome.google.com/webstore/detail/steam-web-integration/bcjlaaocogjkkhbmjhlhonmpnngnlogn)
+[![chrome](https://img.shields.io/chrome-web-store/users/bcjlaaocogjkkhbmjhlhonmpnngnlogn?label=chrome&style=for-the-badge&logo=googlechrome)](https://chrome.google.com/webstore/detail/steam-web-integration/bcjlaaocogjkkhbmjhlhonmpnngnlogn)
+[![firefox](https://img.shields.io/amo/users/steam-web-integration?label=firefox&color=4c1&style=for-the-badge&logo=firefoxbrowser)](https://addons.mozilla.org/firefox/addon/steam-web-integration/)
 
 ## Features
  * Checks web pages for links or images of steam games or DLC
@@ -39,6 +38,10 @@
  * Support for dynamically changing web content
  * Context menu options
  * Highly configurable
+
+## Used Libraries
+  * [JSColor](https://github.com/EastDesire/jscolor)
+  * [FontAwesome](https://fontawesome.com/)
 
 ## FAQ
 
