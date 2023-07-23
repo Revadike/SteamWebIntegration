@@ -47,6 +47,7 @@ svg {
 textarea {
     resize: none;
     height: 100%;
+    font-size: 14px;
     width: 18em;
     background: #111;
     border: none;
@@ -173,12 +174,20 @@ select {
 .text_header {
     font-size: 25px;
     font-weight: bold;
+    margin-left: 6px;
 }
 
 .seperator {
     width: 100%;
     height: 1px;
     background: linear-gradient(to right, #00ccff, #3366ff);
+}
+
+.notice {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    font-size: 12px;
 }
 
 .modal {
@@ -210,7 +219,7 @@ select {
     border-bottom: 1px solid #ffffff2e;
     grid-template-columns: 1fr 1fr;
     align-items: center;
-    font-size: 16px;
+    font-size: 14px;
     min-height: 80px;
 }
 
@@ -238,6 +247,8 @@ select {
     text-align: left;
     outline: none;
     font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .active,
@@ -290,7 +301,7 @@ select {
     top: 50%;
     width: 39px;
     height: 25px;
-    margin: -14px auto 0 auto;
+    margin: -14px 0 0 auto;
     overflow: hidden;
 }
 
