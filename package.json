@@ -21,6 +21,14 @@
     "url": "git+https://github.com/revadike/steamwebintegration.git"
   },
   "author": "Revadike",
+  "contributors": [
+    "bestpika",
+    "HCLonely",
+    "Luckz",
+    "pumPCin",
+    "undefo",
+    "WiLuX-Source"
+  ],
   "license": "LICENSE",
   "bugs": {
     "url": "https://github.com/revadike/steamwebintegration/issues"
