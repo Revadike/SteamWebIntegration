@@ -72,6 +72,10 @@ function onChange(elem) {
             }
         }
         newSettings[name] = Number.isFinite(value) ? Number(value) : value;
+
+        if (name.endsWith("Icon")) {
+            document.querySelector(`i#${name}Color`).setAttribute("class", `swi fa-solid fa-${value}`);
+        }
     }
 
     setSettings(newSettings);
@@ -108,6 +112,9 @@ document.addEventListener("DOMContentLoaded", async() => {
         });
     }
     /* Collapsibles */
+
+    const { name, version, author } = chrome.runtime.getManifest();
+    document.querySelector(".logo").title = `${name} (${version}) by ${author}`;
 
     const permissions = {
         "origins": ["https://store.steampowered.com/*", "http://*/*", "https://*/*"],
@@ -166,7 +173,10 @@ document.addEventListener("DOMContentLoaded", async() => {
                     x.style.opacity = "0.5";
                 });
             }
-            node.dispatchEvent(new Event("input", { "bubbles": true }));
+            node.dispatchEvent(new Event("change", { "bubbles": true }));
+            if (name.endsWith("Icon")) {
+                document.querySelector(`i#${name}Color`).setAttribute("class", `swi fa-solid fa-${value}`);
+            }
         }
 
         node.addEventListener("change", () => onChange(node));
@@ -199,84 +209,22 @@ document.addEventListener("DOMContentLoaded", async() => {
                 x.setAttribute("disabled", "");
             });
         }
+
+        node.addEventListener("change", (a) => {
+            document.querySelectorAll(`.${name}Disable`).forEach((x) => (a.target.checked ? x.removeAttribute("disabled") : x.setAttribute("disabled", "")));
+        });
     }
+
     for (let node of document.querySelectorAll("[data-colorinput]")) {
         const name = node.dataset.colorinput;
         const value = settings[name];
         node.style.color = value;
+
+        const longname = `${name.replace("Color", "")}IconColor`;
+        document.getElementById(`${longname}Input`).addEventListener("change", (a) => {
+            document.querySelector(`#${longname}`).style.color = a.target.value;
+        });
     }
-    document.getElementById("ignoredCheck").addEventListener("change", (a) => {
-        document.querySelectorAll(".ignoredDisable").forEach((x) => {
-            // eslint-disable-next-line no-unused-expressions
-            a.target.checked ? x.removeAttribute("disabled") : x.setAttribute("disabled", "");
-        });
-    });
-    document.getElementById("followedCheck").addEventListener("change", (a) => {
-        document.querySelectorAll(".followedDisable").forEach((x) => {
-            // eslint-disable-next-line no-unused-expressions
-            a.target.checked ? x.removeAttribute("disabled") : x.setAttribute("disabled", "");
-        });
-    });
-    document.getElementById("dlcCheck").addEventListener("change", (a) => {
-        document.querySelectorAll(".dlcDisable").forEach((x) => {
-            // eslint-disable-next-line no-unused-expressions
-            a.target.checked ? x.removeAttribute("disabled") : x.setAttribute("disabled", "");
-        });
-    });
-    document.getElementById("decommissionedCheck").addEventListener("change", (a) => {
-        document.querySelectorAll(".decommissionedDisable").forEach((x) => {
-            // eslint-disable-next-line no-unused-expressions
-            a.target.checked ? x.removeAttribute("disabled") : x.setAttribute("disabled", "");
-        });
-    });
-    document.getElementById("limitedCheck").addEventListener("change", (a) => {
-        document.querySelectorAll(".limitedDisable").forEach((x) => {
-            // eslint-disable-next-line no-unused-expressions
-            a.target.checked ? x.removeAttribute("disabled") : x.setAttribute("disabled", "");
-        });
-    });
-    document.getElementById("cardCheck").addEventListener("change", (a) => {
-        document.querySelectorAll(".cardDisable").forEach((x) => {
-            // eslint-disable-next-line no-unused-expressions
-            a.target.checked ? x.removeAttribute("disabled") : x.setAttribute("disabled", "");
-        });
-    });
-    document.getElementById("bundleCheck").addEventListener("change", (a) => {
-        document.querySelectorAll(".bundleDisable").forEach((x) => {
-            // eslint-disable-next-line no-unused-expressions
-            a.target.checked ? x.removeAttribute("disabled") : x.setAttribute("disabled", "");
-        });
-    });
-    document.getElementById("ignoredIconColorInput").addEventListener("change", (a) => {
-        document.querySelector("#ignoredIconColor").style.color = a.target.value;
-    });
-    document.getElementById("followedIconColorInput").addEventListener("change", (a) => {
-        document.querySelector("#followedIconColor").style.color = a.target.value;
-    });
-    document.getElementById("dlcIconColorInput").addEventListener("change", (a) => {
-        document.querySelector("#dlcIconColor").style.color = a.target.value;
-    });
-    document.getElementById("decommissionedIconColorInput").addEventListener("change", (a) => {
-        document.querySelector("#decommissionedIconColor").style.color = a.target.value;
-    });
-    document.getElementById("limitedIconColorInput").addEventListener("change", (a) => {
-        document.querySelector("#limitedIconColor").style.color = a.target.value;
-    });
-    document.getElementById("cardIconColorInput").addEventListener("change", (a) => {
-        document.querySelector("#cardIconColor").style.color = a.target.value;
-    });
-    document.getElementById("bundleIconColorInput").addEventListener("change", (a) => {
-        document.querySelector("#bundleIconColor").style.color = a.target.value;
-    });
-    document.getElementById("ownedIconColorInput").addEventListener("change", (a) => {
-        document.querySelector("#ownedIconColor").style.color = a.target.value;
-    });
-    document.getElementById("unownedIconColorInput").addEventListener("change", (a) => {
-        document.querySelector("#unownedIconColor").style.color = a.target.value;
-    });
-    document.getElementById("wishlistIconColorInput").addEventListener("change", (a) => {
-        document.querySelector("#wishlistIconColor").style.color = a.target.value;
-    });
     /* Icon Group */
 
     /* Modal */

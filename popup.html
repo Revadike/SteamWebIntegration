@@ -1,364 +1,366 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Steam Web Integration Settings</title>
-        <link rel="stylesheet" href="/css/popup.css">
-        <link rel="stylesheet" href="/css/fontawesome.min.css">
-        <link rel="stylesheet" href="/css/solid.min.css">
-        <script type="application/javascript" src="scripts/jscolor.min.js"></script>
-        <script type="application/javascript" src="scripts/popup.js"></script>
-    </head>
+  <head>
+    <meta charset="UTF-8">
+    <title>Steam Web Integration Settings</title>
+    <link rel="stylesheet" href="/css/popup.css">
+    <link rel="stylesheet" href="/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/css/solid.min.css">
+    <script type="application/javascript" src="scripts/jscolor.min.js"></script>
+    <script type="application/javascript" src="scripts/popup.js"></script>
+  </head>
 
-    <body>
-        <div id="menu">
-            <div class="menu_section">
-                <img class="menu_button" src="/images/SWI.svg" />
-                <span class="text_header">SWI</span>
-            </div>
-            <div class="menu_section">
-                <button id="run" class="button_base buttonDisable"><span>Run</span></button>
-                <button id="clear" class="button_base buttonDisable"><span>Clear</span></button>
-                <button id="reload" class="button_base buttonDisable"><span>Reload</span></button>
-                <button data-modal="resetmodal" title="The good old factory reset."
-                    class="button_base button_danger"><span>Reset</span></button>
-            </div>
+  <body>
+
+    <div id="menu">
+      <div class="menu_section logo">
+        <img class="menu_button" src="/images/SWI.svg">
+        <span class="text_header">SWI</span>
+      </div>
+      <div class="menu_section">
+        <button id="run" class="button_base buttonDisable"><span>Run</span></button>
+        <button id="clear" class="button_base buttonDisable"><span>Clear</span></button>
+        <button id="reload" class="button_base buttonDisable"><span>Reload</span></button>
+        <button data-modal="resetmodal" title="The good old factory reset." class="button_base button_danger"><span>Reset</span></button>
+      </div>
+    </div>
+    <div class="seperator"></div>
+
+    <div id="snackbar">Saved!</div>
+    <div id="overlay"></div>
+
+    <div id="settingsholder">
+      <button class="collapsible">
+        <i class="swi fa-solid fa-cog"></i>
+        &nbsp; General
+      </button>
+      <div class="content">
+        <div class="setting" title="Enter a list of domains or (partial) URLs you don't want SWI to run on – separated by line breaks (enter/return).">
+          <span id="blackListText">Blacklist</span>
+          <textarea data-setting="blackList" id="blackList"></textarea>
         </div>
-        <div class="seperator"></div>
-        <div id="snackbar">Saved!</div>
-        <div id="overlay"></div>
-        <div id="settingsholder">
-            <button class="collapsible">General</button>
-            <div class="content">
-                <div class="setting">
-                    <span
-                        title="Enter a list of domains or (partial) URLs you don't want SWI to run on – separated by line breaks (enter/return)."
-                        id="blackListText">Blacklist</span>
-                    <textarea data-setting="blackList" id="blackList"></textarea>
-                </div>
-                <div class="setting">
-                    <span
-                        title="Convert the blackList to a whitelist, such that SWI will only run on matching domains (or partial URLs).">Whitelist
-                        mode</span>
-                    <div class="toggle-button-cover">
-                        <div class="button-cover">
-                            <div class="button r toggle-button">
-                                <input data-setting="whiteListMode" type="checkbox" class="checkbox" />
-                                <div class="knobs"></div>
-                                <div class="layer"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="setting">
-                    <span title="Select which method you prefer to detect dynamically loaded web content.">Dynamic
-                        content</span>
-                    <select data-setting="dynamicContent" id="dynamicContent" name="dynamicContent">
-                        <option value="observe" selected="">Observe web page content</option>
-                        <option value="ping">Periodically check web page</option>
-                        <option value="disabled">Disabled (only check once)</option>
-                    </select>
-                </div>
-                <div class="setting">
-                    <span
-                        title="The number of ms in between page checks (only when dynamicContent is set to Periodically check web page).">Ping
-                        interval</span>
-                    <input data-setting="pingInterval" value="1500" min="1000" step="100" type="number" />
-                </div>
-                <div class="setting">
-                    <span
-                        title="Prefix (checked) instead of suffix (unchecked) position for the icons placement.">Prefix</span>
-                    <div class="toggle-button-cover">
-                        <div class="button-cover">
-                            <div class="button r toggle-button">
-                                <input data-setting="prefix" type="checkbox" class="checkbox" />
-                                <div class="knobs"></div>
-                                <div class="layer"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="setting">
-                    <span
-                        title="Whether (checked) or not (unchecked) you want the icons to be displayed in a boxed container.">Boxed</span>
-                    <div class="toggle-button-cover">
-                        <div class="button-cover">
-                            <div class="button r toggle-button">
-                                <input data-setting="boxed" type="checkbox" class="checkbox" />
-                                <div class="knobs"></div>
-                                <div class="layer"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="setting">
-                    <span
-                        title="The opacity percentage of the boxed container, between 0 and 1 (boxed has to be enabled).">Box
-                        opacity</span>
-                    <input class="boxDisable" data-setting="boxOpacity" type="number" value="0.7" min="0" max="1"
-                        step="0.1">
-                </div>
-                <div class="setting">
-                    <span title="The background color of the boxed container (boxed has to be enabled).">Box
-                        color</span>
-                    <input class="boxDisable" data-setting="boxColor" type="text" data-jscolor="{}">
-                </div>
-                <div class="setting">
-                    <span
-                        title="Whether (checked) or not (unchecked) you want a dynamic background color of the boxed container, based on the set of icons (boxColor will be ignored).">Box
-                        dynamic color</span>
-                    <div class="toggle-button-cover">
-                        <div class="button-cover">
-                            <div class="button r toggle-button">
-                                <input data-setting="boxDynamicColor" type="checkbox" class="checkbox boxDisable" />
-                                <div class="knobs"></div>
-                                <div class="layer"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="setting">
-                    <span
-                        title="Select which attributes to check for. Attribute 'href' is for hyperlinks and attributes 'src' and 'style' are for images. Hold down the Ctrl (Windows) / Command (Mac) button to select multiple options.">Attributes</span>
-                    <select data-setting="attributes" multiple>
-                        <option value="href" selected="">href</option>
-                        <option value="src" selected="">src</option>
-                        <option value="style" selected="">style</option>
-                    </select>
-                </div>
-                <div class="setting">
-                    <span title="Whether (checked) or not (unchecked) you want the icons to appear bold.">Bold
-                        icons</span>
-                    <div class="toggle-button-cover">
-                        <div class="button-cover">
-                            <div class="button r toggle-button">
-                                <input data-setting="iconsBold" type="checkbox" class="checkbox" />
-                                <div class="knobs"></div>
-                                <div class="layer"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="setting">
-                    <span title="The scale of the icons (1 = 100% = default).">Scale icons</span>
-                    <input data-setting="iconsScale" value="1" min="0" step="0.1" type="number">
-                </div>
-                <div class="setting">
-                    <span
-                        title="Force date display in YYYY-MM-DD HH:MM:SS style; otherwise matches system locale.">Force
-                        date</span>
-                    <div class="toggle-button-cover">
-                        <div class="button-cover">
-                            <div class="button r toggle-button">
-                                <input data-setting="dateOverride" type="checkbox" class="checkbox" />
-                                <div class="knobs"></div>
-                                <div class="layer"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="setting" title="Convert the blackList to a whitelist, such that SWI will only run on matching domains (or partial URLs).">
+          <span>Whitelist mode</span>
+          <div class="toggle-button-cover">
+            <div class="button-cover">
+              <div class="button r toggle-button">
+                <input data-setting="whiteListMode" type="checkbox" class="checkbox">
+                <div class="knobs"></div>
+                <div class="layer"></div>
+              </div>
             </div>
-            <button class="collapsible">Icon Groups</button>
-            <div class="content">
-                <div class="settingexpanded">
-                    <span title="Icon for ignored (not interested) apps."><i data-colorinput="ignoredColor"
-                            id="ignoredIconColor" class="swi fa-solid fa-ban"
-                            style="margin-right: 4px;"></i>Ignored</span>
-                    <div class="toggle-button-cover">
-                        <div class="button-cover">
-                            <div class="button r toggle-button">
-                                <input id="ignoredCheck" data-setting="wantIgnores" data-check="ignored" type="checkbox"
-                                    class="checkbox" />
-                                <div class="knobs"></div>
-                                <div class="layer"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <input class="ignoredDisable" data-setting="ignoredIcon" type="text">
-                    <input id="ignoredIconColorInput" class="ignoredDisable" data-setting="ignoredColor"
-                        data-jscolor="{}">
-                </div>
-                <div class="settingexpanded">
-                    <span title="Icon for followed apps."><i id="followedIconColor" data-colorinput="followedColor"
-                            class="swi fa-solid fa-star" style="margin-right: 4px;"></i>Followed</span>
-                    <div class="toggle-button-cover">
-                        <div class="button-cover">
-                            <div class="button r toggle-button">
-                                <input id="followedCheck" data-setting="wantFollowed" data-check="followed"
-                                    type="checkbox" class="checkbox" />
-                                <div class="knobs"></div>
-                                <div class="layer"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <input class="followedDisable" data-setting="followedIcon" type="text">
-                    <input id="followedIconColorInput" class="followedDisable" data-setting="followedColor"
-                        data-jscolor="{}">
-                </div>
-                <div class="settingexpanded">
-                    <span title="Icon for downloadable content (DLC)."><i id="dlcIconColor" data-colorinput="dlcColor"
-                            class="swi fa-solid fa-download" style="margin-right: 4px;"></i>DLC</span>
-                    <div class="toggle-button-cover">
-                        <div class="button-cover">
-                            <div class="button r toggle-button">
-                                <input id="dlcCheck" data-setting="wantDLC" data-check="dlc" type="checkbox"
-                                    class="checkbox" />
-                                <div class="knobs"></div>
-                                <div class="layer"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <input class="dlcDisable" data-setting="dlcIcon" type="text">
-                    <input id="dlcIconColorInput" class="dlcDisable" data-setting="dlcColor" data-jscolor="{}">
-                </div>
-                <div class="settingexpanded">
-                    <span title="Icon for removed or delisted apps and packages."><i id="decommissionedIconColor"
-                            data-colorinput="decommissionedColor" class="swi fa-solid fa-trash-can"
-                            style="margin-right: 4px;"></i>Decommissioned</span>
-                    <div class="toggle-button-cover">
-                        <div class="button-cover">
-                            <div class="button r toggle-button">
-                                <input id="decommissionedCheck" data-setting="wantDecommissioned"
-                                    data-check="decommissioned" type="checkbox" class="checkbox" />
-                                <div class="knobs"></div>
-                                <div class="layer"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <input class="decommissionedDisable" data-setting="decommissionedIcon" type="text">
-                    <input id="decommissionedIconColorInput" class="decommissionedDisable"
-                        data-setting="decommissionedColor" data-jscolor="{}">
-                </div>
-                <div class="settingexpanded">
-                    <span title="Icon for low confidence metric apps."><i id="limitedIconColor"
-                            data-colorinput="limitedColor" class="swi fa-solid fa-asterisk"
-                            style="margin-right: 4px;"></i>Limited</span>
-                    <div class="toggle-button-cover">
-                        <div class="button-cover">
-                            <div class="button r toggle-button">
-                                <input id="limitedCheck" data-setting="wantLimited" data-check="limited" type="checkbox"
-                                    class="checkbox" />
-                                <div class="knobs"></div>
-                                <div class="layer"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <input class="limitedDisable" data-setting="limitedIcon" type="text">
-                    <input id="limitedIconColorInput" class="limitedDisable" data-setting="limitedColor"
-                        data-jscolor="{}">
-                </div>
-                <div class="settingexpanded">
-                    <span title="Icon for carded apps."><i id="cardIconColor" data-colorinput="cardColor"
-                            class="swi fa-solid fa-money-bills fa-rotate-90" style="margin-right: 4px;"></i>Cards</span>
-                    <div class="toggle-button-cover">
-                        <div class="button-cover">
-                            <div class="button r toggle-button">
-                                <input id="cardCheck" data-setting="wantCards" data-check="card" type="checkbox"
-                                    class="checkbox" />
-                                <div class="knobs"></div>
-                                <div class="layer"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <input class="cardDisable" data-setting="cardIcon" type="text">
-                    <input id="cardIconColorInput" class="cardDisable" data-setting="cardColor" data-jscolor="{}">
-                </div>
-                <div class="settingexpanded">
-                    <span title="Icon for bundled apps."><i id="bundleIconColor" data-colorinput="bundleColor"
-                            class="swi fa-solid fa-gift" style="margin-right: 4px;"></i>Bundles</span>
-                    <div class="toggle-button-cover">
-                        <div class="button-cover">
-                            <div class="button r toggle-button">
-                                <input id="bundleCheck" data-setting="wantBundles" data-check="bundle" type="checkbox"
-                                    class="checkbox" />
-                                <div class="knobs"></div>
-                                <div class="layer"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <input class="bundleDisable" data-setting="bundleIcon" type="text">
-                    <input id="bundleIconColorInput" class="bundleDisable" data-setting="bundleColor" data-jscolor="{}">
-                </div>
-                <div class="settingexpanded">
-                    <span title="Icon for owned apps and packages."><i id="ownedIconColor" data-colorinput="ownedColor"
-                            class="swi fa-solid fa-circle-check" style="margin-right: 4px;"></i>Owned</span>
-                    <div></div>
-                    <input data-setting="ownedIcon" type="text">
-                    <input id="ownedIconColorInput" data-setting="ownedColor" data-jscolor="{}">
-                </div>
-                <div class="settingexpanded">
-                    <span title="Icon for unowned apps and packages."><i id="unownedIconColor"
-                            data-colorinput="unownedColor" class="swi fa-solid fa-circle-xmark"
-                            style="margin-right: 4px;"></i>Unowned</span>
-                    <div></div>
-                    <input data-setting="unownedIcon" type="text">
-                    <input id="unownedIconColorInput" data-setting="unownedColor" data-jscolor="{}">
-                </div>
-                <div class="settingexpanded">
-                    <span title="Icon for wishlisted apps."><i id="wishlistIconColor" data-colorinput="wishlistColor"
-                            class="swi fa-solid fa-heart" style="margin-right: 4px;"></i>Wished</span>
-                    <div></div>
-                    <input data-setting="wishlistIcon" type="text">
-                    <input id="wishlistIconColorInput" data-setting="wishlistColor" data-jscolor="{}">
-                </div>
-                <div class="setting">
-                    <span title="Number of minutes to wait to refresh cached userdata. 0 = always stay up-to-date.">User
-                        interval</span>
-                    <input data-setting="userRefreshInterval" type="number">
-                </div>
-                <div class="setting">
-                    <span
-                        title="Number of minutes to wait to refresh cached DLC data. 0 = always stay up-to-date, but not recommended.">DLC
-                        interval</span>
-                    <input data-setting="dlcRefreshInterval" type="number">
-                </div>
-                <div class="setting">
-                    <span
-                        title="Number of minutes to wait to refresh cached removed games data. 0 = always stay up-to-date, but not recommended.">Decommission
-                        interval</span>
-                    <input data-setting="decommissionedRefreshInterval" type="number">
-                </div>
-                <div class="setting">
-                    <span
-                        title="Number of minutes to wait to refresh cached limited data. 0 = always stay up-to-date, but not recommended.">Limited
-                        interval</span>
-                    <input data-setting="limitedRefreshInterval" type="number">
-                </div>
-                <div class="setting">
-                    <span
-                        title="Number of minutes to wait to refresh cached trading card data. 0 = always stay up-to-date, but not recommended.">Cards
-                        interval</span>
-                    <input data-setting="cardsRefreshInterval" type="number">
-                </div>
-                <div class="setting">
-                    <span
-                        title="Number of minutes to wait to refresh cached bundle data. 0 = always stay up-to-date, but not recommended.">Bundles
-                        interval</span>
-                    <input data-setting="bundlesRefreshInterval" type="number">
-                </div>
-            </div>
-            <small class="notice">TIP: Hover over the row to see a description of that setting.</small>
+          </div>
         </div>
-        <div class="modal" id="resetmodal">
-            <div class="seperator"></div>
-            <div class="modal_menu">
-                <h1>Reset Settings</h1>
-                <div>
-                    <button id="factoryReset" class="button_base"><span>Confirm</span></button>
-                    <button data-closemodal class="button_base"><span>Cancel</span></button>
-                </div>
-            </div>
+        <div class="setting" title="Select which method you prefer to detect dynamically loaded web content.">
+          <span>Dynamic content</span>
+          <select data-setting="dynamicContent" id="dynamicContent" name="dynamicContent">
+            <option value="observe" selected>Observe web page content</option>
+            <option value="ping">Periodically check web page</option>
+            <option value="disabled">Disabled (only check once)</option>
+          </select>
         </div>
-        <div class="modal" id="permmodal">
-            <div class="seperator"></div>
-            <div class="modal_menu">
-                <h1>Grant Permission</h1>
-                <div>
-                    <button id="setup" class="button_base"><span>Confirm</span></button>
-                </div>
-            </div>
+        <div class="setting" title="The number of ms in between page checks (only when dynamicContent is set to Periodically check web page).">
+          <span>Ping interval</span>
+          <input data-setting="pingInterval" value="1500" min="1000" step="100" type="number">
         </div>
-    </body>
+        <div class="setting" title="Prefix (checked) instead of suffix (unchecked) position for the icons placement.">
+          <span>Prefix</span>
+          <div class="toggle-button-cover">
+            <div class="button-cover">
+              <div class="button r toggle-button">
+                <input data-setting="prefix" type="checkbox" class="checkbox">
+                <div class="knobs"></div>
+                <div class="layer"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="setting" title="Whether (checked) or not (unchecked) you want the icons to be displayed in a boxed container.">
+          <span>Boxed</span>
+          <div class="toggle-button-cover">
+            <div class="button-cover">
+              <div class="button r toggle-button">
+                <input data-setting="boxed" type="checkbox" class="checkbox">
+                <div class="knobs"></div>
+                <div class="layer"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="setting" title="The opacity percentage of the boxed container, between 0 and 1 (boxed has to be enabled).">
+          <span>Box opacity</span>
+          <input class="boxDisable" data-setting="boxOpacity" type="number" value="0.7" min="0" max="1" step="0.1">
+        </div>
+        <div class="setting" title="The background color of the boxed container (boxed has to be enabled).">
+          <span>Box color</span>
+          <input class="boxDisable" data-setting="boxColor" type="text" data-jscolor="{}">
+        </div>
+        <div class="setting" title="Whether (checked) or not (unchecked) you want a dynamic background color of the boxed container, based on the set of icons (boxColor will be ignored).">
+          <span>Box dynamic color</span>
+          <div class="toggle-button-cover">
+            <div class="button-cover">
+              <div class="button r toggle-button">
+                <input data-setting="boxDynamicColor" type="checkbox" class="checkbox boxDisable">
+                <div class="knobs"></div>
+                <div class="layer"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="setting" title="Select which attributes to check for. Attribute 'href' is for hyperlinks and attributes 'src' and 'style' are for images. Hold down the Ctrl (Windows) / Command (Mac) button to select multiple options.">
+          <span>Attributes</span>
+          <select data-setting="attributes" multiple>
+            <option value="href" selected>href</option>
+            <option value="src" selected>src</option>
+            <option value="style" selected>style</option>
+          </select>
+        </div>
+        <div class="setting" title="Whether (checked) or not (unchecked) you want the icons to appear bold.">
+          <span>Bold icons</span>
+          <div class="toggle-button-cover">
+            <div class="button-cover">
+              <div class="button r toggle-button">
+                <input data-setting="iconsBold" type="checkbox" class="checkbox">
+                <div class="knobs"></div>
+                <div class="layer"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="setting" title="The scale of the icons (1 = 100% = default).">
+          <span>Scale icons</span>
+          <input data-setting="iconsScale" value="1" min="0" step="0.1" type="number">
+        </div>
+        <div class="setting" title="Force date display in YYYY-MM-DD HH:MM:SS style; otherwise matches system locale.">
+          <span>Force date format</span>
+          <div class="toggle-button-cover">
+            <div class="button-cover">
+              <div class="button r toggle-button">
+                <input data-setting="dateOverride" type="checkbox" class="checkbox">
+                <div class="knobs"></div>
+                <div class="layer"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="collapsible">
+        <i class="swi fa-solid fa-icons"></i>
+        &nbsp; Icons
+      </button>
+      <div class="content">
+
+        <div class="settingexpanded">
+          <span title="Icon for ignored (not interested) apps.">
+            <i data-colorinput="ignoredColor" id="ignoredIconColor" class="swi fa-solid fa-ban" style="margin-right: 4px;"></i>
+            Ignored
+          </span>
+          <div class="toggle-button-cover">
+            <div class="button-cover">
+              <div class="button r toggle-button">
+                <input id="ignoredCheck" data-setting="wantIgnores" data-check="ignored" type="checkbox" class="checkbox">
+                <div class="knobs"></div>
+                <div class="layer"></div>
+              </div>
+            </div>
+          </div>
+          <input class="ignoredDisable" data-setting="ignoredIcon" type="text">
+          <input id="ignoredIconColorInput" class="ignoredDisable" data-setting="ignoredColor" data-jscolor="{}">
+        </div>
+
+        <div class="settingexpanded">
+          <span title="Icon for followed apps.">
+            <i id="followedIconColor" data-colorinput="followedColor" class="swi fa-solid fa-star" style="margin-right: 4px;"></i>
+            Followed
+          </span>
+          <div class="toggle-button-cover">
+            <div class="button-cover">
+              <div class="button r toggle-button">
+                <input id="followedCheck" data-setting="wantFollowed" data-check="followed" type="checkbox" class="checkbox">
+                <div class="knobs"></div>
+                <div class="layer"></div>
+              </div>
+            </div>
+          </div>
+          <input class="followedDisable" data-setting="followedIcon" type="text">
+          <input id="followedIconColorInput" class="followedDisable" data-setting="followedColor" data-jscolor="{}">
+        </div>
+
+        <div class="settingexpanded">
+          <span title="Icon for downloadable content (DLC).">
+            <i id="dlcIconColor" data-colorinput="dlcColor" class="swi fa-solid fa-download" style="margin-right: 4px;"></i>
+            DLC
+          </span>
+          <div class="toggle-button-cover">
+            <div class="button-cover">
+              <div class="button r toggle-button">
+                <input id="dlcCheck" data-setting="wantDLC" data-check="dlc" type="checkbox" class="checkbox">
+                <div class="knobs"></div>
+                <div class="layer"></div>
+              </div>
+            </div>
+          </div>
+          <input class="dlcDisable" data-setting="dlcIcon" type="text">
+          <input id="dlcIconColorInput" class="dlcDisable" data-setting="dlcColor" data-jscolor="{}">
+        </div>
+
+        <div class="settingexpanded">
+          <span title="Icon for removed or delisted apps and packages.">
+            <i id="decommissionedIconColor" data-colorinput="decommissionedColor" class="swi fa-solid fa-trash-can" style="margin-right: 4px;"></i>
+            Decommissioned
+          </span>
+          <div class="toggle-button-cover">
+            <div class="button-cover">
+              <div class="button r toggle-button">
+                <input id="decommissionedCheck" data-setting="wantDecommissioned" data-check="decommissioned" type="checkbox" class="checkbox">
+                <div class="knobs"></div>
+                <div class="layer"></div>
+              </div>
+            </div>
+          </div>
+          <input class="decommissionedDisable" data-setting="decommissionedIcon" type="text">
+          <input id="decommissionedIconColorInput" class="decommissionedDisable" data-setting="decommissionedColor" data-jscolor="{}">
+        </div>
+
+        <div class="settingexpanded">
+          <span title="Icon for low confidence metric apps.">
+            <i id="limitedIconColor" data-colorinput="limitedColor" class="swi fa-solid fa-asterisk" style="margin-right: 4px;"></i>
+            Limited
+          </span>
+          <div class="toggle-button-cover">
+            <div class="button-cover">
+              <div class="button r toggle-button">
+                <input id="limitedCheck" data-setting="wantLimited" data-check="limited" type="checkbox" class="checkbox">
+                <div class="knobs"></div>
+                <div class="layer"></div>
+              </div>
+            </div>
+          </div>
+          <input class="limitedDisable" data-setting="limitedIcon" type="text">
+          <input id="limitedIconColorInput" class="limitedDisable" data-setting="limitedColor" data-jscolor="{}">
+        </div>
+
+        <div class="settingexpanded">
+          <span title="Icon for carded apps.">
+            <i id="cardIconColor" data-colorinput="cardColor" class="swi fa-solid fa-money-bills fa-rotate-90" style="margin-right: 4px;"></i>
+            Cards
+          </span>
+          <div class="toggle-button-cover">
+            <div class="button-cover">
+              <div class="button r toggle-button">
+                <input id="cardCheck" data-setting="wantCards" data-check="card" type="checkbox" class="checkbox">
+                <div class="knobs"></div>
+                <div class="layer"></div>
+              </div>
+            </div>
+          </div>
+          <input class="cardDisable" data-setting="cardIcon" type="text">
+          <input id="cardIconColorInput" class="cardDisable" data-setting="cardColor" data-jscolor="{}">
+        </div>
+
+        <div class="settingexpanded">
+          <span title="Icon for bundled apps.">
+            <i id="bundleIconColor" data-colorinput="bundleColor" class="swi fa-solid fa-gift" style="margin-right: 4px;"></i>
+            Bundles
+          </span>
+          <div class="toggle-button-cover">
+            <div class="button-cover">
+              <div class="button r toggle-button">
+                <input id="bundleCheck" data-setting="wantBundles" data-check="bundle" type="checkbox"
+                  class="checkbox">
+                <div class="knobs"></div>
+                <div class="layer"></div>
+              </div>
+            </div>
+          </div>
+          <input class="bundleDisable" data-setting="bundleIcon" type="text">
+          <input id="bundleIconColorInput" class="bundleDisable" data-setting="bundleColor" data-jscolor="{}">
+        </div>
+
+        <div class="settingexpanded">
+          <span title="Icon for owned apps and packages.">
+            <i id="ownedIconColor" data-colorinput="ownedColor" class="swi fa-solid fa-circle-check" style="margin-right: 4px;"></i>
+            Owned
+          </span>
+          <div></div>
+          <input data-setting="ownedIcon" type="text">
+          <input id="ownedIconColorInput" data-setting="ownedColor" data-jscolor="{}">
+        </div>
+
+        <div class="settingexpanded">
+          <span title="Icon for unowned apps and packages.">
+            <i id="unownedIconColor" data-colorinput="unownedColor" class="swi fa-solid fa-circle-xmark" style="margin-right: 4px;"></i>
+            Unowned
+          </span>
+          <div></div>
+          <input data-setting="unownedIcon" type="text">
+          <input id="unownedIconColorInput" data-setting="unownedColor" data-jscolor="{}">
+        </div>
+
+        <div class="settingexpanded">
+          <span title="Icon for wishlisted apps.">
+            <i id="wishlistIconColor" data-colorinput="wishlistColor" class="swi fa-solid fa-heart" style="margin-right: 4px;"></i>
+            Wished
+          </span>
+          <div></div>
+          <input data-setting="wishlistIcon" type="text">
+          <input id="wishlistIconColorInput" data-setting="wishlistColor" data-jscolor="{}">
+        </div>
+        <div class="setting"
+          title="Number of minutes to wait to refresh cached userdata. 0 = always stay up-to-date.">
+          <span>User interval</span>
+          <input data-setting="userRefreshInterval" type="number">
+        </div>
+        <div class="setting" title="Number of minutes to wait to refresh cached DLC data. 0 = always stay up-to-date, but not recommended.">
+          <span>DLC interval</span>
+          <input data-setting="dlcRefreshInterval" type="number">
+        </div>
+        <div class="setting" title="Number of minutes to wait to refresh cached removed games data. 0 = always stay up-to-date, but not recommended.">
+          <span>Decommission interval</span>
+          <input data-setting="decommissionedRefreshInterval" type="number">
+        </div>
+        <div class="setting" title="Number of minutes to wait to refresh cached limited data. 0 = always stay up-to-date, but not recommended.">
+          <span>Limited interval</span>
+          <input data-setting="limitedRefreshInterval" type="number">
+        </div>
+        <div class="setting" title="Number of minutes to wait to refresh cached trading card data. 0 = always stay up-to-date, but not recommended.">
+          <span>Cards interval</span>
+          <input data-setting="cardsRefreshInterval" type="number">
+        </div>
+        <div class="setting" title="Number of minutes to wait to refresh cached bundle data. 0 = always stay up-to-date, but not recommended.">
+          <span>Bundles interval</span>
+          <input data-setting="bundlesRefreshInterval" type="number">
+        </div>
+      </div>
+
+      <small class="notice">TIP: Hover over the row to see a description of that setting.</small>
+    </div>
+
+    <div class="modal" id="resetmodal">
+      <div class="seperator"></div>
+      <div class="modal_menu">
+        <h1>Factory reset</h1>
+        <br>
+        <small>Are you sure you want to reset all settings and cached data?</small>
+        <br>
+        <div>
+          <button data-closemodal class="button_base"><span>Cancel</span></button>
+          <button id="factoryReset" class="button_secondary"><span>Confirm</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="permmodal">
+      <div class="seperator"></div>
+      <div class="modal_menu">
+        <h1>First-time setup</h1>
+        <div>
+          <button id="setup" class="button_secondary"><span>Grant permissions</span></button>
+        </div>
+      </div>
+    </div>
+
+  </body>
 
 </html>

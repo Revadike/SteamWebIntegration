@@ -47,7 +47,8 @@ svg {
 textarea {
     resize: none;
     height: 100%;
-    font-size: 14px;
+    font-size: 12px;
+    padding: 6px;
     width: 18em;
     background: #111;
     border: none;
@@ -162,6 +163,38 @@ select {
     background: transparent !important;
 }
 
+#setup {
+    margin-top: 10px;
+}
+
+.button_secondary {
+    background: linear-gradient(to bottom, #a4d007 5%, #536904 95%);
+    border-radius: 2px;
+    padding: 1px;
+    font-size: 13px;
+    border: none;
+    text-decoration: none;
+    color: #D2E885;
+    cursor: pointer;
+}
+
+.button_secondary:hover {
+    background: linear-gradient(to bottom, #b6d908 5%, #80a006 95%);
+    color: #fff;
+}
+
+.button_secondary>span {
+    background: linear-gradient(to bottom, #799905 5%, #536904 95%);
+    display: block;
+    padding: 0 15px;
+    border-radius: 2px;
+    line-height: 30px;
+}
+
+.button_secondary>span:hover {
+    background: transparent !important;
+}
+
 .button_danger {
     color: #f5a4a4;
     background: linear-gradient(to bottom, rgb(188, 47, 47) 5%, rgb(92, 23, 23) 95%) !important;
@@ -188,6 +221,8 @@ select {
     justify-content: center;
     margin-top: 10px;
     font-size: 12px;
+    color: #808891;
+    line-height: 20px;
 }
 
 .modal {
@@ -199,6 +234,9 @@ select {
     z-index: 10;
     width: 320px;
     display: none;
+    justify-content: center;
+    text-align: center;
+
 }
 
 .modal.active {
@@ -262,6 +300,7 @@ select {
     overflow: hidden;
     transition: max-height 0.2s ease-out;
     background-color: #171a21;
+    border-bottom: 1px solid #ffffff2e;
 }
 
 .toggle-button-cover {
