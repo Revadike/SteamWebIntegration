@@ -1,5 +1,5 @@
 
-# Steam Web Integration
+<!-- # Steam Web Integration -->
 
 [![GitHub license](https://img.shields.io/github/license/Revadike/SteamWebIntegration?style=for-the-badge&logo=github)](https://github.com/Revadike/SteamWebIntegration/blob/master/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/Revadike/SteamWebIntegration?style=for-the-badge&logo=github)](https://github.com/Revadike/SteamWebIntegration/issues)
