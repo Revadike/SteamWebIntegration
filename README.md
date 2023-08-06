@@ -14,13 +14,13 @@
 
 ## Screenshot
 ![image](https://user-images.githubusercontent.com/4411977/221296248-1abfbc0a-bb3b-409f-bb97-639593e85379.png)
- 
-## Sponsors
-None at the moment. Consider [sponsoring me](https://github.com/sponsors/Revadike) and ask to be featured here! <3
 
 ## Download
 [![chrome](https://img.shields.io/chrome-web-store/users/bcjlaaocogjkkhbmjhlhonmpnngnlogn?label=chrome&style=for-the-badge&logo=googlechrome)](https://chrome.google.com/webstore/detail/steam-web-integration/bcjlaaocogjkkhbmjhlhonmpnngnlogn)
 [![firefox](https://img.shields.io/amo/users/steam-web-integration?label=firefox&color=4c1&style=for-the-badge&logo=firefoxbrowser)](https://addons.mozilla.org/firefox/addon/steam-web-integration/)
+ 
+## Sponsors
+None at the moment. Consider [sponsoring me](https://github.com/sponsors/Revadike) and ask to be featured here! <3
 
 ## Features
  * Checks web pages for links or images of steam games or DLC
