@@ -108,7 +108,7 @@ function doApp(settings, elem, wishlist, ownedApps, ignoredApps, followedApps, d
         if (settings.wantDLC && dlc && dlc[appID]) { // if DLC and enabled
             const base = dlc[appID].base_appID;
             const ownsBase = Boolean(ownedApps[base]);
-            const extraIcon = `<span style="color: ${ownsBase ? settings.ownedColor : settings.unownedColor}; font-weight: bold; font-size: 66%; position: absolute; margin: -4% 0% 0% -4%;">${ownsBase ? "<i class=\"swi fa-solid fa-plus\"></i>" : "<i class=\"swi fa-solid fa-minus\"></i>"}</span>&nbsp;`;
+            const extraIcon = `<span style="color: ${ownsBase ? settings.ownedColor : settings.unownedColor}; font-weight: bold; font-size: 66%; position: absolute; margin: 0% 0% 0% 0%;">${ownsBase ? "<i class=\"swi fa-solid fa-plus\"></i>" : "<i class=\"swi fa-solid fa-minus\"></i>"}</span>&nbsp;`;
             html += getIconHTML(settings.dlcColor, `${subject} (${appID}) is downloadable content for an ${ownsBase ? "" : "un"}owned base game (${base})`, dlclcs, settings.dlcIcon, undefined, extraIcon);
             iconsEncoding += 6;
         }
