@@ -22,3 +22,66 @@
     cursor: help;
     text-decoration: none;
 }
+
+.swi-toolbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1b2838;
+    color: #c7d5e0;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 9999;
+    border-top: 1px solid #000;
+}
+
+.swi-toolbar-section {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 10px;
+    border-right: 1px solid #2a475e;
+}
+
+.swi-toolbar-section:last-child {
+    border-right: none;
+}
+
+.swi-toolbar button {
+    background: #2a475e;
+    border: none;
+    color: #c7d5e0;
+    padding: 5px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.swi-toolbar button:hover {
+    background: #386589;
+}
+
+.swi-toolbar .icon-filter {
+    cursor: pointer;
+    opacity: 1;
+    transition: opacity 0.2s;
+}
+
+.swi-toolbar .icon-filter.filtered {
+    opacity: 0.5;
+}
+
+.swi-toolbar .depth-slider {
+    width: 100px;
+}
+
+.swi-toolbar .close-button {
+    margin-left: auto;
+    font-weight: bold;
+}
+
+.swi-hidden {
+    display: none !important;
+}

@@ -195,6 +195,15 @@ document.addEventListener("DOMContentLoaded", async() => {
         chrome.runtime.sendMessage({ "action": "clearSWI" });
     });
 
+    document.getElementById("tools").addEventListener("click", () => {
+        chrome.tabs.query({
+            "active":        true,
+            "currentWindow": true,
+        }, (tabs) => {
+            chrome.tabs.sendMessage(tabs[0].id, { "action": "showTools" });
+        });
+    });
+
     document.getElementById("factoryReset").addEventListener("click", async() => {
         await factoryReset();
         location.reload();

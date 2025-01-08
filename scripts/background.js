@@ -289,6 +289,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         case "clear-swi":
             chrome.tabs.sendMessage(tab.id, { "action": "clearSWI" });
             break;
+        case "show-tools":
+            chrome.tabs.sendMessage(tab.id, { "action": "showTools" });
+            break;
         case "add-to-blacklist":
             addToBlacklist(tab.url);
             break;
@@ -314,5 +317,10 @@ chrome.contextMenus.create({
 chrome.contextMenus.create({
     "id":       "add-to-blacklist",
     "title":    "Add to whitelist/blacklist",
+    "contexts": ["page"],
+});
+chrome.contextMenus.create({
+    "id":       "show-tools",
+    "title":    "Show tools",
     "contexts": ["page"],
 });

@@ -35,7 +35,7 @@
 body {
     background: #171d25;
     height: 500px;
-    width: 400px;
+    width: 500px;
 }
 
 svg {
@@ -202,6 +202,10 @@ select {
 
 .button_danger>span {
     background: linear-gradient(to bottom, rgb(138, 33, 33) 5%, rgb(92, 23, 23) 95%) !important;
+}
+
+.button_margin {
+    margin: 0 14px;
 }
 
 .text_header {

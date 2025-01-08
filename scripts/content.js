@@ -355,4 +355,169 @@ async function init() {
     }
 }
 
+function applyFilters(activeFilters, depth) {
+    document.querySelectorAll(".swi-hidden").forEach((node) => node.classList.remove("swi-hidden"));
+    document.querySelectorAll(".swi-block").forEach((block) => {
+        const shouldHide = [...block.childNodes].some((node) => {
+            const classes = node.querySelector(".swi").classList;
+            return [...activeFilters].some((filter) => classes.contains(`fa-${filter}`));
+        });
+
+        let target = block;
+        for (let i = 0; i < depth; i++) {
+            if (target.parentNode) {
+                target = target.parentNode;
+            }
+        }
+
+        if (shouldHide) {
+            target.classList.add("swi-hidden");
+        }
+    });
+}
+
+function createToolbar(settings) {
+    const toolbar = document.createElement("div");
+    toolbar.className = "swi-toolbar";
+
+    // Filter section
+    const filterSection = document.createElement("div");
+    filterSection.className = "swi-toolbar-section";
+
+    // Create icon filters
+    const iconConfigs = [
+        { "name": "Owned", "color": settings.ownedColor, "icon": settings.ownedIcon },
+        { "name": "Unowned", "color": settings.unownedColor, "icon": settings.unownedIcon },
+        { "name": "Wishlist", "color": settings.wishlistColor, "icon": settings.wishlistIcon },
+        { "name": "Followed", "color": settings.followedColor, "icon": settings.followedIcon },
+        { "name": "Ignored", "color": settings.ignoredColor, "icon": settings.ignoredIcon },
+        { "name": "DLC", "color": settings.dlcColor, "icon": settings.dlcIcon },
+        { "name": "Decommissioned", "color": settings.decommissionedColor, "icon": settings.decommissionedIcon },
+        { "name": "Limited", "color": settings.limitedColor, "icon": settings.limitedIcon },
+        { "name": "Cards", "color": settings.cardColor, "icon": settings.cardIcon },
+        { "name": "Bundle", "color": settings.bundleColor, "icon": settings.bundleIcon },
+    ];
+
+    const activeFilters = new Set();
+
+    // Depth slider
+    const depthSlider = document.createElement("input");
+    depthSlider.type = "range";
+    depthSlider.min = "0";
+    depthSlider.max = "10";
+    depthSlider.value = "0";
+    depthSlider.className = "depth-slider";
+    depthSlider.title = "Filter Depth";
+
+    depthSlider.addEventListener("input", () => {
+        applyFilters(activeFilters, depthSlider.value);
+    });
+
+    filterSection.appendChild(depthSlider);
+    toolbar.appendChild(filterSection);
+
+    iconConfigs.forEach(({ name, color, icon }) => {
+        const iconSpan = document.createElement("span");
+        iconSpan.className = "icon-filter";
+        iconSpan.innerHTML = `<i class="swi fa-solid fa-${icon}" style="color: ${color}"></i>`;
+        iconSpan.title = name;
+
+        iconSpan.addEventListener("click", () => {
+            iconSpan.classList.toggle("filtered");
+            if (iconSpan.classList.contains("filtered")) {
+                activeFilters.add(icon);
+            } else {
+                activeFilters.delete(icon);
+            }
+            applyFilters(activeFilters, depthSlider.value);
+        });
+
+        filterSection.appendChild(iconSpan);
+    });
+
+    // Blacklist section
+    const blacklistSection = document.createElement("div");
+    blacklistSection.className = "swi-toolbar-section";
+
+    const blacklistButton = document.createElement("button");
+    blacklistButton.textContent = settings.whiteListMode ? "Add/Remove from Whitelist" : "Add/Remove from Blacklist";
+    blacklistButton.addEventListener("click", async() => {
+        const isBlacklisted = settings.blackList.split("\n").some((url) => location.href.includes(url.trim()));
+        if (isBlacklisted) {
+            settings.blackList = settings.blackList.split("\n")
+                .filter((url) => !location.href.includes(url.trim()))
+                .join("\n");
+            console.log({ settings });
+            await chrome.storage.local.set({ "swi_settings": settings });
+            chrome.runtime.sendMessage({ "action": "runSWI" });
+        } else {
+            settings.blackList += `\n${location.href}`;
+            console.log({ settings });
+            await chrome.storage.local.set({ "swi_settings": settings });
+            chrome.runtime.sendMessage({ "action": "clearSWI" });
+        }
+    });
+
+    blacklistSection.appendChild(blacklistButton);
+    toolbar.appendChild(blacklistSection);
+
+    // Copy section
+    const copySection = document.createElement("div");
+    copySection.className = "swi-toolbar-section";
+
+    const copyAppsButton = document.createElement("button");
+    copyAppsButton.textContent = "Copy Apps";
+    copyAppsButton.addEventListener("click", () => {
+        const appIds = [...document.querySelectorAll("[data-appid]")]
+            .map((el) => el.dataset.appid)
+            .join(",");
+        navigator.clipboard.writeText(appIds);
+        copyAppsButton.textContent = "Copied!";
+        setTimeout(() => {
+            copyAppsButton.textContent = "Copy Apps";
+        }, 1000);
+    });
+
+    const copySubsButton = document.createElement("button");
+    copySubsButton.textContent = "Copy Subs";
+    copySubsButton.addEventListener("click", () => {
+        const subIds = [...document.querySelectorAll("[data-subid]")]
+            .map((el) => el.dataset.subid)
+            .join(",");
+        navigator.clipboard.writeText(subIds);
+        copySubsButton.textContent = "Copied!";
+        setTimeout(() => {
+            copySubsButton.textContent = "Copy Subs";
+        }, 1000);
+    });
+
+    copySection.appendChild(copyAppsButton);
+    copySection.appendChild(copySubsButton);
+    toolbar.appendChild(copySection);
+
+    // Close button
+    const closeButton = document.createElement("button");
+    closeButton.textContent = "X";
+    closeButton.className = "close-button";
+    closeButton.addEventListener("click", () => toolbar.remove());
+
+    toolbar.appendChild(closeButton);
+
+    return toolbar;
+}
+
+// Add message listener for showTools action
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.action === "showTools") {
+        const existingToolbar = document.querySelector(".swi-toolbar");
+        if (existingToolbar) {
+            existingToolbar.remove();
+        } else {
+            chrome.runtime.sendMessage({ "action": "getSettings" }).then((settings) => {
+                document.body.appendChild(createToolbar(settings));
+            });
+        }
+    }
+});
+
 init();
