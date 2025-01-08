@@ -212,29 +212,17 @@ function integrate(settings, userdata, decommissioned, cards, bundles, limited, 
         "[href*=\"store.steampowered.com/agecheck/app/\"]",
         "[href*=\"store.steampowered.com/app/\"]",
         "[href*=\"s.team/a/\"]",
-        "[style*=\"cdn.akamai.steamstatic.com/steam/apps/\"]",
-        "[style*=\"cdn.edgecast.steamstatic.com/steam/apps/\"]",
-        "[style*=\"steamcdn-a.akamaihd.net/steam/apps/\"]",
-        "[style*=\"steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/\"]",
-        "[style*=\"cdn.cloudflare.steamstatic.com/steam/apps/\"]",
-        "[style*=\"cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/\"]",
-        "[style*=\"steamcdn-a.opskins.media/steam/apps/\"]",
-        "[style*=\"steamcdn-a.opskins.media/steamcommunity/public/images/apps/\"]",
-        "[style*=\"steamdb.info/static/camo/apps/\"]",
-        "img[src*=\"cdn.akamai.steamstatic.com/steam/apps/\"]",
-        "img[src*=\"cdn.edgecast.steamstatic.com/steam/apps/\"]",
-        "img[src*=\"steamcdn-a.akamaihd.net/steam/apps/\"]",
-        "img[src*=\"steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/\"]",
-        "img[src*=\"cdn.cloudflare.steamstatic.com/steam/apps/\"]",
-        "img[src*=\"cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/\"]",
-        "img[src*=\"steamcdn-a.opskins.media/steam/apps/\"]",
-        "img[src*=\"steamcdn-a.opskins.media/steamcommunity/public/images/apps/\"]",
-        "img[src*=\"steamdb.info/static/camo/apps/\"]",
+        ...["style", "src"].map((attr) => [
+            `[${attr}*="/steam/apps/"]`,
+            `[${attr}*="/steamcommunity/public/images/apps/"]`,
+            `[${attr}*="steamdb.info/static/camo/apps/"]`,
+        ]).flat(),
     ].filter((s) => settings.attributes.find((a) => s.includes(`[${a}`))).map((s) => `${s}:not(.swi)`)
         .join(", ");
 
     const subSelector = [
         "[href*=\"steamdb.info/sub/\"]",
+        "[href*=\"store.steampowered.com/agecheck/sub/\"]",
         "[href*=\"store.steampowered.com/sub/\"]",
     ].map((s) => `${s}:not(.swi)`).join(", ");
 
@@ -313,9 +301,9 @@ function integrate(settings, userdata, decommissioned, cards, bundles, limited, 
             });
 
             observer.observe(document, {
-                "childList":       true,
-                "subtree":         true,
-                "attributes":      true,
+                "childList": true,
+                "subtree": true,
+                "attributes": true,
                 "attributeFilter": settings.attributes,
             });
         }
