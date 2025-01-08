@@ -525,33 +525,18 @@ function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastC
         '[href*="store.steampowered.com/agecheck/app/"]',
         '[href*="store.steampowered.com/app/"]',
         '[href*="s.team/a/"]',
-        '[style*="cdn.akamai.steamstatic.com/steam/apps/"]',
-        '[style*="cdn.edgecast.steamstatic.com/steam/apps/"]',
-        '[style*="steamcdn-a.akamaihd.net/steam/apps/"]',
-        '[style*="steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/"]',
-        '[style*="cdn.cloudflare.steamstatic.com/steam/apps/"]',
-        '[style*="cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/"]',
-        '[style*="steamcdn-a.opskins.media/steam/apps/"]',
-        '[style*="steamcdn-a.opskins.media/steamcommunity/public/images/apps/"]',
-        '[style*="steamdb.info/static/camo/apps/"]',
-        'img[src*="cdn.akamai.steamstatic.com/steam/apps/"]',
-        'img[src*="cdn.edgecast.steamstatic.com/steam/apps/"]',
-        'img[src*="steamcdn-a.akamaihd.net/steam/apps/"]',
-        'img[src*="steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/"]',
-        'img[src*="cdn.cloudflare.steamstatic.com/steam/apps/"]',
-        'img[src*="cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/"]',
-        'img[src*="steamcdn-a.opskins.media/steam/apps/"]',
-        'img[src*="steamcdn-a.opskins.media/steamcommunity/public/images/apps/"]',
-        'img[src*="steamdb.info/static/camo/apps/"]',
-        'img[src*="shared.fastly.steamstatic.com/store_item_assets/steam/apps/"]',
-        'img[src*="shared.akamai.steamstatic.com/store_item_assets/steam/apps/"]',
-        'img[src*="shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/"]',
+        ...['style', 'src'].map((attr) => [
+            `[${attr}*="/steam/apps/"]`,
+            `[${attr}*="/steamcommunity/public/images/apps/"]`,
+            `[${attr}*="steamdb.info/static/camo/apps/"]`,
+        ]).flat(),
     ].filter((s) => settings.attributes.find((a) => s.includes(`[${a}`))).map((s) => `${s}:not(.swi)`)
         .join(', ');
 
     const subSelector = [
         '[href*="steamdb.info/sub/"]',
         '[href*="store.steampowered.com/sub/"]',
+        '[href*="store.steampowered.com/agecheck/sub/"]',
     ].map((s) => `${s}:not(.swi)`).join(', ');
 
     let delaySWI;
