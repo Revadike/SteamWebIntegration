@@ -301,9 +301,9 @@ function integrate(settings, userdata, decommissioned, cards, bundles, limited, 
             });
 
             observer.observe(document, {
-                "childList": true,
-                "subtree": true,
-                "attributes": true,
+                "childList":       true,
+                "subtree":         true,
+                "attributes":      true,
                 "attributeFilter": settings.attributes,
             });
         }
