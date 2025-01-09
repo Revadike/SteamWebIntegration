@@ -1,5 +1,10 @@
 let boxNode;
 
+let settings = {};
+chrome.runtime.sendMessage({ "action": "getSettings" }).then((newSettings) => {
+    settings = newSettings;
+});
+
 function createBoxNode(boxed) {
     let div = document.createElement("div");
     div.classList.add("swi-block");
@@ -50,7 +55,7 @@ function getBoxNode(html, iconsEncoding, appID, subID, boxDynamicColor) {
     return node;
 }
 
-function doApp(settings, elem, wishlist, ownedApps, ignoredApps, followedApps, decommissioned, limited, cards, bundles, dlc, lcs, dlcs, dlclcs, llcs, clcs, blcs) {
+function doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissioned, limited, cards, bundles, dlc, lcs, dlcs, dlclcs, llcs, clcs, blcs) {
     elem.classList.add("swi");
 
     /* Example detectable links:
@@ -149,7 +154,7 @@ function doApp(settings, elem, wishlist, ownedApps, ignoredApps, followedApps, d
     }, 0);
 }
 
-function doSub(settings, elem, ownedPackages, bundles, lcs, blcs) {
+function doSub(elem, ownedPackages, bundles, lcs, blcs) {
     elem.classList.add("swi");
 
     /* Example detectable links:
@@ -196,7 +201,7 @@ function doSub(settings, elem, ownedPackages, bundles, lcs, blcs) {
     }, 0);
 }
 
-function integrate(settings, userdata, decommissioned, cards, bundles, limited, dlcs, lastCached) {
+function integrate(userdata, decommissioned, cards, bundles, limited, dlcs, lastCached) {
     const { ignoredApps, ownedApps, ownedPackages, followedApps, wishlist } = userdata;
 
     const lcstr = new Date(lastCached.userdata).toLocaleString(settings.dateOverride ? "sv-SE" : undefined);
@@ -239,9 +244,9 @@ function integrate(settings, userdata, decommissioned, cards, bundles, limited, 
 
             clearTimeout(delaySWI);
             [...document.body.querySelectorAll(appSelector)]
-                .forEach((elem) => doApp(settings, elem, wishlist, ownedApps, ignoredApps, followedApps, decommissioned, limited, cards, bundles, dlcs, lcstr, dlcstr, dlclcstr, llcstr, clcstr, blcstr));
+                .forEach((elem) => doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissioned, limited, cards, bundles, dlcs, lcstr, dlcstr, dlclcstr, llcstr, clcstr, blcstr));
             [...document.body.querySelectorAll(subSelector)]
-                .forEach((elem) => doSub(settings, elem, ownedPackages, bundles, lcstr, blcstr), 0);
+                .forEach((elem) => doSub(elem, ownedPackages, bundles, lcstr, blcstr), 0);
         }, delay);
     };
 
@@ -249,7 +254,7 @@ function integrate(settings, userdata, decommissioned, cards, bundles, limited, 
     const clearSWI = () => {
         console.log("[Steam Web Integration] Clearing");
         [...document.body.querySelectorAll(".swi-block")].forEach((e) => e.remove());
-        [...document.body.querySelectorAll(".swi")].forEach((e) => e.classList.remove("swi"));
+        [...document.body.querySelectorAll(".swi:not(.swi-toolbar .swi)")].forEach((e) => e.classList.remove("swi"));
         if (pinger) {
             clearInterval(pinger);
             pinger = null;
@@ -335,7 +340,7 @@ function addStyle(css) {
 }
 
 async function init() {
-    let settings = await chrome.runtime.sendMessage({ "action": "getSettings" });
+    settings = await chrome.runtime.sendMessage({ "action": "getSettings" });
     let css = `:root {
         --swi-font-size: ${settings.iconsScale}em;
         --swi-font-weight: ${settings.iconsBold ? "bold" : "normal"};
@@ -351,22 +356,28 @@ async function init() {
         addStylesheet("/css/content.css");
         addStylesheet("/css/fontawesome.min.css");
         addStylesheet("/css/solid.min.css");
-        integrate(settings, userdata, decommissioned, cards, bundles, limited, dlcs, lastCached);
+        integrate(userdata, decommissioned, cards, bundles, limited, dlcs, lastCached);
     }
 }
 
-function applyFilters(activeFilters, depth) {
+function applyFilters(activeFilters, depth, mode) {
     document.querySelectorAll(".swi-hidden").forEach((node) => node.classList.remove("swi-hidden"));
+
     document.querySelectorAll(".swi-block").forEach((block) => {
-        const shouldHide = [...block.childNodes].some((node) => {
-            const classes = node.querySelector(".swi").classList;
-            return [...activeFilters].some((filter) => classes.contains(`fa-${filter}`));
-        });
+        const blockIcons = [...block.childNodes].map((node) => node.querySelector(".swi").getAttribute("class")).join(" ");
+
+        const shouldHide = mode === "hide"
+            ? [...activeFilters].some((filter) => blockIcons.includes(`fa-${filter}`))
+            : ![...activeFilters].every((filter) => blockIcons.includes(`fa-${filter}`));
 
         let target = block;
         for (let i = 0; i < depth; i++) {
-            if (target.parentNode) {
+            if (target.parentNode
+                    && target.parentNode !== document.body
+                    && ![...document.body.childNodes].includes(target.parentNode)) {
                 target = target.parentNode;
+            } else {
+                break;
             }
         }
 
@@ -376,13 +387,43 @@ function applyFilters(activeFilters, depth) {
     });
 }
 
-function createToolbar(settings) {
+function createToolbar() {
     const toolbar = document.createElement("div");
-    toolbar.className = "swi-toolbar";
+    toolbar.className = "swi-toolbar hide-mode";
+
+    const activeFilters = new Set();
+
+    // Depth slider
+    const depthSlider = document.createElement("input");
+    depthSlider.type = "range";
+    depthSlider.min = "0";
+    depthSlider.max = "10";
+    depthSlider.value = "0";
+    depthSlider.className = "depth-slider";
+    depthSlider.title = "Filter Depth";
 
     // Filter section
     const filterSection = document.createElement("div");
     filterSection.className = "swi-toolbar-section";
+
+    const filterMode = document.createElement("select");
+    filterMode.className = "filter-mode";
+    filterMode.innerHTML = `
+        <option value="hide">Hide</option>
+        <option value="only">Only</option>
+    `;
+
+    filterMode.addEventListener("change", () => {
+        toolbar.className = `swi-toolbar ${filterMode.value}-mode`;
+        applyFilters(activeFilters, depthSlider.value, filterMode.value);
+    });
+
+    depthSlider.addEventListener("input", () => {
+        applyFilters(activeFilters, depthSlider.value, filterMode.value);
+    });
+
+    const filterContainer = document.createElement("div");
+    filterContainer.className = "filter-container";
 
     // Create icon filters
     const iconConfigs = [
@@ -398,24 +439,6 @@ function createToolbar(settings) {
         { "name": "Bundle", "color": settings.bundleColor, "icon": settings.bundleIcon },
     ];
 
-    const activeFilters = new Set();
-
-    // Depth slider
-    const depthSlider = document.createElement("input");
-    depthSlider.type = "range";
-    depthSlider.min = "0";
-    depthSlider.max = "10";
-    depthSlider.value = "0";
-    depthSlider.className = "depth-slider";
-    depthSlider.title = "Filter Depth";
-
-    depthSlider.addEventListener("input", () => {
-        applyFilters(activeFilters, depthSlider.value);
-    });
-
-    filterSection.appendChild(depthSlider);
-    toolbar.appendChild(filterSection);
-
     iconConfigs.forEach(({ name, color, icon }) => {
         const iconSpan = document.createElement("span");
         iconSpan.className = "icon-filter";
@@ -429,78 +452,103 @@ function createToolbar(settings) {
             } else {
                 activeFilters.delete(icon);
             }
-            applyFilters(activeFilters, depthSlider.value);
+            applyFilters(activeFilters, depthSlider.value, filterMode.value);
         });
 
-        filterSection.appendChild(iconSpan);
+        filterContainer.appendChild(iconSpan);
     });
+
+    filterSection.appendChild(filterMode);
+    filterSection.appendChild(depthSlider);
+    filterSection.appendChild(filterContainer);
 
     // Blacklist section
     const blacklistSection = document.createElement("div");
     blacklistSection.className = "swi-toolbar-section";
 
     const blacklistButton = document.createElement("button");
-    blacklistButton.textContent = settings.whiteListMode ? "Add/Remove from Whitelist" : "Add/Remove from Blacklist";
+    const isBlacklisted = () => settings.blackList.split("\n").some((url) => location.href.includes(url.trim()));
+    const setButtonText = () => {
+        if (settings.whiteListMode) {
+            blacklistButton.innerHTML = isBlacklisted()
+                ? "<i class=\"swi fa-solid fa-minus\"></i> Whitelist"
+                : "<i class=\"swi fa-solid fa-plus\"></i> Whitelist";
+        } else {
+            blacklistButton.innerHTML = isBlacklisted()
+                ? "<i class=\"swi fa-solid fa-minus\"></i> Blacklist"
+                : "<i class=\"swi fa-solid fa-plus\"></i> Blacklist";
+        }
+    };
+
+    setButtonText();
     blacklistButton.addEventListener("click", async() => {
-        const isBlacklisted = settings.blackList.split("\n").some((url) => location.href.includes(url.trim()));
-        if (isBlacklisted) {
+        if (isBlacklisted()) {
             settings.blackList = settings.blackList.split("\n")
                 .filter((url) => !location.href.includes(url.trim()))
                 .join("\n");
-            console.log({ settings });
-            await chrome.storage.local.set({ "swi_settings": settings });
-            chrome.runtime.sendMessage({ "action": "runSWI" });
+            await chrome.runtime.sendMessage({ "action": "setSettings", settings });
+            setButtonText();
+            await chrome.runtime.sendMessage({ "action": "runSWI" });
         } else {
             settings.blackList += `\n${location.href}`;
-            console.log({ settings });
-            await chrome.storage.local.set({ "swi_settings": settings });
-            chrome.runtime.sendMessage({ "action": "clearSWI" });
+            await chrome.runtime.sendMessage({ "action": "setSettings", settings });
+            setButtonText();
+            await chrome.runtime.sendMessage({ "action": "clearSWI" });
         }
     });
 
     blacklistSection.appendChild(blacklistButton);
-    toolbar.appendChild(blacklistSection);
 
     // Copy section
     const copySection = document.createElement("div");
     copySection.className = "swi-toolbar-section";
 
     const copyAppsButton = document.createElement("button");
-    copyAppsButton.textContent = "Copy Apps";
+    copyAppsButton.innerHTML = "<i class=\"swi fa-solid fa-copy\"></i> Apps";
     copyAppsButton.addEventListener("click", () => {
         const appIds = [...document.querySelectorAll("[data-appid]")]
+            .filter((el) => !el.closest(".swi-hidden"))
             .map((el) => el.dataset.appid)
             .join(",");
         navigator.clipboard.writeText(appIds);
-        copyAppsButton.textContent = "Copied!";
+        copyAppsButton.innerHTML = "<i class=\"swi fa-solid fa-check\"></i> Copied";
         setTimeout(() => {
-            copyAppsButton.textContent = "Copy Apps";
+            copyAppsButton.innerHTML = "<i class=\"swi fa-solid fa-copy\"></i> Apps";
         }, 1000);
     });
 
     const copySubsButton = document.createElement("button");
-    copySubsButton.textContent = "Copy Subs";
+    copySubsButton.innerHTML = "<i class=\"swi fa-solid fa-copy\"></i> Subs";
     copySubsButton.addEventListener("click", () => {
         const subIds = [...document.querySelectorAll("[data-subid]")]
+            .filter((el) => !el.closest(".swi-hidden"))
             .map((el) => el.dataset.subid)
             .join(",");
         navigator.clipboard.writeText(subIds);
-        copySubsButton.textContent = "Copied!";
+        copySubsButton.innerHTML = "<i class=\"swi fa-solid fa-check\"></i> Copied";
         setTimeout(() => {
-            copySubsButton.textContent = "Copy Subs";
+            copySubsButton.innerHTML = "<i class=\"swi fa-solid fa-copy\"></i> Subs";
         }, 1000);
     });
-
     copySection.appendChild(copyAppsButton);
     copySection.appendChild(copySubsButton);
-    toolbar.appendChild(copySection);
 
     // Close button
     const closeButton = document.createElement("button");
-    closeButton.textContent = "X";
+    closeButton.innerHTML = "<i class=\"swi fa-solid fa-times\"></i>";
     closeButton.className = "close-button";
     closeButton.addEventListener("click", () => toolbar.remove());
 
+    // Divider
+    const divider = document.createElement("div");
+    divider.className = "swi-toolbar-divider";
+
+    toolbar.appendChild(filterSection);
+    toolbar.appendChild(divider.cloneNode(false));
+    toolbar.appendChild(blacklistSection);
+    toolbar.appendChild(divider.cloneNode(false));
+    toolbar.appendChild(copySection);
+    toolbar.appendChild(divider.cloneNode(false));
     toolbar.appendChild(closeButton);
 
     return toolbar;
@@ -513,9 +561,7 @@ chrome.runtime.onMessage.addListener((message) => {
         if (existingToolbar) {
             existingToolbar.remove();
         } else {
-            chrome.runtime.sendMessage({ "action": "getSettings" }).then((settings) => {
-                document.body.appendChild(createToolbar(settings));
-            });
+            document.body.appendChild(createToolbar());
         }
     }
 });

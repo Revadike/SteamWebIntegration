@@ -8,7 +8,7 @@ function factoryReset() {
 async function setSettings(newSettings) {
     let settings = await chrome.runtime.sendMessage({ "action": "getSettings" });
     settings = { ...settings, ...newSettings };
-    await chrome.storage.local.set({ "swi_settings": settings });
+    await chrome.runtime.sendMessage({ "action": "setSettings", settings });
     return true;
 }
 

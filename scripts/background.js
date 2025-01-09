@@ -75,7 +75,7 @@ async function addToBlacklist(url) {
         ),
     ].join("\n");
 
-    await chrome.storage.local.set({ "swi_settings": settings });
+    await chrome.runtime.sendMessage({ "action": "setSettings", settings });
 }
 
 function arrayToObject(array, key) {
@@ -257,6 +257,9 @@ function onMessage(message, sender, sendResponse) {
             break;
         case "getSettings":
             getSettings().then((settings) => sendResponse(settings));
+            break;
+        case "setSettings":
+            chrome.storage.local.set({ "swi_settings": message.settings }).then(() => sendResponse(true));
             break;
         case "runSWI":
         case "reloadSWI":
