@@ -1,6 +1,6 @@
 {
   "name": "steamwebintegration",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Integrate your personal Steam information on the web, at your convenience!",
   "main": "manifest.json",
   "type": "module",
