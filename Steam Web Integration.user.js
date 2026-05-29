@@ -543,6 +543,9 @@ function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastC
         'img[src*="steamcdn-a.opskins.media/steam/apps/"]',
         'img[src*="steamcdn-a.opskins.media/steamcommunity/public/images/apps/"]',
         'img[src*="steamdb.info/static/camo/apps/"]',
+        'img[src*="shared.fastly.steamstatic.com/store_item_assets/steam/apps/"]',
+        'img[src*="shared.akamai.steamstatic.com/store_item_assets/steam/apps/"]',
+        'img[src*="shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/"]',
     ].filter((s) => settings.attributes.find((a) => s.includes(`[${a}`))).map((s) => `${s}:not(.swi)`)
         .join(', ');
 
