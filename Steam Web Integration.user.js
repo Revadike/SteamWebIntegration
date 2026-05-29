@@ -1,16 +1,22 @@
 // ==UserScript==
+// @name         Steam Web Integration
+// @namespace    Royalgamer06
+// @version      1.12.3
+// @description  Check every web page for game, dlc and package links to the steam store and mark using icons whether it's owned, unowned, wishlisted, ignored (not interested), DLC, removed/delisted (decommissioned), has low confidence metric, has cards, or is bundled.
 // @author       Revadike
-// @connect      bartervg.com
-// @connect      steam-tracker.com
-// @connect      store.steampowered.com
 // @contributor  Barter.vg
 // @contributor  Black3ird
 // @contributor  Lex
 // @contributor  Luckz
 // @contributor  観月唯
-// @description  Check every web page for game, dlc and package links to the steam store and mark using icons whether it's owned, unowned, wishlisted, ignored (not interested), DLC, removed/delisted (decommissioned), has low confidence metric, has cards, or is bundled.
-// @downloadURL  https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
+// @homepageURL  https://www.steamgifts.com/discussion/y9vVm/
+// @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
+// @icon         https://store.steampowered.com/favicon.ico
+// @include      /^https?\:\/\/.+/
 // @exclude      /^https?\:\/\/(.+\.steampowered|steamcommunity)\.com\/(?!groups\/groupbuys).*/
+// @connect      bartervg.com
+// @connect      steam-tracker.com
+// @connect      store.steampowered.com
 // @grant        GM_addStyle
 // @grant        GM_deleteValue
 // @grant        GM_getValue
@@ -21,17 +27,11 @@
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
 // @grant        unsafeWindow
-// @homepageURL  https://www.steamgifts.com/discussion/y9vVm/
-// @icon         https://store.steampowered.com/favicon.ico
-// @include      /^https?\:\/\/.+/
-// @name         Steam Web Integration
-// @namespace    Royalgamer06
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.slim.min.js
 // @require      https://cdn.jsdelivr.net/gh/kapetan/jquery-observe@2.0.3/jquery-observe.js
 // @run-at       document-start
-// @supportURL   https://github.com/Revadike/SteamWebIntegration/issues/
 // @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @version      1.12.3
+// @downloadURL  https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
 // ==/UserScript==
 
 // ==Code==
