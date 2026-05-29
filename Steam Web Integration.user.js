@@ -519,25 +519,32 @@ function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastC
     const clcs = new Date(GM_getValue('swi_tradingcards_last', 0)).toLocaleString(settings.dateOverride ? 'sv-SE' : undefined);
     const blcs = new Date(GM_getValue('swi_bundles_last', 0)).toLocaleString(settings.dateOverride ? 'sv-SE' : undefined);
 
+    const appImagePaths = [
+        '/steam/apps/',
+        '/steamcommunity/public/images/apps/',
+        'steamdb.info/static/camo/apps/',
+    ];
+
     const appSelector = [
         '[href*="steamcommunity.com/app/"]',
         '[href*="steamdb.info/app/"]',
         '[href*="store.steampowered.com/agecheck/app/"]',
         '[href*="store.steampowered.com/app/"]',
         '[href*="s.team/a/"]',
-        ...['style', 'src'].map((attr) => [
-            `[${attr}*="/steam/apps/"]`,
-            `[${attr}*="/steamcommunity/public/images/apps/"]`,
-            `[${attr}*="steamdb.info/static/camo/apps/"]`,
-        ]).flat(),
-    ].filter((s) => settings.attributes.find((a) => s.includes(`[${a}`))).map((s) => `${s}:not(.swi)`)
+        ...appImagePaths.flatMap((path) => [
+            `[style*="${path}"]`,
+            `img[src*="${path}"]`,
+        ]),
+    ].filter((s) => settings.attributes.some((a) => s.includes(`[${a}`)))
+        .map((s) => `${s}:not(.swi)`)
         .join(', ');
 
     const subSelector = [
         '[href*="steamdb.info/sub/"]',
         '[href*="store.steampowered.com/sub/"]',
         '[href*="store.steampowered.com/agecheck/sub/"]',
-    ].map((s) => `${s}:not(.swi)`).join(', ');
+    ].map((s) => `${s}:not(.swi)`)
+        .join(', ');
 
     let delaySWI;
     const doSWI = (delay = 750) => {
