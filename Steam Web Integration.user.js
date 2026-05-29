@@ -72,13 +72,15 @@ function showToast() {
 }
 
 function onChange(elem) {
-    const name = $(elem).attr('name');
+    const { name, type } = elem;
     const val = $(elem).val();
 
-    if (elem.type === 'checkbox') {
-        settings[name] = $(elem).prop('checked');
+    if (type === 'checkbox') {
+        settings[name] = elem.checked;
+    } else if (type === 'number') {
+        settings[name] = Number(val);
     } else {
-        settings[elem.name] = Number.isFinite(val) ? Number(val) : val;
+        settings[name] = val;
     }
 
     GM_setValue('swi_settings', JSON.stringify(settings));
@@ -561,7 +563,7 @@ function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastC
             $(appSelector, document.body).get()
                 .forEach((elem) => doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissioned, limited, cards, bundles, dlc, lcs, dlcs, dlclcs, llcs, clcs, blcs));
             $(subSelector, document.body).get()
-                .forEach((elem) => doSub(elem, ownedPackages, bundles, lcs, blcs), 0);
+                .forEach((elem) => doSub(elem, ownedPackages, bundles, lcs, blcs));
         }, delay);
     };
 
@@ -601,12 +603,13 @@ function integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastC
 }
 
 function processUserData(userdata) {
-    const ignoredApps = arrayToObject(Object.keys(userdata.rgIgnoredApps)); // change 0 values to 1
-    const ownedApps = arrayToObject(userdata.rgOwnedApps);
-    const ownedPackages = arrayToObject(userdata.rgOwnedPackages);
-    const followedApps = arrayToObject(userdata.rgFollowedApps);
-    const wishlist = arrayToObject(userdata.rgWishlist);
-    return { ignoredApps, ownedApps, ownedPackages, followedApps, wishlist };
+    return {
+        ignoredApps: arrayToObject(Object.keys(userdata.rgIgnoredApps)), // change 0 values to 1
+        ownedApps: arrayToObject(userdata.rgOwnedApps),
+        ownedPackages: arrayToObject(userdata.rgOwnedPackages),
+        followedApps: arrayToObject(userdata.rgFollowedApps),
+        wishlist: arrayToObject(userdata.rgWishlist),
+    };
 }
 
 function refresh() {
@@ -700,14 +703,10 @@ function init() {
         'wishlistIcon':                  '&#10084;',
     };
 
-    settings = JSON.parse(GM_getValue('swi_settings', JSON.stringify(defaults)));
-    Object.keys(defaults).forEach((setting) => {
-        if (settings[setting] !== undefined) {
-            return;
-        }
-
-        settings[setting] = defaults[setting];
-    });
+    settings = {
+        ...defaults,
+        ...JSON.parse(GM_getValue('swi_settings', JSON.stringify(defaults))),
+    };
 
     const stylesheet = `
         .swi-block {
