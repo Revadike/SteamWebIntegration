@@ -39,6 +39,8 @@
 this.$ = this.jQuery = jQuery.noConflict(true);
 let settings;
 let boxNode;
+const APP_ID_REGEX = /\/a(?:pps?)?\/([0-9]+)/;
+const SUB_ID_REGEX = /sub\/([0-9]+)/;
 
 function factoryReset() {
     if (unsafeWindow.confirm('Are you sure you want to reset all settings and cached data?')) {
@@ -365,8 +367,6 @@ function refreshBundles(callback) {
 }
 
 function doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissioned, limited, cards, bundles, dlc, lcs, dlcs, dlclcs, llcs, clcs, blcs) {
-    $(elem).addClass('swi');
-
     /* Example detectable links:
      * https://barter.vg/steam/app/440/
      * https://s.team/a/440/
@@ -375,16 +375,23 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissio
      * https://store.steampowered.com/app/440/
      */
 
-    const attr = settings.attributes.find((a) => /\/a(pps?)?\/[0-9]+/g.test($(elem).attr(a)));
+    const attr = settings.attributes.find((a) => APP_ID_REGEX.test(elem.getAttribute(a)));
     if (!attr) {
         return;
     }
 
-    const attrVal = $(elem).attr(attr);
-    const appID = Number(attrVal.match(/\/a(?:pps?)?\/[0-9]+/g)[0].split(/\/a(?:pps?)?\//)[1]);
+    const attrVal = elem.getAttribute(attr);
+    const appIDMatch = attrVal.match(APP_ID_REGEX);
+    if (!appIDMatch) {
+        return;
+    }
+
+    const appID = Number(appIDMatch[1]);
     if (Number.isNaN(appID)) {
         return;
     }
+
+    $(elem).addClass('swi');
 
     setTimeout(() => { // avoids having the page hang when loading, because it is waiting on our script execution
         let html;
@@ -465,24 +472,29 @@ function doApp(elem, wishlist, ownedApps, ignoredApps, followedApps, decommissio
 }
 
 function doSub(elem, ownedPackages, bundles, lcs, blcs) {
-    $(elem).addClass('swi');
-
     /* Example detectable links:
      * https://barter.vg/steam/sub/469/
      * https://steamdb.info/sub/469/
      * https://store.steampowered.com/sub/469/
      */
 
-    const attr = settings.attributes.find((a) => /sub\/[0-9]+/g.test($(elem).attr(a)));
+    const attr = settings.attributes.find((a) => SUB_ID_REGEX.test(elem.getAttribute(a)));
     if (!attr) {
         return;
     }
 
-    const attrVal = $(elem).attr(attr);
-    const subID = Number(attrVal.match(/sub\/[0-9]+/g)[0].split('sub/')[1]);
+    const attrVal = elem.getAttribute(attr);
+    const subIDMatch = attrVal.match(SUB_ID_REGEX);
+    if (!subIDMatch) {
+        return;
+    }
+
+    const subID = Number(subIDMatch[1]);
     if (Number.isNaN(subID)) {
         return;
     }
+
+    $(elem).addClass('swi');
 
     setTimeout(() => {
         let html;
@@ -612,6 +624,10 @@ function processUserData(userdata) {
     };
 }
 
+function refreshExtraData(userdata, lastCached) {
+    refreshDecommissioned((decommissioned) => refreshDLC((dlc) => refreshLimited((limited) => refreshCards((cards) => refreshBundles((bundles) => integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastCached))))));
+}
+
 function refresh() {
     const cachedJson = GM_getValue('swi_data', null);
     let lastCached = GM_getValue('swi_last', 0);
@@ -622,7 +638,7 @@ function refresh() {
             userdata = processUserData(userdata);
         }
 
-        refreshDecommissioned((decommissioned) => refreshDLC((dlc) => refreshLimited((limited) => refreshCards((cards) => refreshBundles((bundles) => integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastCached))))));
+        refreshExtraData(userdata, lastCached);
         return;
     }
 
@@ -646,7 +662,7 @@ function refresh() {
                 GM_setValue('swi_last', lastCached);
             }
 
-            refreshDecommissioned((decommissioned) => refreshDLC((dlc) => refreshLimited((limited) => refreshCards((cards) => refreshBundles((bundles) => integrate(userdata, decommissioned, cards, bundles, limited, dlc, lastCached))))));
+            refreshExtraData(userdata, lastCached);
         },
     });
 }
