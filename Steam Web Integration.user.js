@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Steam Web Integration
 // @namespace    Royalgamer06
-// @version      1.12.3
+// @version      1.12.4
 // @description  Check every web page for game, dlc and package links to the steam store and mark using icons whether it's owned, unowned, wishlisted, ignored (not interested), DLC, removed/delisted (decommissioned), has low confidence metric, has cards, or is bundled.
 // @author       Revadike
 // @contributor  Barter.vg
