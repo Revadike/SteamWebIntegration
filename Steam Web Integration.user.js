@@ -30,8 +30,8 @@
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.slim.min.js
 // @require      https://cdn.jsdelivr.net/gh/kapetan/jquery-observe@2.0.3/jquery-observe.js
 // @run-at       document-start
-// @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
-// @downloadURL  https://github.com/Revadike/SteamWebIntegration/raw/master/Steam%20Web%20Integration.user.js
+// @updateURL    https://github.com/Revadike/SteamWebIntegration/raw/userscript/Steam%20Web%20Integration.user.js
+// @downloadURL  https://github.com/Revadike/SteamWebIntegration/raw/userscript/Steam%20Web%20Integration.user.js
 // ==/UserScript==
 
 // ==Code==
